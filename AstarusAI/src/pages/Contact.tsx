@@ -65,7 +65,14 @@ export default function Contact() {
         viewport={{ once: true, amount: 0.2 }}
         variants={fadeIn()}
       >
-        <div className="absolute inset-0 bg-mesh-gradient opacity-50" />
+        <div className="absolute inset-0">
+          <img 
+            src="/customer_support_con_ca1f1e80.jpg" 
+            alt="Contact Background" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/80 to-background" />
+        </div>
         <div className="absolute top-20 left-1/3 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-secondary/10 rounded-full blur-3xl" />
 

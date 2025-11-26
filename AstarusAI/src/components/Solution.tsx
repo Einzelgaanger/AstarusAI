@@ -58,12 +58,20 @@ const steps = [
 export const Solution = () => {
   return (
     <motion.section
-      className="relative py-24 px-4 bg-gradient-dark overflow-hidden"
+      className="relative py-24 px-4 overflow-hidden"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.1 }}
       variants={fadeIn()}
     >
+      <div className="absolute inset-0">
+        <img 
+          src="/brain_artificial_int_e9d43400.jpg" 
+          alt="AI Background" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-black/80" />
+      </div>
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/20 rounded-full blur-3xl" />

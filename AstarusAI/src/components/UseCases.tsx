@@ -11,6 +11,7 @@ const useCases = [
     title: "Personalized AI Assistants",
     description: "Consumer models that remember user preferences, tone, and past decisions — creating truly personalized experiences without privacy concerns.",
     examples: ["Custom GPTs", "Personal productivity tools", "Content creators"],
+    image: "/brain_artificial_int_76a4f2c5.jpg",
     color: "primary",
   },
   {
@@ -18,6 +19,7 @@ const useCases = [
     title: "Enterprise Adoption",
     description: "Companies can inject firm-specific knowledge, style guides, and domain expertise directly into model behavior.",
     examples: ["Legal firms", "Financial analysts", "Medical professionals"],
+    image: "/digital_transformati_bcf974ad.jpg",
     color: "secondary",
   },
   {
@@ -25,6 +27,7 @@ const useCases = [
     title: "Adaptive Learning Systems",
     description: "Educational AI that continuously adapts to individual student learning patterns and knowledge gaps.",
     examples: ["AI tutors", "Training platforms", "Skill development"],
+    image: "/digital_transformati_88f18833.jpg",
     color: "primary",
   },
   {
@@ -32,6 +35,7 @@ const useCases = [
     title: "Operational Intelligence",
     description: "Models that improve at routine business tasks through accumulated corrections and organizational knowledge.",
     examples: ["Email automation", "Code generation", "Document summarization"],
+    image: "/futuristic_ai_techno_65818c05.jpg",
     color: "secondary",
   },
 ];
@@ -84,16 +88,31 @@ export const UseCases = () => {
                 transition={{ duration: 0.3 }}
               >
                 <Card className="group relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 h-full bg-white">
-                  <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
-                    <Icon className={`w-full h-full ${isPrimary ? "text-primary" : "text-secondary"}`} />
+                  <div className="absolute inset-0 opacity-5">
+                    <img 
+                      src={useCase.image} 
+                      alt={useCase.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
                   <div className="p-8 relative z-10">
                     <div className="flex items-start gap-5 mb-5">
-                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl ${
-                        isPrimary ? "bg-gradient-primary" : "bg-gradient-secondary"
-                      }`}>
-                        <Icon className="w-7 h-7 text-white" />
+                      <div className="relative flex-shrink-0">
+                        <div className={`w-16 h-16 rounded-2xl overflow-hidden border-4 shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl ${
+                          isPrimary ? "border-primary/30" : "border-secondary/30"
+                        }`}>
+                          <img
+                            src={useCase.image}
+                            alt={useCase.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-lg flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 ${
+                          isPrimary ? "bg-gradient-primary" : "bg-gradient-secondary"
+                        }`}>
+                          <Icon className="w-4 h-4 text-white" />
+                        </div>
                       </div>
                       
                       <h3 className={`text-xl sm:text-2xl font-bold flex-1 pt-2 transition-colors duration-300 ${

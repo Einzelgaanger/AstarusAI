@@ -421,7 +421,14 @@ export default function LutDemo() {
         viewport={{ once: true, amount: 0.2 }}
         variants={fadeIn()}
       >
-        <div className="absolute inset-0 bg-mesh-gradient opacity-50" />
+        <div className="absolute inset-0">
+          <img 
+            src="/futuristic_ai_techno_65818c05.jpg" 
+            alt="AI Technology Background" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/85 to-background" />
+        </div>
         <div className="absolute top-20 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl" />
 
