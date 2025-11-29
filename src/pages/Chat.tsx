@@ -70,7 +70,7 @@ const DEFAULT_NEW_LUT_RESIDUALS: Record<string, number> = {
 
 // Match the Python script defaults
 const DEFAULT_THRESHOLD = 0.45;
-const GEN_LENGTH = 128;
+const GEN_LENGTH = 300; // Max gen length
 
 function generateLutName() {
   const rand = Math.random().toString(16).slice(2, 10);
