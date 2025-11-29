@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronRight, LogIn, UserPlus, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -16,6 +17,8 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -81,16 +84,54 @@ export const Navbar = () => {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
-            <Link to="/chat">
-              <Button
-                variant="ghost"
-                className="text-white/80 hover:text-white hover:bg-white/10 font-medium"
-              >
-                Try Demo
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link to="/spaces">
+                  <Button
+                    variant="ghost"
+                    className="text-white/80 hover:text-white hover:bg-white/10 font-medium"
+                  >
+                    My Spaces
+                  </Button>
+                </Link>
+                <Button
+                  variant="ghost"
+                  onClick={logout}
+                  className="text-white/80 hover:text-white hover:bg-white/10 font-medium"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/demo">
+                  <Button
+                    variant="ghost"
+                    className="text-white/80 hover:text-white hover:bg-white/10 font-medium"
+                  >
+                    Try Demo
+                  </Button>
+                </Link>
+                <Link to="/login">
+                  <Button
+                    variant="ghost"
+                    className="text-white/80 hover:text-white hover:bg-white/10 font-medium"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Log In
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-lg shadow-primary/30 px-6">
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
             <Link to="/contact">
-              <Button className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-lg shadow-primary/30 px-6">
+              <Button className="bg-gradient-secondary hover:opacity-90 text-white font-semibold shadow-lg shadow-secondary/30 px-6">
                 Get in Touch
               </Button>
             </Link>
@@ -136,16 +177,54 @@ export const Navbar = () => {
                 ))}
 
                 <div className="pt-3 mt-3 border-t border-white/10 space-y-2">
-                  <Link to="/chat" className="block">
-                    <Button
-                      variant="outline"
-                      className="w-full border-white/20 text-white hover:bg-white/10 font-medium"
-                    >
-                      Try Demo
-                    </Button>
-                  </Link>
+                  {isAuthenticated ? (
+                    <>
+                      <Link to="/spaces" className="block">
+                        <Button
+                          variant="outline"
+                          className="w-full border-white/20 text-white hover:bg-white/10 font-medium"
+                        >
+                          My Spaces
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outline"
+                        onClick={logout}
+                        className="w-full border-white/20 text-white hover:bg-white/10 font-medium"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/demo" className="block">
+                        <Button
+                          variant="outline"
+                          className="w-full border-white/20 text-white hover:bg-white/10 font-medium"
+                        >
+                          Try Demo
+                        </Button>
+                      </Link>
+                      <Link to="/login" className="block">
+                        <Button
+                          variant="outline"
+                          className="w-full border-white/20 text-white hover:bg-white/10 font-medium"
+                        >
+                          <LogIn className="w-4 h-4 mr-2" />
+                          Log In
+                        </Button>
+                      </Link>
+                      <Link to="/signup" className="block">
+                        <Button className="w-full bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-lg py-6">
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Sign Up
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                   <Link to="/contact" className="block">
-                    <Button className="w-full bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-lg py-6">
+                    <Button className="w-full bg-gradient-secondary hover:opacity-90 text-white font-semibold shadow-lg py-6">
                       Get in Touch
                     </Button>
                   </Link>

@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -48,10 +49,13 @@ type PretrainedLutConfig = {
   readOnly?: boolean;
 };
 
+// Demo uses fixed lut_name
+const DEMO_LUT_NAME = "astarus_demo";
+
 const PRETRAINED_LUTS: PretrainedLutConfig[] = [
   {
     label: "Astarus AI Demo",
-    lutName: "demo-f0d18034",
+    lutName: DEMO_LUT_NAME,
     blocks: [-1, -4, -9],
     residualMap: {
       "-1": 0.15,
@@ -203,9 +207,8 @@ const suggestedQuestions = [
 ];
 
 export default function LutDemo() {
-  const [lutName, setLutName] = useState<string>(
-    () => initialPretrained?.lutName ?? generateLutName()
-  );
+  // Demo always uses fixed lut_name
+  const [lutName] = useState<string>(DEMO_LUT_NAME);
   const [lutInput, setLutInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -448,6 +451,16 @@ export default function LutDemo() {
               Chat with our LUT-enhanced Mistral model. The AI has been trained with Astarus-specific
               knowledge that it can recall instantly without traditional fine-tuning.
             </p>
+
+            <div className="px-4 py-3 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 max-w-2xl mx-auto">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                <strong>Demo only</strong> – To create your own brain,{" "}
+                <Link to="/signup" className="underline font-semibold hover:text-amber-900 dark:hover:text-amber-100">
+                  sign up
+                </Link>
+                .
+              </p>
+            </div>
 
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
               <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border shadow-sm">

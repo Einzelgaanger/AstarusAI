@@ -79,7 +79,7 @@ export const Hero = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
             variants={fadeInUp(0.3)}
           >
-            <Link to="/chat">
+            <Link to="/demo">
               <Button 
                 size="lg" 
                 className="group cta-button text-base px-8 py-6 h-auto"
