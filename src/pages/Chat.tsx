@@ -47,9 +47,9 @@ const PRETRAINED_LUTS: PretrainedLutConfig[] = [
     lutName: "AstarusAIInternalv2",
     blocks: [-1, -5, -9],
     residualMap: {
-      "-1": 0.04,
-      "-5": 0.07,
-      "-9": 0.07,
+      "-1": 0.075,
+      "-5": 0.10,
+      "-9": 0.10,
     },
     readOnly: true,
   },
@@ -69,7 +69,7 @@ const DEFAULT_NEW_LUT_RESIDUALS: Record<string, number> = {
 };
 
 // Match the Python script defaults
-const DEFAULT_THRESHOLD = 0.35;
+const DEFAULT_THRESHOLD = 0.45;
 const GEN_LENGTH = 128;
 
 function generateLutName() {
