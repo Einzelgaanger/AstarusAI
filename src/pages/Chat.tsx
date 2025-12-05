@@ -228,7 +228,7 @@ const suggestedQuestions = [
   "What does Astarus AI do?",
   "Who founded Astarus AI?",
   "How does memory augmentation work?",
-  "What makes your technology unique?",
+  "What makes Astarus AI's technology unique?",
 ];
 
 export default function LutDemo() {
