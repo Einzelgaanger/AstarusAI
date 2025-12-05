@@ -33,7 +33,7 @@ const BASE_URL =
   "https://dhzzxfr41qjcz7-8000.proxy.runpod.net";
 const MODEL = import.meta.env.VITE_API_MODEL || "mistral";
 
-// ---- Chat system prompt + Mistral-style prefix (matches old code / Python CLI) ----
+// ---- Chat system prompt + Mistral-style prefix (matches Python CLI) ----
 
 const SYSTEM_PROMPT = `
 You are a helpful domain assistant for Astarus AI.
@@ -45,17 +45,24 @@ Rules:
 - If you are unsure, say so briefly rather than inventing details.
 `.trim();
 
+/**
+ * Match Python:
+ * def build_mistral_chat_prefix(user_text: str) -> str:
+ *     return (
+ *         "[INST]"
+ *         + SYSTEM_PROMPT
+ *         + "\\n"
+ *         + user_text.strip()
+ *         + " [/INST]"
+ *     )
+ */
 function buildMistralChatPrefix(
   userMessage: string,
   systemPrompt: string = SYSTEM_PROMPT
 ): string {
   const trimmedUser = userMessage.trim();
-  const content = systemPrompt
-    ? `${systemPrompt.trim()}\n\n${trimmedUser}`
-    : trimmedUser;
-
-  // Match the Python / old-UI format
-  return `[INST] ${content} [/INST]`;
+  const sys = systemPrompt.trim();
+  return `[INST]${sys}\n${trimmedUser} [/INST]`;
 }
 
 type Message = {
@@ -81,15 +88,16 @@ type PretrainedLutConfig = {
 // Demo uses fixed lut_name
 const DEMO_LUT_NAME = "AstarusAIInternalv16";
 
+// Updated to match CLI blocks: [-1, -5, -9]
 const PRETRAINED_LUTS: PretrainedLutConfig[] = [
   {
     label: "Astarus AI Demo",
     lutName: DEMO_LUT_NAME,
-    blocks: [-1, -4, -9],
+    blocks: [-1, -5, -9],
     residualMap: {
       "-1": 0.05,
-      "-4": 0.10,
-      "-9": 0.10,
+      "-5": 0.1,
+      "-9": 0.1,
     },
     readOnly: true,
   },
@@ -99,14 +107,14 @@ const READ_ONLY_LUTS = PRETRAINED_LUTS.filter((p) => p.readOnly).map(
   (p) => p.lutName
 );
 
-// Defaults for *new* LUTs (aligned roughly with old behaviour)
+// Defaults for *new* LUTs (you can keep these separate from the demo config)
 const DEFAULT_NEW_LUT_BLOCKS = [-1, -4];
 const DEFAULT_NEW_LUT_RESIDUALS: Record<string, number> = {
   "-1": 0.2,
   "-4": 0.25,
 };
 
-const DEFAULT_THRESHOLD = 0.45;
+const DEFAULT_THRESHOLD = 0.35;
 const GEN_LENGTH = 300;
 
 function generateLutName() {
@@ -157,7 +165,8 @@ async function trainLut(
     threshold,
     residuals,
     sparsity: 1.0,
-    cost_scale: 5,
+    // Match CLI behaviour
+    cost_scale: 8,
   };
   const res = await fetch(`${BASE_URL}/train_lut`, {
     method: "POST",
@@ -175,8 +184,7 @@ async function trainLut(
   return json;
 }
 
-// Generate using the same chat prefix as the old code:
-// prompt = [INST] SYSTEM_PROMPT + "\n\n" + user_message [/INST]
+// Generate using the same chat prefix as the old code / Python CLI
 async function generateFromApi(
   lutName: string,
   userMsg: string,
@@ -194,7 +202,8 @@ async function generateFromApi(
     threshold,
     residuals,
     wnn_blocks: wnnBlocks,
-    cost_scale: 5,
+    // Match CLI behaviour
+    cost_scale: 8,
   };
 
   const res = await fetch(`${BASE_URL}/generate`, {
