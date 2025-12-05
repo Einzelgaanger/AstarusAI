@@ -28,7 +28,7 @@ import { fadeIn, fadeInUp, staggerContainer } from "@/lib/motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { createChat, saveMessage, updateChatTitle } from "@/lib/chatService";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dhzzxfr41qjcz7-8000.proxy.runpod.net";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://semifinished-carmen-pantheistic.ngrok-free.dev";
 const MODEL = import.meta.env.VITE_API_MODEL || "mistral";
 
 type Message = {

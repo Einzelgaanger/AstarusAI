@@ -32,15 +32,29 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
 ### Supabase Setup
 
+**⚠️ IMPORTANT:** Supabase setup is **required** for spaces functionality. Without it, users cannot create spaces.
+
 1. Create a Supabase project at [supabase.com](https://supabase.com)
 2. Go to your project settings and copy:
    - Project URL (for `VITE_SUPABASE_URL`)
    - Anon/Public key (for `VITE_SUPABASE_ANON_KEY`)
-3. In your Supabase SQL Editor, run the SQL from `supabase-schema.sql` to create the necessary tables:
+3. **Create your `.env` file** in the project root:
+   ```env
+   VITE_SUPABASE_URL=https://your-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-anon-key-here
+   VITE_API_BASE_URL=https://your-api-url.com
+   VITE_API_MODEL=mistral
+   ```
+4. **Restart your development server** after creating/updating `.env` file
+5. In your Supabase SQL Editor, run the **entire** `supabase-schema.sql` file to create the necessary tables:
    - `chats` - stores user chat sessions
    - `messages` - stores individual messages in chats
    - `user_memory` - stores user-specific memory/data
-4. The schema includes Row Level Security (RLS) policies to ensure users can only access their own data
+   - `spaces` - stores AI spaces (required for space creation)
+   - `space_members` - stores space memberships and invitations
+6. The schema includes Row Level Security (RLS) policies to ensure users can only access their own data
+
+**Troubleshooting:** If you can't create spaces, see `TROUBLESHOOTING.md` for detailed help.
 
 ### Development
 
