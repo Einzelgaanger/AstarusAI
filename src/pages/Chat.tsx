@@ -96,8 +96,8 @@ const PRETRAINED_LUTS: PretrainedLutConfig[] = [
     blocks: [-1, -6, -11],
     residualMap: {
       "-1": 0.1,
-      "-5": 0.1,
-      "-9": 0.1,
+      "-6": 0.1,
+      "-11": 0.1,
     },
     readOnly: true,
   },
