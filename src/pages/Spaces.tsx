@@ -137,7 +137,18 @@ export default function Spaces() {
       setNewSpaceDescription("");
     } catch (error: any) {
       console.error("Failed to create space:", error);
-      alert(error.message || "Failed to create space");
+      let errorMessage = error.message || "Failed to create space";
+      
+      // Provide helpful error messages
+      if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
+        errorMessage = "Database tables not set up. Please run 'supabase-schema.sql' in your Supabase SQL Editor. See TROUBLESHOOTING.md for details.";
+      } else if (errorMessage.includes("row-level security") || errorMessage.includes("permission denied")) {
+        errorMessage = "Database permissions issue. Make sure you've run the complete 'supabase-schema.sql' file including RLS policies. See TROUBLESHOOTING.md for details.";
+      } else if (errorMessage.includes("Failed to fetch") || errorMessage.includes("401") || errorMessage.includes("Unauthorized")) {
+        errorMessage = "Supabase connection issue. Check your .env file has correct VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then restart the dev server. See TROUBLESHOOTING.md for details.";
+      }
+      
+      alert(errorMessage);
     } finally {
       setCreating(false);
     }

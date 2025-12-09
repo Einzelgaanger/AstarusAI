@@ -26,7 +26,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeIn, fadeInUp, staggerContainer } from "@/lib/motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { createChat, saveMessage, updateChatTitle } from "@/lib/chatService";
+import { createChat, saveMessage, updateChatTitle, getUserChats, getChatMessages } from "@/lib/chatService";
 
 const BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
@@ -259,6 +259,7 @@ export default function LutDemo() {
   const [lastThresholdUsed, setLastThresholdUsed] = useState<number>();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const { user, isAuthenticated } = useAuth();
@@ -279,45 +280,86 @@ export default function LutDemo() {
     [wnnBlocks, residualMap]
   );
 
-  // Scroll to top when component mounts - use multiple methods to ensure it works
+  // Scroll to top only on initial component mount
   useLayoutEffect(() => {
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    });
+    if (isInitialMount.current) {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
+      isInitialMount.current = false;
+    }
   }, []);
 
-  // Also scroll to top in useEffect as backup
-  useEffect(() => {
-    const scrollToTop = () => {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    };
-
-    scrollToTop();
-    const timer = setTimeout(scrollToTop, 50);
-
-    isInitialMount.current = false;
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Only scroll to messages end when there are actual messages (not on initial mount)
+  // Scroll to messages end when new messages are added (but not on initial mount)
   useEffect(() => {
     if (messages.length > 0 && !isInitialMount.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      // Scroll the container to bottom instead of using scrollIntoView
+      setTimeout(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+      }, 50);
     }
-  }, [messages]);
+  }, [messages.length]);
 
-  // Create a new chat when user is authenticated and starts chatting
+  // Load chat from localStorage or most recent chat when user is authenticated
   useEffect(() => {
-    if (isAuthenticated && user && !currentChatId && messages.length === 0) {
-      // Chat will be created when first message is sent
-    }
+    const loadChat = async () => {
+      if (isAuthenticated && user && !currentChatId && messages.length === 0) {
+        try {
+          let chatIdToLoad: string | null = null;
+          
+          // First, try to load from localStorage
+          const storedChatId = localStorage.getItem(`currentChatId_${user.id}`);
+          if (storedChatId) {
+            // Verify the chat still exists
+            try {
+              const messages = await getChatMessages(storedChatId);
+              chatIdToLoad = storedChatId;
+              const loadedMessages: Message[] = messages.map((msg) => ({
+                id: msg.id,
+                role: msg.role,
+                content: msg.content,
+              }));
+              setMessages(loadedMessages);
+            } catch (error) {
+              // Chat doesn't exist, clear localStorage and try to load most recent
+              localStorage.removeItem(`currentChatId_${user.id}`);
+            }
+          }
+          
+          // If no stored chat or it doesn't exist, load the most recent chat
+          if (!chatIdToLoad) {
+            const chats = await getUserChats(user.id);
+            if (chats.length > 0) {
+              const recentChat = chats[0];
+              chatIdToLoad = recentChat.id;
+              localStorage.setItem(`currentChatId_${user.id}`, recentChat.id);
+              
+              // Load messages for this chat
+              const chatMessages = await getChatMessages(recentChat.id);
+              const loadedMessages: Message[] = chatMessages.map((msg) => ({
+                id: msg.id,
+                role: msg.role,
+                content: msg.content,
+              }));
+              setMessages(loadedMessages);
+            }
+          }
+          
+          if (chatIdToLoad) {
+            setCurrentChatId(chatIdToLoad);
+          }
+        } catch (error) {
+          console.error("Failed to load chat:", error);
+          // Continue without loading - chat will be created on first message
+        }
+      }
+    };
+
+    loadChat();
   }, [isAuthenticated, user, currentChatId, messages.length]);
 
   const resetCommonState = (label?: string) => {
@@ -329,8 +371,10 @@ export default function LutDemo() {
     setTeachOpen(false);
     setTeachQuestion("");
     setTeachAnswer("");
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       setCurrentChatId(null);
+      // Clear stored chat ID when resetting
+      localStorage.removeItem(`currentChatId_${user.id}`);
     }
   };
 
@@ -374,6 +418,8 @@ export default function LutDemo() {
       try {
         chatId = await createChat(user.id, trimmed.substring(0, 50));
         setCurrentChatId(chatId);
+        // Store chat ID in localStorage
+        localStorage.setItem(`currentChatId_${user.id}`, chatId);
         if (trimmed.length > 20) {
           updateChatTitle(chatId, trimmed.substring(0, 50));
         }
@@ -542,21 +588,16 @@ export default function LutDemo() {
         <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl" />
 
         <div className="container relative z-10 max-w-4xl mx-auto text-center">
-          <motion.div variants={fadeInUp(0.1)} className="space-y-6">
-            <div className="section-badge mx-auto">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-primary">Interactive Demo</span>
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
+            <motion.div variants={fadeInUp(0.1)} className="space-y-6">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
               <span className="text-foreground">Experience </span>
               <span className="text-gradient">Memory-Augmented AI</span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Chat with our LUT-enhanced Mistral model. The AI has been trained
-              with Astarus-specific knowledge that it can recall instantly
-              without traditional fine-tuning.
+            <p className="text-lg sm:text-xl text-black max-w-2xl mx-auto">
+              Experience our LUT-enhanced Mistral model. This AI has been trained
+              with Astarus-specific knowledge that it can recall instantly,
+              without the need for expensive fine-tuning or complex retraining processes.
             </p>
 
             <div className="px-4 py-3 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 max-w-2xl mx-auto">
@@ -596,7 +637,7 @@ export default function LutDemo() {
       </motion.section>
 
       <motion.section
-        className="py-8 px-4"
+        className="py-6 sm:py-8 px-3 sm:px-4"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
@@ -606,7 +647,7 @@ export default function LutDemo() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <motion.div className="lg:col-span-2" variants={fadeInUp(0.1)}>
               <Card className="overflow-hidden border-0 shadow-xl bg-card/80 backdrop-blur-sm">
-                <div className="p-4 sm:p-6 border-b bg-gradient-to-r from-primary/5 via-transparent to-secondary/5">
+                <div className="p-3 sm:p-4 md:p-6 border-b bg-gradient-to-r from-primary/5 via-transparent to-secondary/5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg">
@@ -637,7 +678,7 @@ export default function LutDemo() {
                   </div>
                 </div>
 
-                <div className="h-[400px] sm:h-[480px] overflow-y-auto p-4 sm:p-6 space-y-4">
+                <div ref={messagesContainerRef} className="h-[300px] sm:h-[400px] md:h-[480px] overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4">
                   {!hasMessages ? (
                     <div className="h-full flex flex-col items-center justify-center text-center px-4">
                       <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-6">
@@ -663,50 +704,70 @@ export default function LutDemo() {
                       </div>
                     </div>
                   ) : (
-                    <AnimatePresence mode="popLayout">
-                      {messages.map((m) => (
-                        <motion.div
-                          key={m.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          className={`flex ${
-                            m.role === "user"
-                              ? "justify-end"
-                              : "justify-start"
-                          }`}
-                        >
-                          <div
-                            className={`flex items-start gap-3 max-w-[85%] ${
-                              m.role === "user" ? "flex-row-reverse" : ""
+                    <>
+                      <AnimatePresence mode="popLayout">
+                        {messages.map((m) => (
+                          <motion.div
+                            key={m.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            className={`flex ${
+                              m.role === "user"
+                                ? "justify-end"
+                                : "justify-start"
                             }`}
                           >
                             <div
-                              className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                                m.role === "user"
-                                  ? "bg-gradient-primary text-white"
-                                  : "bg-muted text-muted-foreground"
+                              className={`flex items-start gap-3 max-w-[85%] ${
+                                m.role === "user" ? "flex-row-reverse" : ""
                               }`}
                             >
-                              {m.role === "user" ? (
-                                <User className="w-4 h-4" />
-                              ) : (
-                                <Bot className="w-4 h-4" />
-                              )}
+                              <div
+                                className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                                  m.role === "user"
+                                    ? "bg-gradient-primary text-white"
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {m.role === "user" ? (
+                                  <User className="w-4 h-4" />
+                                ) : (
+                                  <Bot className="w-4 h-4" />
+                                )}
+                              </div>
+                              <div
+                                className={`rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
+                                  m.role === "user"
+                                    ? "chat-bubble-user text-white"
+                                    : "chat-bubble-ai text-foreground"
+                                }`}
+                              >
+                                {m.content}
+                              </div>
                             </div>
-                            <div
-                              className={`rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
-                                m.role === "user"
-                                  ? "chat-bubble-user text-white"
-                                  : "chat-bubble-ai text-foreground"
-                              }`}
-                            >
-                              {m.content}
-                            </div>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                      {!input.trim() && !isGenerating && (
+                        <div className="pt-4 border-t border-muted/50">
+                          <p className="text-xs font-medium text-muted-foreground mb-3 text-center">
+                            Suggested questions:
+                          </p>
+                          <div className="flex flex-wrap justify-center gap-2">
+                            {suggestedQuestions.map((q, i) => (
+                              <button
+                                key={i}
+                                onClick={() => handleSend(q)}
+                                className="px-3 py-1.5 text-xs rounded-full bg-muted hover:bg-primary/10 hover:text-primary transition-all duration-200 border hover:border-primary/30"
+                              >
+                                {q}
+                              </button>
+                            ))}
                           </div>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
+                        </div>
+                      )}
+                    </>
                   )}
 
                   {isGenerating && (
@@ -732,7 +793,7 @@ export default function LutDemo() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                <div className="p-4 sm:p-6 border-t bg-gradient-to-r from-transparent via-muted/30 to-transparent">
+                <div className="p-3 sm:p-4 md:p-6 border-t bg-gradient-to-r from-transparent via-muted/30 to-transparent">
                   {status && (
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
@@ -751,7 +812,7 @@ export default function LutDemo() {
                   <div className="flex gap-3">
                     <div className="flex-1 relative">
                       <textarea
-                        className="w-full resize-none rounded-xl border-2 border-muted bg-background px-4 py-3 pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
+                        className="w-full resize-none rounded-xl border-2 border-muted bg-background px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
                         rows={2}
                         placeholder="Ask something about Astarus AI..."
                         value={input}

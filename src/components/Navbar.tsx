@@ -51,7 +51,7 @@ export const Navbar = () => {
         >
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img
-              src="/Astarus AI No name logo.png"
+              src="/Actual Logo.png"
               alt="Astarus Logo"
               className="h-20 sm:h-24 w-auto rounded-lg -my-2"
             />
