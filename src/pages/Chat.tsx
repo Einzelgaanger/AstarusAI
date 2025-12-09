@@ -166,7 +166,7 @@ async function trainLut(
     residuals,
     sparsity: 1.0,
     // Match CLI behaviour
-    cost_scale: 0,
+    cost_scale: 8,
   };
   const res = await fetch(`${BASE_URL}/train_lut`, {
     method: "POST",
@@ -203,7 +203,7 @@ async function generateFromApi(
     residuals,
     wnn_blocks: wnnBlocks,
     // Match CLI behaviour
-    cost_scale: 0,
+    cost_scale: 8,
   };
 
   const res = await fetch(`${BASE_URL}/generate`, {
