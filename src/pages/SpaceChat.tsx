@@ -5,6 +5,7 @@ import {
   useLayoutEffect,
   useMemo,
 } from "react";
+import OpenAI from "openai";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
@@ -13,12 +14,26 @@ import { Send, Bot, User, RefreshCw, MessageCircle, Brain, Sparkles, ChevronDown
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { fadeIn } from "@/lib/motion";
-import { getSpaceByLutName } from "@/lib/spaceService";
+import {
+  getSpaceByLutName,
+  getSpaceTrainingLogsByLutName,
+  createSpaceTrainingLog,
+  updateSpaceTrainingLogQAs,
+} from "@/lib/spaceService";
 
 const BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   "https://dhzzxfr41qjcz7-8000.proxy.runpod.net";
 const MODEL = import.meta.env.VITE_API_MODEL || "mistral";
+const OPENAI_MODEL = import.meta.env.VITE_OPENAI_MODEL || "gpt-4.1";
+
+// NOTE: This runs in the browser. Using OpenAI directly from the client will
+// expose your API key to anyone who can see the network calls / bundle.
+// For production, proxy this call through your own backend instead.
+const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
 
 // Reuse same style of system prompt so behaviour matches main demo
 const SYSTEM_PROMPT =
@@ -59,6 +74,22 @@ const GEN_LENGTH = 300;
 const DEFAULT_BLOCKS = [-1, -4];
 const DEFAULT_RESIDUALS = [0.2, 0.25];
 
+type QAItem = {
+  id: string;
+  question: string;
+  answer: string;
+};
+
+type TrainingHistoryEntry = {
+  id: string;
+  user: string;
+  date: string;
+  qaCount: number;
+  qas: QAItem[];
+  lastEditedBy?: string;
+  lastEditedAt?: string;
+};
+
 function cleanAnswer(raw: string): string {
   let text = raw;
   text = text.replace(/\[INST\]/g, "").replace(/\[\/INST\]/g, "");
@@ -82,144 +113,108 @@ function extractAssistantAnswer(_userMsg: string, completion: string): string {
   return cleanAnswer(completion.trim());
 }
 
-// Generate Q&A pairs from text using the AI
-async function generateQAsFromText(text: string, lutName: string): Promise<Array<{ question: string; answer: string }>> {
-  // Use a more direct prompt without the system prompt wrapper
-  const userPrompt = `Extract 8-12 key question-answer pairs from this text. Return ONLY a JSON array, no other text. Format: [{"question":"...","answer":"..."}]
+// Generate Q&A pairs from text using OpenAI directly
+async function generateQAsFromText(
+  text: string,
+  _lutName: string
+): Promise<Array<{ question: string; answer: string }>> {
+  if (!import.meta.env.VITE_OPENAI_API_KEY) {
+    throw new Error(
+      "VITE_OPENAI_API_KEY is not set. Please add it to your .env file."
+    );
+  }
 
-Text:
-${text.substring(0, 2000)}
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return [];
+  }
 
-JSON:`;
-  
-  const prompt = buildMistralChatPrefix(userPrompt);
+  const prompt = `
+You generate high-quality question–answer pairs from source text.
 
-  const payload = {
-    prompt,
-    length: 800,
-    lut_name: lutName,
-    model: MODEL,
-    threshold: DEFAULT_THRESHOLD,
-    residuals: DEFAULT_RESIDUALS,
-    wnn_blocks: DEFAULT_BLOCKS,
-    cost_scale: 5,
-  };
+Your goals, in order of priority:
+1) Create as MANY useful Q&A pairs as possible from the text.
+2) Every question must be significant and non-trivial (no fluff).
+3) Avoid redundant or near-duplicate questions completely.
 
-  const res = await fetch(`${BASE_URL}/generate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+Guidelines:
+- Focus on key ideas, mechanisms, definitions, trade-offs, and practical implications.
+- Prefer questions that would genuinely help someone understand or be tested on this text.
+- Do NOT create questions that just restate the same fact in slightly different words.
+- Do NOT create questions about formatting, headings, or obviously minor details.
+- Each question must be understandable without seeing the original text.
+- If the text is long and rich, you can return 20–40 questions.
+- If the text is short or repetitive, return fewer questions and keep only the best ones.
+
+Output format (MUST follow exactly):
+- Return ONLY valid JSON, no extra text.
+- JSON must be an array of objects with exactly these fields:
+  - "question": string
+  - "answer": string
+- Example: [{"question":"...","answer":"..."}, {"question":"...","answer":"..."}]
+
+Source text (possibly truncated):
+${trimmed.substring(0, 4000)}
+`;
+
+  const response = await openai.responses.create({
+    model: OPENAI_MODEL,
+    input: [
+      {
+        role: "system",
+        content:
+          "You are an assistant that extracts concise, high-value question–answer pairs from text and returns ONLY JSON.",
+      },
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    max_output_tokens: 1200,
   });
 
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(json.error || json.detail || `Failed to generate Q&A pairs`);
+  const raw =
+    response.output[0]?.content[0]?.type === "output_text"
+      ? response.output[0].content[0].text
+      : "";
+
+  // Clean common wrappers like markdown fences
+  let cleaned = raw.trim()
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*$/gi, "")
+    .trim();
+
+  // Ensure we only keep the JSON array part if there's extra text
+  const firstBracket = cleaned.indexOf("[");
+  const lastBracket = cleaned.lastIndexOf("]");
+  if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+    cleaned = cleaned.slice(firstBracket, lastBracket + 1);
   }
 
-  // Try to extract and clean JSON from the response
-  const completion = json.completion || "";
-  
-  // Remove everything before the first [ (JSON array start)
-  // This handles cases where the AI returns the prompt + response
-  const jsonStart = completion.indexOf('[');
-  let cleaned = jsonStart >= 0 ? completion.substring(jsonStart) : completion;
-  
-  // Remove markdown code blocks if present
-  cleaned = cleaned.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-  
-  // Find JSON array - look for the complete array (balanced brackets)
-  let bracketCount = 0;
-  let jsonStartIdx = 0;
-  let jsonEnd = -1;
-  
-  for (let i = 0; i < cleaned.length; i++) {
-    if (cleaned[i] === '[') {
-      if (bracketCount === 0) jsonStartIdx = i;
-      bracketCount++;
-    }
-    if (cleaned[i] === ']') {
-      bracketCount--;
-      if (bracketCount === 0) {
-        jsonEnd = i + 1;
-        break;
-      }
-    }
-  }
-  
-  if (jsonEnd > jsonStartIdx) {
-    const jsonStr = cleaned.substring(jsonStartIdx, jsonEnd);
-    try {
-      // Try to parse directly first
-      const qas = JSON.parse(jsonStr);
-      if (Array.isArray(qas) && qas.length > 0) {
-        return qas.map((qa: any) => ({
-          question: String(qa.question || qa.q || "").trim(),
-          answer: String(qa.answer || qa.a || "").trim(),
-        })).filter((qa: any) => qa.question && qa.answer && qa.question.length > 5 && qa.answer.length > 5);
-      }
-    } catch (e) {
-      // If direct parse fails, try a simpler approach - just remove problematic characters
-      try {
-        // Remove control characters but keep the structure
-        let cleanJson = jsonStr
-          .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '') // Remove control chars
-          .replace(/\r\n/g, ' ') // Replace newlines with spaces in string values
-          .replace(/\r/g, ' ')
-          .replace(/\n/g, ' ')
-          .replace(/\t/g, ' ');
-        
-        const qas = JSON.parse(cleanJson);
-        if (Array.isArray(qas) && qas.length > 0) {
-          return qas.map((qa: any) => ({
-            question: String(qa.question || qa.q || "").trim(),
-            answer: String(qa.answer || qa.a || "").trim(),
-          })).filter((qa: any) => qa.question && qa.answer && qa.question.length > 5 && qa.answer.length > 5);
-        }
-      } catch (e2) {
-        console.error("Failed to parse Q&A JSON after cleaning:", e2);
-        console.log("Raw JSON string (first 500 chars):", jsonStr.substring(0, 500));
-      }
-    }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (err) {
+    console.error("Failed to parse OpenAI Q&A JSON:", err, cleaned);
+    throw new Error("Failed to parse Q&A pairs from OpenAI response.");
   }
 
-  // Fallback: create Q&A pairs from text using better extraction
-  const paragraphs = text.split(/\n\n+/).filter(p => p.trim().length > 50);
-  const qas: Array<{ question: string; answer: string }> = [];
-  
-  paragraphs.forEach((para, i) => {
-    const sentences = para.split(/[.!?]+/).filter(s => s.trim().length > 20);
-    if (sentences.length > 0) {
-      const mainSentence = sentences[0].trim();
-      if (mainSentence.length > 30 && mainSentence.length < 200) {
-        // Create question from key terms
-        const words = mainSentence.split(/\s+/).filter(w => w.length > 4);
-        const keyTerms = words.slice(0, 3).join(' ');
-        qas.push({
-          question: `What is ${keyTerms}?`,
-          answer: mainSentence,
-        });
-      }
-    }
-  });
-  
-  // Also create Q&A from section headers
-  const headers = text.match(/^#{1,3}\s+(.+)$/gm);
-  if (headers) {
-    headers.forEach((header, i) => {
-      const headerText = header.replace(/^#+\s+/, '').trim();
-      if (headerText.length > 5 && headerText.length < 100) {
-        const nextPara = paragraphs[i] || paragraphs[0] || '';
-        if (nextPara.length > 20) {
-          qas.push({
-            question: `Tell me about ${headerText}`,
-            answer: nextPara.substring(0, 200).trim(),
-          });
-        }
-      }
-    });
+  if (!Array.isArray(parsed)) {
+    throw new Error("OpenAI did not return a JSON array of Q&A pairs.");
   }
-  
-  return qas.slice(0, 10); // Return up to 10 Q&A pairs
+
+  return (parsed as any[])
+    .map((qa) => ({
+      question: String(qa.question ?? "").trim(),
+      answer: String(qa.answer ?? "").trim(),
+    }))
+    .filter(
+      (qa) =>
+        qa.question &&
+        qa.answer &&
+        qa.question.length > 5 &&
+        qa.answer.length > 5
+    );
 }
 
 // Train LUT with the same chat formatting as Python CLI / old UI:
@@ -302,10 +297,10 @@ export default function SpaceChat() {
   const [status, setStatus] = useState<string | null>(null);
   const [spaceName, setSpaceName] = useState<string>("");
   const [trainingText, setTrainingText] = useState("");
-  const [generatedQAs, setGeneratedQAs] = useState<Array<{ question: string; answer: string; id: string }>>([]);
+  const [generatedQAs, setGeneratedQAs] = useState<QAItem[]>([]);
   const [isGeneratingQAs, setIsGeneratingQAs] = useState(false);
   const [editingQA, setEditingQA] = useState<string | null>(null);
-  const [trainingHistory, setTrainingHistory] = useState<Array<{ user: string; date: string; qaCount: number }>>([]);
+  const [trainingHistory, setTrainingHistory] = useState<TrainingHistoryEntry[]>([]);
   const [activeView, setActiveView] = useState<'chat' | 'training' | 'logs'>('chat');
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [loadingStage, setLoadingStage] = useState<string>('');
@@ -318,6 +313,11 @@ export default function SpaceChat() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const startTimeRef = useRef<number>(0);
+  const [selectedHistoryId, setSelectedHistoryId] = useState<string | null>(null);
+  const [historyEditQAs, setHistoryEditQAs] = useState<QAItem[]>([]);
+  const [isRetraining, setIsRetraining] = useState(false);
+  const [spaceId, setSpaceId] = useState<string | null>(null);
+  const [targetLutName, setTargetLutName] = useState<string>("");
 
   const hasMessages = useMemo(() => messages.length > 0, [messages.length]);
 
@@ -327,14 +327,44 @@ export default function SpaceChat() {
       getSpaceByLutName(lut_name)
         .then((space) => {
           if (space) {
+            setSpaceId(space.id);
             setSpaceName(space.name);
+            setTargetLutName(space.lut_name || lut_name);
+          } else {
+            setTargetLutName(lut_name);
           }
         })
         .catch(() => {
           // If space not found, use lut_name as fallback
           setSpaceName(lut_name);
+          setTargetLutName(lut_name);
         });
     }
+  }, [lut_name]);
+
+  // Load persisted training logs for this LUT
+  useEffect(() => {
+    if (!lut_name) return;
+    getSpaceTrainingLogsByLutName(lut_name)
+      .then((logs) => {
+        const entries: TrainingHistoryEntry[] = logs.map((log) => ({
+          id: log.id,
+          user: log.user_identifier,
+          date: log.created_at,
+          qaCount: (log.qas || []).length,
+          qas: (log.qas || []).map((qa, index) => ({
+            id: `${log.id}-${index}`,
+            question: qa.question,
+            answer: qa.answer,
+          })),
+          lastEditedBy: log.last_edited_by || undefined,
+          lastEditedAt: log.last_edited_at || undefined,
+        }));
+        setTrainingHistory(entries);
+      })
+      .catch((err) => {
+        console.error("Failed to load training logs:", err);
+      });
   }, [lut_name]);
 
   // Scroll to top only on initial component mount
@@ -482,6 +512,13 @@ export default function SpaceChat() {
       return;
     }
 
+    const effectiveLutName = targetLutName.trim() || lut_name;
+
+    if (!user) {
+      setStatus("You must be logged in to train a LUT.");
+      return;
+    }
+
     setLoadingType('train');
     setShowLoadingModal(true);
     setLoadingProgress(0);
@@ -510,7 +547,7 @@ export default function SpaceChat() {
         }
         
         await trainLut(
-          lut_name,
+          effectiveLutName,
           qa.answer,
           qa.question,
           DEFAULT_BLOCKS,
@@ -519,13 +556,34 @@ export default function SpaceChat() {
         );
       }
 
-      // Log training (add to history)
+      // Log training (persist to Supabase and add to history)
       if (user) {
-        setTrainingHistory(prev => [{
-          user: user.email || user.id,
-          date: new Date().toISOString(),
-          qaCount: generatedQAs.length,
-        }, ...prev]);
+        const log = await createSpaceTrainingLog({
+          spaceId,
+          lutName: effectiveLutName,
+          userId: user.id,
+          userIdentifier: user.email || user.id,
+          sourceText: trainingText,
+          qas: generatedQAs.map((qa) => ({
+            question: qa.question,
+            answer: qa.answer,
+          })),
+        });
+
+        const entry: TrainingHistoryEntry = {
+          id: log.id,
+          user: log.user_identifier,
+          date: log.created_at,
+          qaCount: (log.qas || []).length,
+          qas: (log.qas || []).map((qa, index) => ({
+            id: `${log.id}-${index}`,
+            question: qa.question,
+            answer: qa.answer,
+          })),
+          lastEditedBy: log.last_edited_by || undefined,
+          lastEditedAt: log.last_edited_at || undefined,
+        };
+        setTrainingHistory((prev) => [entry, ...prev]);
       }
 
       setLoadingProgress(generatedQAs.length);
@@ -545,6 +603,133 @@ export default function SpaceChat() {
     } catch (err: any) {
       setShowLoadingModal(false);
       setStatus(err?.message || "Training failed");
+    }
+  };
+
+  const openHistoryEntry = (entry: TrainingHistoryEntry) => {
+    setSelectedHistoryId(entry.id);
+    setHistoryEditQAs(
+      entry.qas.map((qa) => ({
+        id: qa.id,
+        question: qa.question,
+        answer: qa.answer,
+      }))
+    );
+  };
+
+  const closeHistoryModal = () => {
+    if (isRetraining) return;
+    setSelectedHistoryId(null);
+    setHistoryEditQAs([]);
+  };
+
+  const handleHistoryQAEdit = (
+    id: string,
+    field: "question" | "answer",
+    value: string
+  ) => {
+    setHistoryEditQAs((prev) =>
+      prev.map((qa) =>
+        qa.id === id
+          ? {
+              ...qa,
+              [field]: value,
+            }
+          : qa
+      )
+    );
+  };
+
+  const handleRetrainHistory = async () => {
+    if (!lut_name || !selectedHistoryId || historyEditQAs.length === 0) return;
+
+    setIsRetraining(true);
+    setLoadingType("train");
+    setShowLoadingModal(true);
+    setLoadingProgress(0);
+    setLoadingTotal(historyEditQAs.length);
+    startTimeRef.current = Date.now();
+
+    try {
+      for (let i = 0; i < historyEditQAs.length; i++) {
+        const qa = historyEditQAs[i];
+        const currentProgress = i + 1;
+
+        setLoadingStage(
+          `Retraining Q&A pair ${currentProgress} of ${historyEditQAs.length}...`
+        );
+        setLoadingProgress(currentProgress);
+
+        const elapsed = Date.now() - startTimeRef.current;
+        const avgTimePerItem = elapsed / currentProgress;
+        const remaining = (historyEditQAs.length - currentProgress) * avgTimePerItem;
+        const secondsRemaining = Math.ceil(remaining / 1000);
+
+        if (secondsRemaining > 60) {
+          setLoadingTimeRemaining(
+            `${Math.ceil(secondsRemaining / 60)} min remaining`
+          );
+        } else {
+          setLoadingTimeRemaining(`${secondsRemaining} sec remaining`);
+        }
+
+        await trainLut(
+          lut_name,
+          qa.answer,
+          qa.question,
+          DEFAULT_BLOCKS,
+          DEFAULT_THRESHOLD,
+          DEFAULT_RESIDUALS
+        );
+      }
+
+      setLoadingProgress(historyEditQAs.length);
+      setLoadingStage("Retraining complete!");
+      setLoadingTimeRemaining("");
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      setShowLoadingModal(false);
+
+      const editorIdentifier = user ? user.email || user.id : "unknown";
+
+      await updateSpaceTrainingLogQAs({
+        logId: selectedHistoryId,
+        editorIdentifier,
+        qas: historyEditQAs.map((qa) => ({
+          question: qa.question,
+          answer: qa.answer,
+        })),
+      });
+
+      const editedAt = new Date().toISOString();
+
+      setTrainingHistory((prev) =>
+        prev.map((entry) =>
+          entry.id === selectedHistoryId
+            ? {
+                ...entry,
+                qas: historyEditQAs.map((qa, index) => ({
+                  id: `${entry.id}-${index}`,
+                  question: qa.question,
+                  answer: qa.answer,
+                })),
+                lastEditedBy: editorIdentifier,
+                lastEditedAt: editedAt,
+              }
+            : entry
+        )
+      );
+
+      setStatus(
+        `Successfully re-trained AI with ${historyEditQAs.length} edited Q&A pairs.`
+      );
+      closeHistoryModal();
+    } catch (err: any) {
+      setShowLoadingModal(false);
+      setStatus(err?.message || "Retraining failed");
+      setIsRetraining(false);
+    } finally {
+      setIsRetraining(false);
     }
   };
 
@@ -903,6 +1088,11 @@ export default function SpaceChat() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                        <div className="hidden sm:flex flex-col items-end mr-2 text-xs text-white/60">
+                          <span className="font-mono">
+                            LUT: {targetLutName || lut_name}
+                          </span>
+                        </div>
                         <Button
                           onClick={() => setActiveView('chat')}
                           variant="ghost"
@@ -931,6 +1121,23 @@ export default function SpaceChat() {
                   </div>
 
                   <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-white/70">
+                        Target LUT name to train
+                      </label>
+                      <input
+                        type="text"
+                        aria-label="Target LUT name to train"
+                        className="w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50 transition-colors"
+                        value={targetLutName}
+                        onChange={(e) => setTargetLutName(e.target.value)}
+                        placeholder={lut_name}
+                      />
+                      <p className="text-[10px] text-white/50">
+                        This is the LUT that will be updated during training.
+                      </p>
+                    </div>
+
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-white">
                         Enter text to train the AI
@@ -1145,31 +1352,42 @@ export default function SpaceChat() {
                     ) : (
                       <div className="space-y-3">
                         {trainingHistory.map((entry, i) => (
-                          <motion.div
-                            key={i}
+                          <motion.button
+                            key={entry.id}
+                            type="button"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.05 }}
-                            className="p-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all"
+                            onClick={() => openHistoryEntry(entry)}
+                            className="w-full text-left p-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all flex items-center justify-between"
                           >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
-                                  <User className="w-5 h-5 text-white" />
-                                </div>
-                                <div>
-                                  <p className="text-white font-medium">{entry.user}</p>
-                                  <p className="text-xs text-white/60">
-                                    {new Date(entry.date).toLocaleString()}
-                                  </p>
-                                </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
+                                <User className="w-5 h-5 text-white" />
                               </div>
-                              <div className="text-right">
-                                <p className="text-white font-semibold">{entry.qaCount}</p>
-                                <p className="text-xs text-white/60">Q&A pairs</p>
+                              <div>
+                                <p className="text-white font-medium">{entry.user}</p>
+                                <p className="text-xs text-white/60">
+                                  {new Date(entry.date).toLocaleString()}
+                                </p>
+                                {entry.lastEditedBy && entry.lastEditedAt && (
+                                  <p className="text-xs text-white/50 mt-1">
+                                    Last edited by {entry.lastEditedBy} on{" "}
+                                    {new Date(entry.lastEditedAt).toLocaleString()}
+                                  </p>
+                                )}
                               </div>
                             </div>
-                          </motion.div>
+                            <div className="text-right">
+                              <p className="text-white font-semibold">
+                                {entry.qaCount}
+                              </p>
+                              <p className="text-xs text-white/60">Q&A pairs</p>
+                              <p className="mt-1 text-xs text-white/70">
+                                View & edit
+                              </p>
+                            </div>
+                          </motion.button>
                         ))}
                       </div>
                     )}
@@ -1180,6 +1398,126 @@ export default function SpaceChat() {
           </div>
         </div>
       </div>
+      {/* History Q&A Modal */}
+      <AnimatePresence>
+        {selectedHistoryId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            onClick={(e) =>
+              e.target === e.currentTarget && !isRetraining && closeHistoryModal()
+            }
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-black/90 border border-white/20 rounded-2xl p-4 sm:p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col glass-dark glass-border"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-primary flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white">
+                      Training Session Details
+                    </h3>
+                    <p className="text-xs text-white/60">
+                      View, edit, and retrain on stored Q&A pairs
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10"
+                  onClick={closeHistoryModal}
+                  disabled={isRetraining}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto pr-1 space-y-3">
+                {historyEditQAs.map((qa) => (
+                  <div
+                    key={qa.id}
+                    className="p-3 rounded-lg border border-white/20 bg-white/5 space-y-2"
+                  >
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-white/60">
+                        Question
+                      </label>
+                      <input
+                        type="text"
+                        aria-label="Training question"
+                        className="w-full rounded border border-primary/50 bg-white/10 px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        value={qa.question}
+                        onChange={(e) =>
+                          handleHistoryQAEdit(qa.id, "question", e.target.value)
+                        }
+                        disabled={isRetraining}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-white/60">
+                        Answer
+                      </label>
+                      <textarea
+                        aria-label="Training answer"
+                        className="w-full rounded border border-primary/50 bg-white/10 px-2 py-1 text-sm text-white resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        rows={3}
+                        value={qa.answer}
+                        onChange={(e) =>
+                          handleHistoryQAEdit(qa.id, "answer", e.target.value)
+                        }
+                        disabled={isRetraining}
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                {historyEditQAs.length === 0 && (
+                  <p className="text-sm text-white/60">
+                    No Q&A pairs stored for this training session.
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4 flex justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  className="text-white/70 hover:text-white hover:bg-white/10"
+                  onClick={closeHistoryModal}
+                  disabled={isRetraining}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleRetrainHistory}
+                  disabled={isRetraining || historyEditQAs.length === 0}
+                  className="bg-gradient-primary hover:opacity-90 text-white"
+                >
+                  {isRetraining ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Retraining...
+                    </>
+                  ) : (
+                    <>
+                      <GraduationCap className="w-4 h-4 mr-2" />
+                      Retrain with edits
+                    </>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
