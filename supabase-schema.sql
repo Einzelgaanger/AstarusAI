@@ -4,6 +4,56 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- ============================================================
+-- Space training logs (stores exact Q&A training data per LUT)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS space_training_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  space_id UUID REFERENCES spaces(id) ON DELETE CASCADE,
+  lut_name TEXT NOT NULL,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_identifier TEXT NOT NULL, -- e.g. user email at time of training
+  source_text TEXT,
+  qas JSONB NOT NULL, -- array of { question: string, answer: string }
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+  last_edited_by TEXT,
+  last_edited_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX IF NOT EXISTS idx_space_training_logs_lut_name
+  ON space_training_logs(lut_name);
+CREATE INDEX IF NOT EXISTS idx_space_training_logs_space_id
+  ON space_training_logs(space_id);
+CREATE INDEX IF NOT EXISTS idx_space_training_logs_user_id
+  ON space_training_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_space_training_logs_created_at
+  ON space_training_logs(created_at DESC);
+
+-- ============================================================
+-- LUT access tokens (short-lived licenses for training per LUT)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS lut_tokens (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  space_id UUID REFERENCES spaces(id) ON DELETE CASCADE,
+  lut_name TEXT NOT NULL,
+  token TEXT NOT NULL UNIQUE,
+  created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  used_at TIMESTAMP WITH TIME ZONE,
+  used_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_lut_tokens_lut_name
+  ON lut_tokens(lut_name);
+CREATE INDEX IF NOT EXISTS idx_lut_tokens_space_id
+  ON lut_tokens(space_id);
+CREATE INDEX IF NOT EXISTS idx_lut_tokens_expires_at
+  ON lut_tokens(expires_at);
+
 -- Create spaces table (must be before chats due to foreign key)
 CREATE TABLE IF NOT EXISTS spaces (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -181,6 +231,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 ALTER TABLE chats ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_memory ENABLE ROW LEVEL SECURITY;
+ALTER TABLE space_training_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lut_tokens ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for chats
 -- Drop old policies
@@ -188,6 +240,15 @@ DROP POLICY IF EXISTS "Users can view their own chats" ON chats;
 DROP POLICY IF EXISTS "Users can create their own chats" ON chats;
 DROP POLICY IF EXISTS "Users can update their own chats" ON chats;
 DROP POLICY IF EXISTS "Users can delete their own chats" ON chats;
+-- Drop current policies if they already exist (idempotent)
+DROP POLICY IF EXISTS "Users can view their personal chats" ON chats;
+DROP POLICY IF EXISTS "Space members can view shared chats" ON chats;
+DROP POLICY IF EXISTS "Users can create personal chats" ON chats;
+DROP POLICY IF EXISTS "Space members can create shared chats" ON chats;
+DROP POLICY IF EXISTS "Users can update their personal chats" ON chats;
+DROP POLICY IF EXISTS "Space members can update shared chats" ON chats;
+DROP POLICY IF EXISTS "Users can delete their personal chats" ON chats;
+DROP POLICY IF EXISTS "Space members can delete shared chats" ON chats;
 
 -- Policy 1: Users can view their personal chats
 CREATE POLICY "Users can view their personal chats"
@@ -269,6 +330,15 @@ DROP POLICY IF EXISTS "Users can view messages in their chats" ON messages;
 DROP POLICY IF EXISTS "Users can create messages in their chats" ON messages;
 DROP POLICY IF EXISTS "Users can update messages in their chats" ON messages;
 DROP POLICY IF EXISTS "Users can delete messages in their chats" ON messages;
+-- Drop current policies if they already exist (idempotent)
+DROP POLICY IF EXISTS "Users can view messages in personal chats" ON messages;
+DROP POLICY IF EXISTS "Space members can view messages in shared chats" ON messages;
+DROP POLICY IF EXISTS "Users can create messages in personal chats" ON messages;
+DROP POLICY IF EXISTS "Space members can create messages in shared chats" ON messages;
+DROP POLICY IF EXISTS "Users can update messages in personal chats" ON messages;
+DROP POLICY IF EXISTS "Space members can update messages in shared chats" ON messages;
+DROP POLICY IF EXISTS "Users can delete messages in personal chats" ON messages;
+DROP POLICY IF EXISTS "Space members can delete messages in shared chats" ON messages;
 
 -- Policy 1: Users can view messages in their personal chats
 CREATE POLICY "Users can view messages in personal chats"
@@ -425,6 +495,61 @@ CREATE POLICY "Users can delete their own memory"
   ON user_memory FOR DELETE
   USING (auth.uid() = user_id);
 
+-- RLS Policies for lut_tokens
+DROP POLICY IF EXISTS "Creators can create lut tokens" ON lut_tokens;
+CREATE POLICY "Creators can create lut tokens"
+  ON lut_tokens FOR INSERT
+  WITH CHECK (
+    created_by = auth.uid()
+    AND (
+      space_id IS NULL
+      OR EXISTS (
+        SELECT 1 FROM spaces
+        WHERE spaces.id = lut_tokens.space_id
+        AND spaces.creator_id = auth.uid()
+      )
+    )
+  );
+
+DROP POLICY IF EXISTS "Token owners can view their lut tokens" ON lut_tokens;
+CREATE POLICY "Token owners can view their lut tokens"
+  ON lut_tokens FOR SELECT
+  USING (created_by = auth.uid());
+
+DROP POLICY IF EXISTS "Users can consume lut tokens" ON lut_tokens;
+CREATE POLICY "Users can consume lut tokens"
+  ON lut_tokens FOR UPDATE
+  USING (used_at IS NULL AND expires_at > TIMEZONE('utc', NOW()))
+  WITH CHECK (used_at IS NOT NULL AND used_by = auth.uid());
+
+-- RLS Policies for space_training_logs
+DROP POLICY IF EXISTS "Users can view their own training logs" ON space_training_logs;
+CREATE POLICY "Users can view their own training logs"
+  ON space_training_logs FOR SELECT
+  USING (user_id = auth.uid());
+
+DROP POLICY IF EXISTS "Space members can view space training logs" ON space_training_logs;
+CREATE POLICY "Space members can view space training logs"
+  ON space_training_logs FOR SELECT
+  USING (
+    space_id IS NOT NULL AND
+    is_space_member(
+      space_id,
+      auth.uid(),
+      (auth.jwt()->>'email')
+    )
+  );
+
+DROP POLICY IF EXISTS "Users can create training logs" ON space_training_logs;
+CREATE POLICY "Users can create training logs"
+  ON space_training_logs FOR INSERT
+  WITH CHECK (user_id = auth.uid());
+
+DROP POLICY IF EXISTS "Users can update their training logs" ON space_training_logs;
+CREATE POLICY "Users can update their training logs"
+  ON space_training_logs FOR UPDATE
+  USING (user_id = auth.uid());
+
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -445,6 +570,18 @@ CREATE TRIGGER update_chats_updated_at
 DROP TRIGGER IF EXISTS update_user_memory_updated_at ON user_memory;
 CREATE TRIGGER update_user_memory_updated_at
   BEFORE UPDATE ON user_memory
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_space_training_logs_updated_at ON space_training_logs;
+CREATE TRIGGER update_space_training_logs_updated_at
+  BEFORE UPDATE ON space_training_logs
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_lut_tokens_updated_at ON lut_tokens;
+CREATE TRIGGER update_lut_tokens_updated_at
+  BEFORE UPDATE ON lut_tokens
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 

@@ -24,6 +24,32 @@ export interface SpaceMember {
   accepted_at: string | null;
 }
 
+export interface SpaceTrainingLog {
+  id: string;
+  space_id: string | null;
+  lut_name: string;
+  user_id: string;
+  user_identifier: string;
+  source_text: string | null;
+  qas: { question: string; answer: string }[];
+  created_at: string;
+  updated_at: string;
+  last_edited_by: string | null;
+  last_edited_at: string | null;
+}
+
+export interface LutToken {
+  id: string;
+  space_id: string | null;
+  lut_name: string;
+  token: string;
+  created_by: string;
+  created_at: string;
+  expires_at: string;
+  used_at: string | null;
+  used_by: string | null;
+}
+
 /**
  * Get all spaces for the current user (created by them or they're a member)
  */
@@ -349,6 +375,174 @@ export async function removeMember(memberId: string): Promise<void> {
 
   if (error) {
     throw new Error(`Failed to remove member: ${error.message}`);
+  }
+}
+
+/**
+ * Generate a short-lived LUT token (license) valid for 1 minute
+ * Only space creators (owners) should call this, enforced by RLS.
+ */
+export async function createLutToken(params: {
+  spaceId: string | null;
+  lutName: string;
+  creatorId: string;
+  ttlSeconds?: number;
+}): Promise<LutToken> {
+  const { spaceId, lutName, creatorId, ttlSeconds = 60 } = params;
+  const expiresAt = new Date(Date.now() + ttlSeconds * 1000).toISOString();
+
+  // Simple human-readable token (not cryptographic, but fine for short-lived UI flow)
+  const token = Math.random().toString(36).slice(2, 10).toUpperCase();
+
+  const { data, error } = await supabase
+    .from('lut_tokens')
+    .insert({
+      space_id: spaceId,
+      lut_name: lutName,
+      token,
+      created_by: creatorId,
+      expires_at: expiresAt,
+    })
+    .select('*')
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create LUT token: ${error.message}`);
+  }
+
+  return data as LutToken;
+}
+
+/**
+ * Validate and consume a LUT token for a specific LUT name.
+ * Succeeds only if:
+ * - token exists
+ * - matches the lut_name
+ * - not expired
+ * - not used yet
+ * It marks the token as used by the current user.
+ */
+export async function validateAndConsumeLutToken(params: {
+  token: string;
+  lutName: string;
+  userId: string;
+}): Promise<boolean> {
+  const { token, lutName, userId } = params;
+
+  // Fetch the token row (visible according to RLS rules)
+  const { data, error } = await supabase
+    .from('lut_tokens')
+    .select('*')
+    .eq('token', token)
+    .eq('lut_name', lutName)
+    .lte('expires_at', new Date(Date.now() + 5 * 60 * 1000).toISOString()) // sanity window
+    .maybeSingle();
+
+  if (error) {
+    console.error('Failed to validate LUT token:', error.message);
+    return false;
+  }
+
+  if (!data) {
+    return false;
+  }
+
+  const row = data as LutToken;
+  const now = new Date();
+  if (row.used_at || new Date(row.expires_at) <= now) {
+    return false;
+  }
+
+  const { error: updateError } = await supabase
+    .from('lut_tokens')
+    .update({
+      used_at: new Date().toISOString(),
+      used_by: userId,
+    })
+    .eq('id', row.id);
+
+  if (updateError) {
+    console.error('Failed to consume LUT token:', updateError.message);
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Create a training log for a space / LUT with full Q&A content
+ */
+export async function createSpaceTrainingLog(params: {
+  spaceId: string | null;
+  lutName: string;
+  userId: string;
+  userIdentifier: string;
+  sourceText: string;
+  qas: { question: string; answer: string }[];
+}): Promise<SpaceTrainingLog> {
+  const { spaceId, lutName, userId, userIdentifier, sourceText, qas } = params;
+
+  const { data, error } = await supabase
+    .from('space_training_logs')
+    .insert({
+      space_id: spaceId,
+      lut_name: lutName,
+      user_id: userId,
+      user_identifier: userIdentifier,
+      source_text: sourceText || null,
+      qas,
+    })
+    .select('*')
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create training log: ${error.message}`);
+  }
+
+  return data as SpaceTrainingLog;
+}
+
+/**
+ * Get all training logs for a given LUT name (space members can see shared logs)
+ */
+export async function getSpaceTrainingLogsByLutName(
+  lutName: string
+): Promise<SpaceTrainingLog[]> {
+  const { data, error } = await supabase
+    .from('space_training_logs')
+    .select('*')
+    .eq('lut_name', lutName)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Failed to fetch space training logs:', error.message);
+    return [];
+  }
+
+  return (data || []) as SpaceTrainingLog[];
+}
+
+/**
+ * Update Q&A content for an existing training log and record editor metadata
+ */
+export async function updateSpaceTrainingLogQAs(params: {
+  logId: string;
+  editorIdentifier: string;
+  qas: { question: string; answer: string }[];
+}): Promise<void> {
+  const { logId, editorIdentifier, qas } = params;
+
+  const { error } = await supabase
+    .from('space_training_logs')
+    .update({
+      qas,
+      last_edited_by: editorIdentifier,
+      last_edited_at: new Date().toISOString(),
+    })
+    .eq('id', logId);
+
+  if (error) {
+    throw new Error(`Failed to update training log: ${error.message}`);
   }
 }
 
