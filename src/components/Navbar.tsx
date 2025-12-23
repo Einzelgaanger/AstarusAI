@@ -41,9 +41,9 @@ export const Navbar = () => {
         scrolled ? "py-0.5" : "py-1"
       }`}
     >
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-3 sm:px-4">
         <div
-          className={`flex items-center justify-between rounded-2xl px-4 sm:px-6 py-1 transition-all duration-300 max-h-16 overflow-visible ${
+          className={`flex items-center justify-between rounded-2xl px-3 sm:px-6 py-1 transition-all duration-300 overflow-visible ${
             scrolled
               ? "glass-dark glass-border shadow-2xl"
               : "bg-black/70 backdrop-blur-sm border border-white/10"
@@ -53,9 +53,9 @@ export const Navbar = () => {
             <img
               src="/Actual Logo.png"
               alt="Astarus Logo"
-              className="h-20 sm:h-24 w-auto rounded-lg -my-2"
+              className="h-10 sm:h-12 md:h-16 w-auto rounded-lg -my-1"
             />
-            <span className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            <span className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
               Astarus
             </span>
           </Link>

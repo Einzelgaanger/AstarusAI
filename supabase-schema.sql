@@ -81,6 +81,17 @@ CREATE TABLE IF NOT EXISTS space_members (
   UNIQUE(space_id, email)
 );
 
+-- Add icon column if it doesn't exist (for existing tables)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'spaces' AND column_name = 'icon'
+  ) THEN
+    ALTER TABLE spaces ADD COLUMN icon TEXT;
+  END IF;
+END $$;
+
 -- Create indexes for spaces
 CREATE INDEX IF NOT EXISTS idx_spaces_creator_id ON spaces(creator_id);
 CREATE INDEX IF NOT EXISTS idx_spaces_lut_name ON spaces(lut_name);

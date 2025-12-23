@@ -13,6 +13,7 @@ import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Spaces from "./pages/Spaces";
+import CreateSpace from "./pages/CreateSpace";
 import SpaceChat from "./pages/SpaceChat";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/spaces" element={<Spaces />} />
+            <Route path="/spaces/new" element={<CreateSpace />} />
             <Route path="/spaces/:lut_name" element={<SpaceChat />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

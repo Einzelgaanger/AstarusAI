@@ -20,6 +20,11 @@ import {
   createSpaceTrainingLog,
   updateSpaceTrainingLogQAs,
 } from "@/lib/spaceService";
+import {
+  getOrCreateSpaceChat,
+  getChatMessages,
+  saveMessageWithUser,
+} from "@/lib/chatService";
 
 const BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
@@ -317,9 +322,15 @@ export default function SpaceChat() {
   const [historyEditQAs, setHistoryEditQAs] = useState<QAItem[]>([]);
   const [isRetraining, setIsRetraining] = useState(false);
   const [spaceId, setSpaceId] = useState<string | null>(null);
-  const [targetLutName, setTargetLutName] = useState<string>("");
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
 
   const hasMessages = useMemo(() => messages.length > 0, [messages.length]);
+
+  // Effective LUT name is always tied to this space
+  const effectiveLutName = useMemo(
+    () => lut_name || "",
+    [lut_name]
+  );
 
   // Load space name
   useEffect(() => {
@@ -329,23 +340,19 @@ export default function SpaceChat() {
           if (space) {
             setSpaceId(space.id);
             setSpaceName(space.name);
-            setTargetLutName(space.lut_name || lut_name);
-          } else {
-            setTargetLutName(lut_name);
           }
         })
         .catch(() => {
           // If space not found, use lut_name as fallback
           setSpaceName(lut_name);
-          setTargetLutName(lut_name);
         });
     }
   }, [lut_name]);
 
   // Load persisted training logs for this LUT
   useEffect(() => {
-    if (!lut_name) return;
-    getSpaceTrainingLogsByLutName(lut_name)
+    if (!effectiveLutName) return;
+    getSpaceTrainingLogsByLutName(effectiveLutName)
       .then((logs) => {
         const entries: TrainingHistoryEntry[] = logs.map((log) => ({
           id: log.id,
@@ -365,7 +372,33 @@ export default function SpaceChat() {
       .catch((err) => {
         console.error("Failed to load training logs:", err);
       });
-  }, [lut_name]);
+  }, [effectiveLutName]);
+
+  // Get or create space chat and load messages
+  useEffect(() => {
+    const loadSpaceChat = async () => {
+      if (!spaceId || !user || !lut_name) return;
+
+      try {
+        // Get or create chat for this space
+        const chatId = await getOrCreateSpaceChat(spaceId, user.id, spaceName || undefined);
+        setCurrentChatId(chatId);
+
+        // Load existing messages
+        const dbMessages = await getChatMessages(chatId);
+        const loadedMessages: Message[] = dbMessages.map((msg) => ({
+          id: msg.id,
+          role: msg.role as "user" | "assistant",
+          content: msg.content,
+        }));
+        setMessages(loadedMessages);
+      } catch (err) {
+        console.error("Failed to load space chat:", err);
+      }
+    };
+
+    loadSpaceChat();
+  }, [spaceId, user, lut_name, spaceName]);
 
   // Scroll to top only on initial component mount
   useLayoutEffect(() => {
@@ -398,7 +431,20 @@ export default function SpaceChat() {
 
   const handleSend = async () => {
     const trimmed = input.trim();
-    if (!trimmed || isGenerating) return;
+    if (!trimmed || isGenerating || !effectiveLutName) return;
+
+    // Ensure we have a chat ID
+    let chatId = currentChatId;
+    if (!chatId && spaceId && user) {
+      try {
+        chatId = await getOrCreateSpaceChat(spaceId, user.id, spaceName || undefined);
+        setCurrentChatId(chatId);
+      } catch (err) {
+        console.error("Failed to get/create chat:", err);
+        setStatus("Failed to initialize chat");
+        return;
+      }
+    }
 
     const userMsg: Message = {
       id: crypto.randomUUID(),
@@ -411,9 +457,18 @@ export default function SpaceChat() {
     setStatus(null);
     setIsGenerating(true);
 
+    // Save user message to DB
+    if (chatId && user) {
+      try {
+        await saveMessageWithUser(chatId, "user", trimmed, user.id);
+      } catch (err) {
+        console.error("Failed to save user message:", err);
+      }
+    }
+
     try {
       const resp = await generateFromApi(
-        lut_name,
+        effectiveLutName,
         trimmed,
         DEFAULT_THRESHOLD,
         DEFAULT_BLOCKS,
@@ -427,9 +482,34 @@ export default function SpaceChat() {
         content: assistantText,
       };
       setMessages((prev) => [...prev, assistantMsg]);
+
+      // Clear loading state immediately after showing the answer
+      setIsGenerating(false);
+
+      // Save assistant message to DB (non-blocking)
+      if (chatId) {
+        saveMessageWithUser(chatId, "assistant", assistantText, null).catch((err) => {
+          console.error("Failed to save assistant message:", err);
+        });
+      }
+
+      // Train the Q&A pair into the LUT as memory (non-blocking, in background)
+      if (effectiveLutName && user) {
+        // Run training in background without blocking UI
+        trainLut(
+          effectiveLutName,
+          assistantText,
+          trimmed,
+          DEFAULT_BLOCKS,
+          DEFAULT_THRESHOLD,
+          DEFAULT_RESIDUALS
+        ).catch((err) => {
+          console.error("Failed to train chat message into LUT:", err);
+          // Don't show error to user for chat training failures
+        });
+      }
     } catch (err: any) {
       setStatus(err?.message || "Generation failed");
-    } finally {
       setIsGenerating(false);
     }
   };
@@ -507,12 +587,10 @@ export default function SpaceChat() {
   };
 
   const handleTrain = async () => {
-    if (!lut_name || generatedQAs.length === 0) {
+    if (!effectiveLutName || generatedQAs.length === 0) {
       setStatus("Please generate and review Q&A pairs first.");
       return;
     }
-
-    const effectiveLutName = targetLutName.trim() || lut_name;
 
     if (!user) {
       setStatus("You must be logged in to train a LUT.");
@@ -641,7 +719,7 @@ export default function SpaceChat() {
   };
 
   const handleRetrainHistory = async () => {
-    if (!lut_name || !selectedHistoryId || historyEditQAs.length === 0) return;
+    if (!effectiveLutName || !selectedHistoryId || historyEditQAs.length === 0) return;
 
     setIsRetraining(true);
     setLoadingType("train");
@@ -674,7 +752,7 @@ export default function SpaceChat() {
         }
 
         await trainLut(
-          lut_name,
+          effectiveLutName,
           qa.answer,
           qa.question,
           DEFAULT_BLOCKS,
@@ -690,35 +768,36 @@ export default function SpaceChat() {
       await new Promise((resolve) => setTimeout(resolve, 800));
       setShowLoadingModal(false);
 
+      // Update training log in database
       const editorIdentifier = user ? user.email || user.id : "unknown";
-
-      await updateSpaceTrainingLogQAs({
-        logId: selectedHistoryId,
-        editorIdentifier,
-        qas: historyEditQAs.map((qa) => ({
-          question: qa.question,
-          answer: qa.answer,
-        })),
-      });
-
-      const editedAt = new Date().toISOString();
-
-      setTrainingHistory((prev) =>
-        prev.map((entry) =>
-          entry.id === selectedHistoryId
-            ? {
-                ...entry,
-                qas: historyEditQAs.map((qa, index) => ({
-                  id: `${entry.id}-${index}`,
-                  question: qa.question,
-                  answer: qa.answer,
-                })),
-                lastEditedBy: editorIdentifier,
-                lastEditedAt: editedAt,
-              }
-            : entry
-        )
-      );
+      try {
+        await updateSpaceTrainingLogQAs({
+          logId: selectedHistoryId,
+          editorIdentifier,
+          qas: historyEditQAs.map((qa) => ({
+            question: qa.question,
+            answer: qa.answer,
+          })),
+        });
+        // Reload training history
+        const logs = await getSpaceTrainingLogsByLutName(effectiveLutName);
+        const entries: TrainingHistoryEntry[] = logs.map((log) => ({
+          id: log.id,
+          user: log.user_identifier,
+          date: log.created_at,
+          qaCount: (log.qas || []).length,
+          qas: (log.qas || []).map((qa, index) => ({
+            id: `${log.id}-${index}`,
+            question: qa.question,
+            answer: qa.answer,
+          })),
+          lastEditedBy: log.last_edited_by || undefined,
+          lastEditedAt: log.last_edited_at || undefined,
+        }));
+        setTrainingHistory(entries);
+      } catch (err) {
+        console.error("Failed to update training log:", err);
+      }
 
       setStatus(
         `Successfully re-trained AI with ${historyEditQAs.length} edited Q&A pairs.`
@@ -832,7 +911,7 @@ export default function SpaceChat() {
       </AnimatePresence>
       
       <Navbar />
-      <div className="flex-1 flex bg-gradient-to-b from-black via-primary/5 to-black pt-24 h-[calc(100vh-6rem)]">
+      <div className="flex-1 flex bg-gradient-to-b from-black via-primary/5 to-black pt-20 sm:pt-24 min-h-[calc(100vh-4rem)]">
         {/* Mobile Navigation */}
         <div className="md:hidden w-full border-b border-white/10 bg-black/40">
           <div className="flex">
@@ -888,7 +967,7 @@ export default function SpaceChat() {
             >
               {/* Chat View */}
               {activeView === 'chat' && (
-                <Card className="glass-dark glass-border border-white/20 flex-1 flex flex-col mb-6">
+                <Card className="glass-dark glass-border border-white/20 flex-1 flex flex-col mb-6 min-h-0">
                   <div className="p-3 sm:p-4 md:p-6 border-b border-white/10">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
@@ -942,7 +1021,10 @@ export default function SpaceChat() {
                     </div>
                   </div>
 
-                  <div ref={messagesContainerRef} className="h-[300px] sm:h-[400px] md:h-[480px] overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 flex-1">
+                  <div
+                    ref={messagesContainerRef}
+                    className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4"
+                  >
                     {!hasMessages ? (
                       <div className="h-full flex flex-col items-center justify-center text-center px-4">
                         <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-6">
@@ -1090,7 +1172,7 @@ export default function SpaceChat() {
                       <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                         <div className="hidden sm:flex flex-col items-end mr-2 text-xs text-white/60">
                           <span className="font-mono">
-                            LUT: {targetLutName || lut_name}
+                            LUT: {effectiveLutName}
                           </span>
                         </div>
                         <Button
@@ -1121,23 +1203,6 @@ export default function SpaceChat() {
                   </div>
 
                   <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-white/70">
-                        Target LUT name to train
-                      </label>
-                      <input
-                        type="text"
-                        aria-label="Target LUT name to train"
-                        className="w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50 transition-colors"
-                        value={targetLutName}
-                        onChange={(e) => setTargetLutName(e.target.value)}
-                        placeholder={lut_name}
-                      />
-                      <p className="text-[10px] text-white/50">
-                        This is the LUT that will be updated during training.
-                      </p>
-                    </div>
-
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-white">
                         Enter text to train the AI

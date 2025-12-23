@@ -24,6 +24,10 @@ VITE_API_BASE_URL=https://your-api-url-here.com
 VITE_API_MODEL=mistral
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
+
+# Q&A generation via OpenAI (used in SpaceChat training view)
+VITE_OPENAI_API_KEY=your-openai-api-key
+VITE_OPENAI_MODEL=gpt-4.1
 ```
 
 **Note:** 

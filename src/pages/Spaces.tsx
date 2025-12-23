@@ -12,11 +12,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
-import { Plus, Brain, Building2, User, ArrowRight, Mail, Users, X, Check, XCircle, Users2 } from "lucide-react";
+import { Plus, Brain, Building2, User, ArrowRight, Mail, Users, X, Check, XCircle, Users2, Edit2, Save } from "lucide-react";
 import { 
   getUserSpaces, 
   createSpace, 
   deleteSpace, 
+  updateSpace,
   inviteToSpace, 
   getSpaceMembers, 
   removeMember,
@@ -34,12 +35,6 @@ export default function Spaces() {
   const navigate = useNavigate();
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [loading, setLoading] = useState(true);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [newSpaceName, setNewSpaceName] = useState("");
-  const [newSpaceType, setNewSpaceType] = useState<"team" | "personal">("personal");
-  const [newSpaceDescription, setNewSpaceDescription] = useState("");
-  const [newSpaceIcon, setNewSpaceIcon] = useState("💼");
-  const [creating, setCreating] = useState(false);
   const [inviteOpen, setInviteOpen] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
@@ -47,6 +42,9 @@ export default function Spaces() {
   const [membersOpen, setMembersOpen] = useState<string | null>(null);
   const [pendingInvitations, setPendingInvitations] = useState<Array<SpaceMember & { space: Space }>>([]);
   const [processingInvitation, setProcessingInvitation] = useState<string | null>(null);
+  const [editingSpaceId, setEditingSpaceId] = useState<string | null>(null);
+  const [editSpaceName, setEditSpaceName] = useState("");
+  const [updatingSpace, setUpdatingSpace] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -119,44 +117,6 @@ export default function Spaces() {
     }
   };
 
-  const handleCreateSpace = async () => {
-    if (!newSpaceName.trim() || !user) return;
-
-    setCreating(true);
-    try {
-      const newSpace = await createSpace(
-        user.id,
-        newSpaceName,
-        newSpaceType,
-        newSpaceDescription || undefined,
-        newSpaceIcon || undefined
-      );
-
-      setSpaces([newSpace, ...spaces]);
-      setCreateOpen(false);
-      setNewSpaceName("");
-      setNewSpaceType("personal");
-      setNewSpaceDescription("");
-      setNewSpaceIcon("💼");
-    } catch (error: any) {
-      console.error("Failed to create space:", error);
-      let errorMessage = error.message || "Failed to create space";
-      
-      // Provide helpful error messages
-      if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
-        errorMessage = "Database tables not set up. Please run 'supabase-schema.sql' in your Supabase SQL Editor. See TROUBLESHOOTING.md for details.";
-      } else if (errorMessage.includes("row-level security") || errorMessage.includes("permission denied")) {
-        errorMessage = "Database permissions issue. Make sure you've run the complete 'supabase-schema.sql' file including RLS policies. See TROUBLESHOOTING.md for details.";
-      } else if (errorMessage.includes("Failed to fetch") || errorMessage.includes("401") || errorMessage.includes("Unauthorized")) {
-        errorMessage = "Supabase connection issue. Check your .env file has correct VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then restart the dev server. See TROUBLESHOOTING.md for details.";
-      }
-      
-      alert(errorMessage);
-    } finally {
-      setCreating(false);
-    }
-  };
-
   const handleDeleteSpace = async (spaceId: string) => {
     if (!confirm("Are you sure you want to delete this space? This action cannot be undone.")) {
       return;
@@ -168,6 +128,37 @@ export default function Spaces() {
     } catch (error: any) {
       console.error("Failed to delete space:", error);
       alert(error.message || "Failed to delete space");
+    }
+  };
+
+  const handleStartEditSpace = (space: Space) => {
+    setEditingSpaceId(space.id);
+    setEditSpaceName(space.name);
+  };
+
+  const handleCancelEditSpace = () => {
+    setEditingSpaceId(null);
+    setEditSpaceName("");
+  };
+
+  const handleSaveSpaceName = async (spaceId: string) => {
+    if (!editSpaceName.trim()) {
+      alert("Space name cannot be empty");
+      return;
+    }
+
+    setUpdatingSpace(true);
+    try {
+      await updateSpace(spaceId, { name: editSpaceName.trim() });
+      // Update local state
+      setSpaces(spaces.map(s => s.id === spaceId ? { ...s, name: editSpaceName.trim() } : s));
+      setEditingSpaceId(null);
+      setEditSpaceName("");
+    } catch (error: any) {
+      console.error("Failed to update space:", error);
+      alert(error.message || "Failed to update space name");
+    } finally {
+      setUpdatingSpace(false);
     }
   };
 
@@ -224,7 +215,7 @@ export default function Spaces() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+        <div className="text-white text-sm sm:text-base">Loading...</div>
       </div>
     );
   }
@@ -232,7 +223,7 @@ export default function Spaces() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-1 px-3 sm:px-4 py-12 sm:py-16 md:py-20 bg-gradient-to-b from-black via-primary/5 to-black">
+      <div className="flex-1 px-3 sm:px-4 pt-24 sm:pt-28 md:pt-32 pb-10 sm:pb-14 md:pb-20 bg-gradient-to-b from-black via-primary/5 to-black">
         <div className="container mx-auto max-w-6xl">
           <motion.div
             initial="hidden"
@@ -245,99 +236,14 @@ export default function Spaces() {
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Your Spaces</h1>
                 <p className="text-sm sm:text-base text-white/70">Manage your AI brains and knowledge bases</p>
               </div>
-              <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-                <DialogTrigger asChild>
-                  <Button className="min-h-[44px] bg-gradient-primary hover:opacity-90 text-white touch-manipulation">
-                    <Plus className="w-4 h-4 mr-2" />
-                    <span className="hidden sm:inline">Create New Space</span>
-                    <span className="sm:hidden">Create</span>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="glass-dark glass-border border-white/20 text-white bg-black/90 !left-1/2 !top-1/2 !-translate-x-1/2 !-translate-y-1/2 max-w-[95vw] sm:max-w-md mx-4">
-                  <DialogHeader>
-                    <DialogTitle className="text-white">Create New Space</DialogTitle>
-                    <DialogDescription className="text-white/70">
-                      A space is a named brain with its own memory. Each space has a unique identifier.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name *</Label>
-                      <Input
-                        id="name"
-                        value={newSpaceName}
-                        onChange={(e) => setNewSpaceName(e.target.value)}
-                        placeholder="e.g., Marketing Team Brain"
-                        className="bg-white/5 border-white/20 text-white"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Type *</Label>
-                      <RadioGroup value={newSpaceType} onValueChange={(v) => setNewSpaceType(v as "team" | "personal")}>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="team" id="team" />
-                          <Label htmlFor="team" className="flex items-center gap-2 cursor-pointer">
-                            <Users2 className="w-4 h-4" />
-                            Team
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="personal" id="personal" />
-                          <Label htmlFor="personal" className="flex items-center gap-2 cursor-pointer">
-                            <User className="w-4 h-4" />
-                            Personal
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="icon">Icon</Label>
-                      <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
-                        {['💼', '🚀', '🎯', '💡', '🔥', '⚡', '🌟', '🎨', '🔬', '📊', '🎓', '🏆', '💻', '🌐', '🎪', '🎭', '🎬', '🎵', '🎮', '🏀', '⚽', '🎾', '🏈', '🎲'].map((emoji) => (
-                          <button
-                            key={emoji}
-                            type="button"
-                            onClick={() => setNewSpaceIcon(emoji)}
-                            className={`text-2xl p-2 rounded-lg border-2 transition-all hover:scale-110 ${
-                              newSpaceIcon === emoji
-                                ? 'border-primary bg-primary/20'
-                                : 'border-white/20 bg-white/5 hover:border-white/40'
-                            }`}
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                      <Input
-                        type="text"
-                        value={newSpaceIcon}
-                        onChange={(e) => setNewSpaceIcon(e.target.value)}
-                        placeholder="Or enter custom emoji/icon"
-                        className="bg-white/5 border-white/20 text-white"
-                        maxLength={2}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="description">Description (Optional)</Label>
-                      <Textarea
-                        id="description"
-                        value={newSpaceDescription}
-                        onChange={(e) => setNewSpaceDescription(e.target.value)}
-                        placeholder="What is this space for?"
-                        className="bg-white/5 border-white/20 text-white"
-                        rows={3}
-                      />
-                    </div>
-                    <Button
-                      onClick={handleCreateSpace}
-                      disabled={creating || !newSpaceName.trim()}
-                      className="w-full bg-gradient-primary hover:opacity-90 text-white"
-                    >
-                      {creating ? "Creating..." : "Create Space"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button
+                className="min-h-[44px] bg-gradient-primary hover:opacity-90 text-white touch-manipulation"
+                onClick={() => navigate("/spaces/new")}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Create New Space</span>
+                <span className="sm:hidden">Create</span>
+              </Button>
             </motion.div>
 
             {/* Pending Invitations Section */}
@@ -420,7 +326,7 @@ export default function Spaces() {
                     <h3 className="text-xl font-semibold text-white mb-2">No spaces yet</h3>
                     <p className="text-white/70 mb-6">Create your first space to get started</p>
                     <Button
-                      onClick={() => setCreateOpen(true)}
+                      onClick={() => navigate("/spaces/new")}
                       className="min-h-[44px] bg-gradient-primary hover:opacity-90 text-white touch-manipulation"
                     >
                       <Plus className="w-4 h-4 mr-2" />
@@ -442,15 +348,67 @@ export default function Spaces() {
                     <Card className="glass-dark glass-border border-white/20 hover:border-primary/50 transition-all cursor-pointer h-full">
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="text-white flex items-center gap-2">
-                            {space.icon && <span className="text-2xl">{space.icon}</span>}
-                            {space.name}
-                          </CardTitle>
-                          {!space.icon && (
-                            space.type === "team" ? (
-                              <Users2 className="w-5 h-5 text-primary" />
+                          <div className="flex-1 min-w-0">
+                            {editingSpaceId === space.id ? (
+                              <div className="flex items-center gap-2">
+                                {space.icon && <span className="text-2xl flex-shrink-0">{space.icon}</span>}
+                                <Input
+                                  value={editSpaceName}
+                                  onChange={(e) => setEditSpaceName(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      handleSaveSpaceName(space.id);
+                                    } else if (e.key === "Escape") {
+                                      handleCancelEditSpace();
+                                    }
+                                  }}
+                                  className="bg-white/5 border-white/20 text-white flex-1 min-w-0"
+                                  autoFocus
+                                  disabled={updatingSpace}
+                                />
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleSaveSpaceName(space.id)}
+                                  disabled={updatingSpace || !editSpaceName.trim()}
+                                  className="bg-gradient-primary hover:opacity-90 text-white h-8 px-2"
+                                >
+                                  <Save className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={handleCancelEditSpace}
+                                  disabled={updatingSpace}
+                                  className="text-white/70 hover:text-white h-8 px-2"
+                                >
+                                  <X className="w-3 h-3" />
+                                </Button>
+                              </div>
                             ) : (
-                              <User className="w-5 h-5 text-secondary" />
+                              <CardTitle className="text-white flex items-center gap-2">
+                                {space.icon && <span className="text-2xl">{space.icon}</span>}
+                                <span className="truncate">{space.name}</span>
+                                {space.creator_id === user?.id && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleStartEditSpace(space);
+                                    }}
+                                    className="h-6 w-6 p-0 text-white/50 hover:text-white hover:bg-white/10 ml-1"
+                                  >
+                                    <Edit2 className="w-3 h-3" />
+                                  </Button>
+                                )}
+                              </CardTitle>
+                            )}
+                          </div>
+                          {!space.icon && editingSpaceId !== space.id && (
+                            space.type === "team" ? (
+                              <Users2 className="w-5 h-5 text-primary flex-shrink-0" />
+                            ) : (
+                              <User className="w-5 h-5 text-secondary flex-shrink-0" />
                             )
                           )}
                         </div>
@@ -537,18 +495,18 @@ export default function Spaces() {
                   {inviting ? "Inviting..." : "Invite"}
                 </Button>
               </div>
-              <div className="max-h-64 overflow-y-auto space-y-2">
+              <div className="space-y-2 min-h-0">
                 {spaceMembers[membersOpen]?.map((member) => (
                   <div
                     key={member.id}
                     className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
                         <User className="w-4 h-4 text-white" />
                       </div>
-                      <div>
-                        <p className="text-white font-medium">{member.email}</p>
+                      <div className="min-w-0">
+                        <p className="text-white font-medium truncate">{member.email}</p>
                         <p className="text-xs text-white/60 capitalize">
                           {member.role} • {member.status}
                         </p>
@@ -560,7 +518,7 @@ export default function Spaces() {
                         onClick={() => handleRemoveMember(member.id, membersOpen)}
                         variant="ghost"
                         size="sm"
-                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
                       >
                         <X className="w-4 h-4" />
                       </Button>
