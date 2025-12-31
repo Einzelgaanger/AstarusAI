@@ -646,7 +646,7 @@ export default function LutDemo() {
         <div className="container max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <motion.div className="lg:col-span-2" variants={fadeInUp(0.1)}>
-              <Card className="overflow-hidden border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+              <Card className="overflow-hidden border-0 shadow-xl bg-card/80 backdrop-blur-sm flex flex-col min-h-0">
                 <div className="p-3 sm:p-4 md:p-6 border-b bg-gradient-to-r from-primary/5 via-transparent to-secondary/5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -678,7 +678,10 @@ export default function LutDemo() {
                   </div>
                 </div>
 
-                <div ref={messagesContainerRef} className="h-[300px] sm:h-[400px] md:h-[480px] overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4">
+                <div
+                  ref={messagesContainerRef}
+                  className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4"
+                >
                   {!hasMessages ? (
                     <div className="h-full flex flex-col items-center justify-center text-center px-4">
                       <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-6">

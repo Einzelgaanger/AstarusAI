@@ -3,7 +3,8 @@ import type { Message } from '@/pages/Chat';
 
 export interface Chat {
   id: string;
-  user_id: string;
+  user_id: string | null;
+  space_id: string | null;
   title: string | null;
   created_at: string;
   updated_at: string;
@@ -105,6 +106,68 @@ export async function getChatMessages(chatId: string): Promise<ChatMessage[]> {
   }
 
   return data || [];
+}
+
+/**
+ * Create or get existing chat for a space (one chat per space)
+ */
+export async function getOrCreateSpaceChat(spaceId: string, userId: string, title?: string): Promise<string> {
+  // Try to find existing chat for this space
+  const { data: existing, error: findError } = await supabase
+    .from('chats')
+    .select('id')
+    .eq('space_id', spaceId)
+    .maybeSingle();
+
+  if (findError && findError.code !== 'PGRST116') {
+    throw new Error(`Failed to find space chat: ${findError.message}`);
+  }
+
+  if (existing) {
+    return existing.id;
+  }
+
+  // Create new chat for space
+  const { data, error } = await supabase
+    .from('chats')
+    .insert({
+      space_id: spaceId,
+      user_id: null,
+      created_by: userId,
+      title: title || 'Space Chat',
+    })
+    .select('id')
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create space chat: ${error.message}`);
+  }
+
+  return data.id;
+}
+
+/**
+ * Save a message to the database with user_id
+ */
+export async function saveMessageWithUser(
+  chatId: string,
+  role: 'user' | 'assistant',
+  content: string,
+  userId?: string | null
+): Promise<void> {
+  const { error } = await supabase
+    .from('messages')
+    .insert({
+      chat_id: chatId,
+      role,
+      content,
+      user_id: userId || null,
+    });
+
+  if (error) {
+    console.error('Failed to save message:', error);
+    // Don't throw - allow chat to continue even if save fails
+  }
 }
 
 /**
