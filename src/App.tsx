@@ -16,6 +16,9 @@ import Spaces from "./pages/Spaces";
 import CreateSpace from "./pages/CreateSpace";
 import SpaceChat from "./pages/SpaceChat";
 import NotFound from "./pages/NotFound";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import AuthCallback from "./pages/AuthCallback";
 
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -39,6 +42,9 @@ const App = () => (
             <Route path="/chat" element={<Chat />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/spaces" element={<Spaces />} />
             <Route path="/spaces/new" element={<CreateSpace />} />
             <Route path="/spaces/:lut_name" element={<SpaceChat />} />
