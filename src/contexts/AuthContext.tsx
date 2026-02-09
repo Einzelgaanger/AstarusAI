@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface User {
@@ -24,6 +24,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Skip auth initialization if Supabase is not configured
+    if (!isSupabaseConfigured) {
+      setLoading(false);
+      return;
+    }
+
     // Check for Supabase session on mount
     const initAuth = async () => {
       try {
@@ -68,6 +74,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error("Authentication is not available. Please configure Supabase environment variables.");
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -87,6 +97,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signup = async (email: string, password: string, name?: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error("Authentication is not available. Please configure Supabase environment variables.");
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -111,6 +125,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
+    if (!isSupabaseConfigured) {
+      setUser(null);
+      return;
+    }
+
     await supabase.auth.signOut();
     setUser(null);
   };
