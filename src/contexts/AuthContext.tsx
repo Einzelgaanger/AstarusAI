@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 
 interface User {
   id: string;
@@ -24,33 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Skip auth initialization if Supabase is not configured
-    if (!isSupabaseConfigured) {
-      setLoading(false);
-      return;
-    }
-
-    // Check for Supabase session on mount
-    const initAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          setUser({
-            id: session.user.id,
-            email: session.user.email || '',
-            name: session.user.user_metadata?.name || session.user.email?.split("@")[0],
-          });
-        }
-      } catch (error) {
-        console.error("Error initializing auth:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initAuth();
-
-    // Listen for auth changes
+    // Listen for auth changes FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session?.user) {
@@ -60,7 +33,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             email: userEmail,
             name: session.user.user_metadata?.name || userEmail.split("@")[0],
           });
-          // Note: Invitations are NOT auto-accepted - users must manually accept them
         } else {
           setUser(null);
         }
@@ -68,16 +40,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
+    // Then check current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata?.name || session.user.email?.split("@")[0],
+        });
+      }
+      setLoading(false);
+    });
+
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
   const login = async (email: string, password: string) => {
-    if (!isSupabaseConfigured) {
-      throw new Error("Authentication is not available. Please configure Supabase environment variables.");
-    }
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -97,14 +77,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signup = async (email: string, password: string, name?: string) => {
-    if (!isSupabaseConfigured) {
-      throw new Error("Authentication is not available. Please configure Supabase environment variables.");
-    }
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: {
           name: name || email.split("@")[0],
         },
@@ -125,11 +102,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    if (!isSupabaseConfigured) {
-      setUser(null);
-      return;
-    }
-
     await supabase.auth.signOut();
     setUser(null);
   };
