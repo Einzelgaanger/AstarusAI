@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 export const Hero = () => {
   return (
     <motion.section
-      className="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 py-16 sm:py-20 overflow-hidden"
       initial="hidden"
       animate="visible"
       variants={fadeIn()}
@@ -30,29 +30,29 @@ export const Hero = () => {
 
       <div className="container relative z-10">
         <motion.div
-          className="max-w-5xl mx-auto text-center space-y-8"
+          className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-8"
           variants={staggerContainer(0.15)}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
         >
           <motion.div
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass-dark glass-border shadow-2xl"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full glass-dark glass-border shadow-2xl"
             variants={fadeInUp(0)}
           >
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-white/90">Next-Generation AI Architecture</span>
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+            <span className="text-xs sm:text-sm font-semibold text-white/90">Next-Generation AI Architecture</span>
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-400 animate-pulse" />
           </motion.div>
 
           <motion.h1 
-            className="font-bold text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight"
+            className="font-bold text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight leading-tight px-2"
             variants={fadeInUp(0.1)}
           >
             AI That{" "}
             <span className="relative inline-block">
               <span className="text-gradient">Learns</span>
-              <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
+              <svg className="absolute -bottom-1 sm:-bottom-2 left-0 w-full hidden sm:block" viewBox="0 0 200 12" fill="none">
                 <path d="M2 8C50 3 150 3 198 8" stroke="url(#gradient)" strokeWidth="4" strokeLinecap="round"/>
                 <defs>
                   <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -67,7 +67,7 @@ export const Hero = () => {
           </motion.h1>
 
           <motion.p
-            className="text-lg sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium px-4"
             variants={fadeInUp(0.2)}
           >
             Introducing memory-augmented transformers: the breakthrough that enables 
@@ -76,67 +76,65 @@ export const Hero = () => {
           </motion.p>
 
           <motion.div
-            className="flex items-center justify-center pt-4"
+            className="flex items-center justify-center pt-2 sm:pt-4 px-4"
             variants={fadeInUp(0.3)}
           >
-            <Link to="/demo">
+            <Link to="/demo" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
-                className="group cta-button text-base px-8 py-6 h-auto"
+                className="group cta-button text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6 h-auto w-full sm:w-auto min-h-[48px] touch-manipulation"
               >
-                <Play className="w-5 h-5 mr-2 transition-transform group-hover:scale-110" />
-                Try Interactive Demo
-                <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transition-transform group-hover:scale-110" />
+                <span className="whitespace-nowrap">Try Interactive Demo</span>
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
           </motion.div>
 
           <motion.div
-            className="pt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto"
+            className="pt-8 sm:pt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-3xl mx-auto px-4"
             variants={fadeInUp(0.4)}
           >
-            <div className="glass-dark glass-border rounded-2xl p-5 text-center group hover:glow-primary transition-all duration-300">
-              <div className="w-12 h-12 rounded-xl bg-gradient-primary mx-auto mb-3 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <TrendingUp className="w-6 h-6 text-white" />
+            <div className="glass-dark glass-border rounded-2xl p-4 sm:p-5 text-center group hover:glow-primary transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-primary mx-auto mb-3 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div className="text-3xl sm:text-4xl font-bold text-gradient mb-1">75%</div>
-              <div className="text-sm text-white/70 font-medium">Perplexity Reduction</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gradient mb-1">75%</div>
+              <div className="text-xs sm:text-sm text-white/70 font-medium">Perplexity Reduction</div>
             </div>
 
-            <div className="glass-dark glass-border rounded-2xl p-5 text-center group hover:glow-secondary transition-all duration-300">
-              <div className="w-12 h-12 rounded-xl bg-gradient-secondary mx-auto mb-3 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <Zap className="w-6 h-6 text-white" />
+            <div className="glass-dark glass-border rounded-2xl p-4 sm:p-5 text-center group hover:glow-secondary transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-secondary mx-auto mb-3 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div className="text-3xl sm:text-4xl font-bold text-gradient-secondary mb-1">&lt;20s</div>
-              <div className="text-sm text-white/70 font-medium">Training Time</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gradient-secondary mb-1">&lt;20s</div>
+              <div className="text-xs sm:text-sm text-white/70 font-medium">Training Time</div>
             </div>
 
-            <div className="glass-dark glass-border rounded-2xl p-5 text-center group hover:glow-primary transition-all duration-300">
-              <div className="w-12 h-12 rounded-xl bg-gradient-primary mx-auto mb-3 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <Brain className="w-6 h-6 text-white" />
+            <div className="glass-dark glass-border rounded-2xl p-4 sm:p-5 text-center group hover:glow-primary transition-all duration-300">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-primary mx-auto mb-3 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div className="text-3xl sm:text-4xl font-bold text-gradient mb-1">100%</div>
-              <div className="text-sm text-white/70 font-medium">Knowledge Retention</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gradient mb-1">100%</div>
+              <div className="text-xs sm:text-sm text-white/70 font-medium">Knowledge Retention</div>
             </div>
           </motion.div>
         </motion.div>
       </div>
 
       <motion.div 
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 text-white/50"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5, duration: 0.8 }}
       >
-        <div className="flex flex-col items-center gap-2 text-white/50">
-          <span className="text-xs uppercase tracking-widest">Scroll to explore</span>
-          <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-1">
-            <motion.div 
-              className="w-1.5 h-3 bg-white/50 rounded-full"
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-          </div>
+        <span className="text-xs uppercase tracking-widest">Scroll to explore</span>
+        <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-1">
+          <motion.div 
+            className="w-1.5 h-3 bg-white/50 rounded-full"
+            animate={{ y: [0, 12, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          />
         </div>
       </motion.div>
     </motion.section>

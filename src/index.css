@@ -236,6 +236,32 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* Mobile-specific improvements */
+  @media (max-width: 640px) {
+    /* Better text rendering on mobile */
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Improve button touch targets */
+    button, a[role="button"], .touch-manipulation {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Better spacing for mobile cards */
+    .card, [class*="Card"] {
+      padding: 1rem;
+    }
+
+    /* Improve readability */
+    p, span, div {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+  }
+
   .shine {
     position: relative;
     overflow: hidden;

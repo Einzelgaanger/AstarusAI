@@ -58,7 +58,7 @@ const steps = [
 export const Solution = () => {
   return (
     <motion.section
-      className="relative py-24 px-4 overflow-hidden"
+      className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 overflow-hidden"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.1 }}
@@ -79,30 +79,30 @@ export const Solution = () => {
 
       <div className="container relative z-10">
         <motion.div
-          className="max-w-3xl mx-auto text-center mb-16 space-y-6"
+          className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 space-y-4 sm:space-y-6"
           variants={fadeInUp(0.1)}
         >
-          <div className="section-badge mx-auto bg-white/5 border-white/10">
-            <Sparkles className="w-4 h-4 text-primary" />
+          <div className="section-badge mx-auto bg-white/5 border-white/10 text-xs sm:text-sm">
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
             <span className="text-white/90">Our Innovation</span>
           </div>
           
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white px-2">
             Memory-Augmented{" "}
             <span className="text-gradient">Transformers</span>
           </h2>
           
-          <p className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-white/70 max-w-2xl mx-auto px-4">
             We've developed a breakthrough architecture that adds a small, trainable 
             lookup table (LUT) layer to transformer blocks, enabling instant learning.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-start max-w-7xl mx-auto">
-          <motion.div className="space-y-8" variants={staggerContainer(0.1, 0.1)}>
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-start max-w-7xl mx-auto">
+          <motion.div className="space-y-6 sm:space-y-8" variants={staggerContainer(0.1, 0.1)}>
             <motion.div variants={fadeInUp(0.1)}>
-              <h3 className="text-2xl font-bold text-white mb-6">Key Advantages</h3>
-              <div className="grid gap-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 px-2 sm:px-0">Key Advantages</h3>
+              <div className="grid gap-3 sm:gap-4">
                 {features.map((feature, index) => {
                   const Icon = feature.icon;
                   return (
@@ -111,14 +111,14 @@ export const Solution = () => {
                       variants={fadeInUp(index * 0.1)}
                       className="group"
                     >
-                      <Card className="p-5 bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-300 hover:border-primary/30">
-                        <div className="flex gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                            <Icon className="w-6 h-6 text-white" />
+                      <Card className="p-4 sm:p-5 bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-300 hover:border-primary/30">
+                        <div className="flex gap-3 sm:gap-4">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-primary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                           </div>
-                          <div>
-                            <h4 className="font-bold text-white mb-1">{feature.title}</h4>
-                            <p className="text-sm text-white/60">{feature.description}</p>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-bold text-white mb-1 text-sm sm:text-base">{feature.title}</h4>
+                            <p className="text-xs sm:text-sm text-white/60 leading-relaxed">{feature.description}</p>
                           </div>
                         </div>
                       </Card>
@@ -128,26 +128,26 @@ export const Solution = () => {
               </div>
             </motion.div>
 
-            <motion.div variants={fadeInUp(0.3)}>
-              <Link to="/chat">
-                <Button className="cta-button group">
+            <motion.div variants={fadeInUp(0.3)} className="px-2 sm:px-0">
+              <Link to="/chat" className="block w-full sm:w-auto">
+                <Button className="cta-button group w-full sm:w-auto min-h-[48px] touch-manipulation text-sm sm:text-base px-6 sm:px-8 py-4 sm:py-5">
                   <span>Try It Yourself</span>
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
             </motion.div>
           </motion.div>
 
           <motion.div variants={fadeInUp(0.2)}>
-            <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
-              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-secondary flex items-center justify-center">
-                  <RefreshCw className="w-5 h-5 text-white" />
+            <Card className="p-5 sm:p-6 md:p-8 bg-white/5 border-white/10 backdrop-blur-sm">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-6 sm:mb-8 flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-secondary flex items-center justify-center flex-shrink-0">
+                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                How It Works
+                <span>How It Works</span>
               </h3>
 
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 {steps.map((step, index) => (
                   <motion.div
                     key={index}
@@ -158,28 +158,28 @@ export const Solution = () => {
                     transition={{ delay: index * 0.15 }}
                   >
                     {index < steps.length - 1 && (
-                      <div className="absolute left-6 top-14 bottom-0 w-px bg-gradient-to-b from-white/20 to-transparent" />
+                      <div className="absolute left-5 sm:left-6 top-12 sm:top-14 bottom-0 w-px bg-gradient-to-b from-white/20 to-transparent" />
                     )}
                     
-                    <div className="flex gap-5">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-white ${
+                    <div className="flex gap-3 sm:gap-5">
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-white text-sm sm:text-base ${
                         step.color === "primary" ? "bg-gradient-primary" : "bg-gradient-secondary"
                       }`}>
                         {step.step}
                       </div>
-                      <div className="pt-1">
-                        <h4 className="font-bold text-white mb-1">{step.title}</h4>
-                        <p className="text-sm text-white/60">{step.description}</p>
+                      <div className="pt-0.5 sm:pt-1 min-w-0 flex-1">
+                        <h4 className="font-bold text-white mb-1 text-sm sm:text-base">{step.title}</h4>
+                        <p className="text-xs sm:text-sm text-white/60 leading-relaxed">{step.description}</p>
                       </div>
                     </div>
                   </motion.div>
                 ))}
               </div>
 
-              <div className="mt-8 p-4 rounded-xl bg-gradient-to-r from-primary/20 to-secondary/20 border border-white/10">
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-400" />
-                  <p className="text-sm text-white/80">
+              <div className="mt-6 sm:mt-8 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/20 to-secondary/20 border border-white/10">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
                     <span className="font-semibold text-white">Result:</span> Personalized, 
                     adapted output with no retraining required
                   </p>

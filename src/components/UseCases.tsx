@@ -43,7 +43,7 @@ const useCases = [
 export const UseCases = () => {
   return (
     <motion.section
-      className="relative py-24 px-4 bg-gradient-to-b from-muted/30 to-white overflow-hidden"
+      className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-gradient-to-b from-muted/30 to-white overflow-hidden"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.1 }}
@@ -53,27 +53,27 @@ export const UseCases = () => {
 
       <div className="container relative z-10">
         <motion.div
-          className="max-w-3xl mx-auto text-center mb-16 space-y-6"
+          className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 space-y-4 sm:space-y-6"
           variants={fadeInUp(0.1)}
         >
-          <div className="section-badge mx-auto">
-            <Briefcase className="w-4 h-4 text-secondary" />
+          <div className="section-badge mx-auto text-xs sm:text-sm">
+            <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-secondary" />
             <span className="text-secondary">Real-World Impact</span>
           </div>
           
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground px-2">
             Transformative{" "}
             <span className="text-gradient-secondary">Applications</span>
           </h2>
           
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Enable use cases that were previously impossible or economically unfeasible 
             with traditional approaches.
           </p>
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto"
           variants={staggerContainer(0.1, 0.1)}
         >
           {useCases.map((useCase, index) => {
@@ -96,10 +96,10 @@ export const UseCases = () => {
                     />
                   </div>
 
-                  <div className="p-8 relative z-10">
-                    <div className="flex items-start gap-5 mb-5">
-                      <div className="relative flex-shrink-0">
-                        <div className={`w-16 h-16 rounded-2xl overflow-hidden border-4 shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl ${
+                  <div className="p-5 sm:p-6 md:p-8 relative z-10">
+                    <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5 mb-4 sm:mb-5">
+                      <div className="relative flex-shrink-0 w-full sm:w-auto">
+                        <div className={`w-full sm:w-16 sm:h-16 aspect-square rounded-2xl overflow-hidden border-4 shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl ${
                           isPrimary ? "border-primary/30" : "border-secondary/30"
                         }`}>
                           <img
@@ -108,35 +108,35 @@ export const UseCases = () => {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-lg flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 ${
+                        <div className={`absolute -bottom-2 -right-2 w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 ${
                           isPrimary ? "bg-gradient-primary" : "bg-gradient-secondary"
                         }`}>
-                          <Icon className="w-4 h-4 text-white" />
+                          <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                         </div>
                       </div>
                       
-                      <h3 className={`text-xl sm:text-2xl font-bold flex-1 pt-2 transition-colors duration-300 ${
+                      <h3 className={`text-lg sm:text-xl md:text-2xl font-bold flex-1 pt-0 sm:pt-2 transition-colors duration-300 w-full sm:w-auto ${
                         isPrimary ? "group-hover:text-primary" : "group-hover:text-secondary"
                       }`}>
                         {useCase.title}
                       </h3>
                     </div>
 
-                    <p className="text-muted-foreground leading-relaxed mb-6">
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4 sm:mb-6">
                       {useCase.description}
                     </p>
 
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       <p className={`text-xs font-semibold uppercase tracking-wider ${
                         isPrimary ? "text-primary" : "text-secondary"
                       }`}>
                         Key Applications
                       </p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2">
                         {useCase.examples.map((example, idx) => (
                           <motion.span
                             key={idx}
-                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 ${
+                            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-all duration-200 ${
                               isPrimary
                                 ? "bg-primary/5 border-primary/20 text-primary hover:bg-primary/10"
                                 : "bg-secondary/5 border-secondary/20 text-secondary hover:bg-secondary/10"
@@ -160,13 +160,13 @@ export const UseCases = () => {
         </motion.div>
 
         <motion.div
-          className="text-center mt-16"
+          className="text-center mt-12 sm:mt-16 px-4"
           variants={fadeInUp(0.4)}
         >
-          <Link to="/investors">
-            <Button className="cta-button group">
+          <Link to="/investors" className="block w-full sm:w-auto sm:inline-block">
+            <Button className="cta-button group w-full sm:w-auto min-h-[48px] touch-manipulation text-sm sm:text-base px-6 sm:px-8 py-4 sm:py-5">
               <span>Explore Investment Opportunities</span>
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
         </motion.div>
