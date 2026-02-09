@@ -178,10 +178,15 @@ ${trimmed.substring(0, 4000)}
     max_output_tokens: 1200,
   });
 
-  const raw =
-    response.output[0]?.content[0]?.type === "output_text"
-      ? response.output[0].content[0].text
-      : "";
+  // Safely extract text from the response output
+  const outputItem = response.output[0];
+  let raw = "";
+  if (outputItem && "content" in outputItem && Array.isArray(outputItem.content)) {
+    const contentItem = outputItem.content[0];
+    if (contentItem && "type" in contentItem && contentItem.type === "output_text" && "text" in contentItem) {
+      raw = contentItem.text;
+    }
+  }
 
   // Clean common wrappers like markdown fences
   let cleaned = raw.trim()
