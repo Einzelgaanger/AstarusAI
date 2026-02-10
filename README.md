@@ -34,6 +34,12 @@ VITE_OPENAI_MODEL=gpt-4.1
 - If API environment variables are not set, the application will use default values.
 - Supabase variables are required for user authentication and chat storage. The app will work without them, but users won't be able to sign up or save their chats.
 
+**For Lovable Preview/Deployment:**
+- Set environment variables in your Lovable project settings (not just `.env` file)
+- Go to your Lovable project → Settings → Environment Variables
+- Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` there
+- The app will gracefully handle missing Supabase config and show warnings instead of crashing
+
 ### Supabase Setup
 
 **⚠️ IMPORTANT:** Supabase setup is **required** for spaces functionality. Without it, users cannot create spaces.

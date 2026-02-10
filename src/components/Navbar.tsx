@@ -43,19 +43,19 @@ export const Navbar = () => {
     >
       <div className="container mx-auto px-3 sm:px-4">
         <div
-          className={`flex items-center justify-between rounded-2xl px-3 sm:px-6 py-1 transition-all duration-300 overflow-visible ${
+          className={`flex items-center justify-between rounded-2xl px-3 sm:px-6 py-1.5 sm:py-1 transition-all duration-300 overflow-visible ${
             scrolled
               ? "glass-dark glass-border shadow-2xl"
               : "bg-black/70 backdrop-blur-sm border border-white/10"
           }`}
         >
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity touch-manipulation">
             <img
               src="/Actual Logo.png"
               alt="Astarus Logo"
-              className="h-10 sm:h-12 md:h-16 w-auto rounded-lg -my-1"
+              className="h-8 sm:h-10 md:h-12 lg:h-16 w-auto rounded-lg -my-1"
             />
-            <span className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
+            <span className="font-display text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white tracking-tight">
               Astarus
             </span>
           </Link>
@@ -125,7 +125,9 @@ export const Navbar = () => {
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-xl hover:bg-white/10 text-white transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="lg:hidden p-2.5 rounded-xl hover:bg-white/10 active:bg-white/20 text-white transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center -mr-1"
+            aria-label="Toggle menu"
+            aria-expanded={isOpen}
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -140,7 +142,7 @@ export const Navbar = () => {
               transition={{ duration: 0.3 }}
               className="lg:hidden mt-2 overflow-hidden"
             >
-              <div className="glass-dark glass-border rounded-2xl p-3 sm:p-4 space-y-1 shadow-2xl">
+              <div className="glass-dark glass-border rounded-2xl p-3 sm:p-4 space-y-1.5 shadow-2xl">
                 {navLinks.map((link, index) => (
                   <motion.div
                     key={link.to}
@@ -150,10 +152,10 @@ export const Navbar = () => {
                   >
                     <Link
                       to={link.to}
-                      className={`flex items-center justify-between py-3 px-4 rounded-xl font-medium transition-colors ${
+                      className={`flex items-center justify-between py-3.5 sm:py-3 px-4 rounded-xl font-medium transition-colors touch-manipulation min-h-[48px] ${
                         location.pathname === link.to
                           ? "bg-white/10 text-white"
-                          : "text-white/70 hover:text-white hover:bg-white/5"
+                          : "text-white/70 active:text-white active:bg-white/5"
                       }`}
                     >
                       {link.label}
@@ -162,13 +164,13 @@ export const Navbar = () => {
                   </motion.div>
                 ))}
 
-                <div className="pt-3 mt-3 border-t border-white/10 space-y-2">
+                <div className="pt-3 mt-3 border-t border-white/10 space-y-2.5">
                   {isAuthenticated ? (
                     <>
                       <Link to="/spaces" className="block">
                         <Button
                           variant="outline"
-                          className="w-full border-white/20 text-white hover:bg-white/10 font-medium"
+                          className="w-full border-white/20 text-white hover:bg-white/10 active:bg-white/15 font-medium min-h-[48px] touch-manipulation"
                         >
                           My Spaces
                         </Button>
@@ -176,7 +178,7 @@ export const Navbar = () => {
                       <Button
                         variant="outline"
                         onClick={logout}
-                        className="w-full border-white/20 text-white hover:bg-white/10 font-medium"
+                        className="w-full border-white/20 text-white hover:bg-white/10 active:bg-white/15 font-medium min-h-[48px] touch-manipulation"
                       >
                         <LogOut className="w-4 h-4 mr-2" />
                         Logout
@@ -187,13 +189,13 @@ export const Navbar = () => {
                       <Link to="/demo" className="block">
                         <Button
                           variant="outline"
-                          className="w-full border-white/20 text-white hover:bg-white/10 font-medium"
+                          className="w-full border-white/20 text-white hover:bg-white/10 active:bg-white/15 font-medium min-h-[48px] touch-manipulation"
                         >
                           Try Demo
                         </Button>
                       </Link>
                       <Link to="/signup" className="block">
-                        <Button className="w-full bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-lg py-6">
+                        <Button className="w-full bg-gradient-primary hover:opacity-90 active:opacity-95 text-white font-semibold shadow-lg py-5 sm:py-6 min-h-[48px] touch-manipulation">
                           <Rocket className="w-4 h-4 mr-2" />
                           Get Started
                         </Button>
