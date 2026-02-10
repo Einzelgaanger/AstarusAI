@@ -19,7 +19,14 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Space Grotesk", "system-ui", "sans-serif"],
-        display: ["Exo 2", "Space Grotesk", "system-ui", "sans-serif"],
+        display: ["Playfair Display", "Exo 2", "Georgia", "serif"],
+        accent: ["DM Sans", "Space Grotesk", "system-ui", "sans-serif"],
+        brand: ["Bebas Neue", "Impact", "sans-serif"],
+      },
+      boxShadow: {
+        "glow": "0 0 40px -8px hsl(262 83% 58% / 0.35)",
+        "soft": "0 2px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05)",
+        "elegant": "0 10px 40px -10px rgb(0 0 0 / 0.12)",
       },
       colors: {
         border: "hsl(var(--border))",

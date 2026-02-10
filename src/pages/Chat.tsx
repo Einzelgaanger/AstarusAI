@@ -1,7 +1,6 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -566,11 +565,11 @@ export default function LutDemo() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
       <motion.section
-        className="relative pt-28 pb-8 px-4 overflow-hidden"
+        className="relative pt-24 sm:pt-28 md:pt-28 lg:pt-32 pb-6 sm:pb-8 md:pb-10 px-4 sm:px-6 md:px-8 lg:px-10 overflow-hidden safe-area-px"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -582,95 +581,78 @@ export default function LutDemo() {
             alt="AI Technology Background"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/35 to-background/60" />
         </div>
-        <div className="absolute top-20 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,hsl(262_83%_58%_/_.04)_1px,transparent_1px),linear-gradient(hsl(262_83%_58%_/_.04)_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" aria-hidden />
+        <div className="absolute top-20 right-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-56 h-56 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="container relative z-10 max-w-4xl mx-auto text-center">
-            <motion.div variants={fadeInUp(0.1)} className="space-y-6">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
-              <span className="text-foreground">Experience </span>
-              <span className="text-gradient">Memory-Augmented AI</span>
-            </h1>
-
-            <p className="text-lg sm:text-xl text-black max-w-2xl mx-auto">
-              Experience our LUT-enhanced Mistral model. This AI has been trained
-              with Astarus-specific knowledge that it can recall instantly,
-              without the need for expensive fine-tuning or complex retraining processes.
-            </p>
-
-            <div className="px-4 py-3 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 max-w-2xl mx-auto">
-              <p className="text-sm text-amber-800 dark:text-amber-200">
-                <strong>Demo only</strong> – To create your own brain,{" "}
-                <Link
-                  to="/signup"
-                  className="underline font-semibold hover:text-amber-900 dark:hover:text-amber-100"
-                >
-                  sign up
-                </Link>
-                .
+        <div className="container relative z-10 max-w-3xl lg:max-w-4xl xl:max-w-[56rem] mx-auto text-center">
+          <motion.div variants={staggerContainer(0.06, 0.05)} initial="hidden" whileInView="visible" viewport={{ once: true }} className="space-y-4 lg:space-y-5">
+            <motion.h1 variants={fadeInUp(0)} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold px-1 text-black drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
+              <span className="text-black">Experience </span>
+              <span className="text-black">Memory-Augmented AI</span>
+            </motion.h1>
+            <motion.p variants={fadeInUp(0)} className="text-sm sm:text-base text-black/90 max-w-xl mx-auto drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]">
+              LUT-enhanced model with Astarus-specific knowledge — no fine-tuning or retraining.
+            </motion.p>
+            <motion.div variants={fadeInUp(0)} className="px-3 py-2 rounded-xl bg-amber-50/90 dark:bg-amber-900/25 border border-amber-200/80 dark:border-amber-800 max-w-md mx-auto">
+              <p className="text-xs text-amber-800 dark:text-amber-200">
+                <strong>Demo only</strong> – <Link to="/signup" className="underline font-semibold hover:text-amber-900 dark:hover:text-amber-100">Sign up</Link> to create your own.
               </p>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border shadow-sm">
-                <Brain className="w-4 h-4 text-primary" />
-                <span className="text-muted-foreground">Model: </span>
+            </motion.div>
+            <motion.div variants={fadeInUp(0)} className="flex flex-wrap items-center justify-center gap-2 text-xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card/90 border border-border shadow-sm">
+                <Brain className="w-3.5 h-3.5 text-primary" />
+                <span className="text-muted-foreground">Model</span>
                 <span className="font-semibold text-foreground">{MODEL}</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border shadow-sm">
-                <Zap className="w-4 h-4 text-secondary" />
-                <span className="text-muted-foreground">LUT: </span>
-                <span className="font-mono font-semibold text-foreground">
-                  {lutName}
-                </span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card/90 border border-border shadow-sm">
+                <Zap className="w-3.5 h-3.5 text-secondary" />
+                <span className="text-muted-foreground">LUT</span>
+                <span className="font-mono font-semibold text-foreground truncate max-w-[120px]">{lutName}</span>
                 {isReadOnlyLut && (
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-primary/10 text-primary border border-primary/20">
-                    Demo
-                  </span>
+                  <span className="px-1.5 py-0.5 text-[10px] rounded-full bg-primary/15 text-primary border border-primary/25">Demo</span>
                 )}
-              </div>
-            </div>
+              </span>
+            </motion.div>
           </motion.div>
         </div>
       </motion.section>
 
       <motion.section
-        className="py-6 sm:py-8 px-3 sm:px-4"
+        className="relative py-6 sm:py-8 md:py-10 lg:py-12 px-4 sm:px-6 md:px-8 lg:px-10 safe-area-px bg-muted/20 bg-grid-subtle overflow-hidden"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
         variants={fadeIn()}
       >
-        <div className="container max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <motion.div className="lg:col-span-2" variants={fadeInUp(0.1)}>
-              <Card className="overflow-hidden border-0 shadow-xl bg-card/80 backdrop-blur-sm flex flex-col min-h-0">
-                <div className="p-3 sm:p-4 md:p-6 border-b bg-gradient-to-r from-primary/5 via-transparent to-secondary/5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg">
-                        <MessageCircle className="w-5 h-5 text-white" />
+        <div className="container max-w-5xl lg:max-w-6xl xl:max-w-[72rem] mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 xl:gap-8">
+            <motion.div className="lg:col-span-2" variants={fadeInUp(0.08)}>
+              <Card className="overflow-hidden border border-border shadow-md bg-card/95 backdrop-blur-sm flex flex-col min-h-0 rounded-2xl">
+                <div className="p-3 sm:p-4 border-b bg-gradient-to-r from-primary/5 via-transparent to-secondary/5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm flex-shrink-0">
+                        <MessageCircle className="w-4 h-4 text-white" />
                       </div>
-                      <div>
-                        <h2 className="font-bold text-foreground">AI Chat</h2>
-                        <p className="text-sm text-muted-foreground">
-                          Powered by Memory-Augmented LUT
-                        </p>
+                      <div className="min-w-0">
+                        <h2 className="font-bold text-foreground text-sm sm:text-base">AI Chat</h2>
+                        <p className="text-xs text-muted-foreground truncate">Memory-Augmented LUT</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
                       {lastThresholdUsed !== undefined && (
-                        <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
-                          Threshold: {lastThresholdUsed.toFixed(2)}
+                        <span className="text-[10px] px-2 py-1 rounded-full bg-muted/80 text-muted-foreground font-mono">
+                          τ {lastThresholdUsed.toFixed(2)}
                         </span>
                       )}
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => setMessages([])}
-                        className="h-8 w-8"
+                        className="h-8 w-8 rounded-lg"
                       >
                         <RefreshCw className="w-4 h-4" />
                       </Button>
@@ -680,26 +662,25 @@ export default function LutDemo() {
 
                 <div
                   ref={messagesContainerRef}
-                  className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4"
+                  className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 space-y-3"
                 >
                   {!hasMessages ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-6">
-                        <Bot className="w-10 h-10 text-primary" />
+                    <div className="h-full flex flex-col items-center justify-center text-center px-3 py-6">
+                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/15 to-secondary/10 flex items-center justify-center mb-4 ring-2 ring-primary/10">
+                        <Bot className="w-7 h-7 text-primary" />
                       </div>
-                      <h3 className="text-xl font-bold text-foreground mb-2">
+                      <h3 className="text-base font-bold text-foreground mb-1">
                         Start a Conversation
                       </h3>
-                      <p className="text-muted-foreground mb-6 max-w-md">
-                        Ask me about Astarus AI, our technology, or try teaching
-                        me something new.
+                      <p className="text-sm text-muted-foreground mb-4 max-w-sm">
+                        Ask about Astarus AI or try teaching me something new.
                       </p>
-                      <div className="flex flex-wrap justify-center gap-2">
+                      <div className="flex flex-wrap justify-center gap-1.5">
                         {suggestedQuestions.map((q, i) => (
                           <button
                             key={i}
                             onClick={() => handleSend(q)}
-                            className="px-4 py-2 text-sm rounded-full bg-muted hover:bg-primary/10 hover:text-primary transition-all duration-200 border hover:border-primary/30"
+                            className="px-3 py-1.5 text-xs rounded-full bg-muted/80 hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all duration-200"
                           >
                             {q}
                           </button>
@@ -722,14 +703,14 @@ export default function LutDemo() {
                             }`}
                           >
                             <div
-                              className={`flex items-start gap-3 max-w-[85%] ${
+                              className={`flex items-start gap-2 sm:gap-3 max-w-[92%] sm:max-w-[85%] ${
                                 m.role === "user" ? "flex-row-reverse" : ""
                               }`}
                             >
                               <div
                                 className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
                                   m.role === "user"
-                                    ? "bg-gradient-primary text-white"
+                                    ? "bg-primary text-white"
                                     : "bg-muted text-muted-foreground"
                                 }`}
                               >
@@ -740,7 +721,7 @@ export default function LutDemo() {
                                 )}
                               </div>
                               <div
-                                className={`rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
+                                className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm whitespace-pre-wrap break-words ${
                                   m.role === "user"
                                     ? "chat-bubble-user text-white"
                                     : "chat-bubble-ai text-foreground"
@@ -753,16 +734,14 @@ export default function LutDemo() {
                         ))}
                       </AnimatePresence>
                       {!input.trim() && !isGenerating && (
-                        <div className="pt-4 border-t border-muted/50">
-                          <p className="text-xs font-medium text-muted-foreground mb-3 text-center">
-                            Suggested questions:
-                          </p>
-                          <div className="flex flex-wrap justify-center gap-2">
+                        <div className="pt-3 border-t border-muted/40">
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 text-center">Suggested</p>
+                          <div className="flex flex-wrap justify-center gap-1.5">
                             {suggestedQuestions.map((q, i) => (
                               <button
                                 key={i}
                                 onClick={() => handleSend(q)}
-                                className="px-3 py-1.5 text-xs rounded-full bg-muted hover:bg-primary/10 hover:text-primary transition-all duration-200 border hover:border-primary/30"
+                                className="px-2.5 py-1 text-[11px] rounded-full bg-muted/70 hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
                               >
                                 {q}
                               </button>
@@ -796,12 +775,12 @@ export default function LutDemo() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                <div className="p-3 sm:p-4 md:p-6 border-t bg-gradient-to-r from-transparent via-muted/30 to-transparent">
+                <div className="p-3 sm:p-4 border-t bg-gradient-to-r from-transparent via-muted/20 to-transparent">
                   {status && (
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`mb-3 px-4 py-2 rounded-lg text-sm ${
+                      className={`mb-2.5 px-3 py-2 rounded-xl text-xs ${
                         status.includes("success") ||
                         status.includes("stored") ||
                         status.includes("Stored this Q&A")
@@ -812,12 +791,12 @@ export default function LutDemo() {
                       {status}
                     </motion.div>
                   )}
-                  <div className="flex gap-3">
-                    <div className="flex-1 relative">
+                  <div className="flex gap-2">
+                    <div className="flex-1 relative min-w-0">
                       <textarea
-                        className="w-full resize-none rounded-xl border-2 border-muted bg-background px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
+                        className="w-full resize-none rounded-xl border-2 border-border bg-background px-3 py-2.5 pr-11 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all min-h-[42px] touch-manipulation"
                         rows={2}
-                        placeholder="Ask something about Astarus AI..."
+                        placeholder="Ask about Astarus AI..."
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => {
@@ -831,12 +810,12 @@ export default function LutDemo() {
                     <Button
                       onClick={() => handleSend()}
                       disabled={isGenerating || !input.trim()}
-                      className="h-auto px-6 bg-gradient-primary hover:opacity-90 text-white shadow-lg shadow-primary/25"
+                      className="h-[42px] w-[42px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm touch-manipulation flex-shrink-0 p-0"
                     >
                       {isGenerating ? (
-                        <RefreshCw className="w-5 h-5 animate-spin" />
+                        <RefreshCw className="w-4 h-4 animate-spin" />
                       ) : (
-                        <Send className="w-5 h-5" />
+                        <Send className="w-4 h-4" />
                       )}
                     </Button>
                   </div>
@@ -845,36 +824,33 @@ export default function LutDemo() {
             </motion.div>
 
             <motion.div
-              className="space-y-4"
-              variants={staggerContainer(0.1, 0.05)}
+              className="space-y-3"
+              variants={staggerContainer(0.08, 0.05)}
             >
-              <motion.div variants={fadeInUp(0.1)}>
-                <Card className="p-5 border-0 shadow-lg bg-card/80 backdrop-blur-sm">
-                  <div className="flex items-center justify-between mb-4">
+              <motion.div variants={fadeInUp(0.08)}>
+                <Card className="p-4 border border-border shadow-sm bg-card/95 backdrop-blur-sm rounded-xl">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-                        <Settings2 className="w-4 h-4 text-white" />
+                      <div className="w-8 h-8 rounded-lg bg-primary/15 ring-2 ring-primary/20 flex items-center justify-center">
+                        <Settings2 className="w-4 h-4 text-primary" />
                       </div>
-                      <h3 className="font-bold text-foreground">LUT Controls</h3>
+                      <h3 className="font-bold text-foreground text-sm">LUT Controls</h3>
                     </div>
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8"
+                      className="h-7 w-7 rounded-lg"
                       onClick={handleNewLut}
                       title="Create new LUT"
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="w-3.5 h-3.5" />
                     </Button>
                   </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Pre-trained Models
-                      </label>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Pre-trained</label>
                       <select
-                        className="w-full rounded-lg border-2 border-muted bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-primary/50 transition-colors"
+                        className="w-full rounded-lg border border-border bg-background px-2.5 py-2 text-xs focus:outline-none focus:border-primary/50 transition-colors"
                         value={selectedPretrainedValue}
                         onChange={(e) => {
                           const config = PRETRAINED_LUTS.find(
@@ -883,7 +859,7 @@ export default function LutDemo() {
                           if (config) applyPretrainedConfig(config);
                         }}
                       >
-                        <option value="">Select a model...</option>
+                        <option value="">Select...</option>
                         {PRETRAINED_LUTS.map((p) => (
                           <option key={p.lutName} value={p.lutName}>
                             {p.label}
@@ -891,27 +867,21 @@ export default function LutDemo() {
                         ))}
                       </select>
                     </div>
-
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-muted" />
+                        <div className="w-full border-t border-border" />
                       </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-card px-2 text-muted-foreground">
-                          or load custom
-                        </span>
-                      </div>
+                      <span className="relative flex justify-center text-[10px] uppercase tracking-wider text-muted-foreground bg-card px-1.5">or custom</span>
                     </div>
-
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
                       <input
                         type="text"
-                        className="flex-1 rounded-lg border-2 border-muted bg-background px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary/50 transition-colors"
-                        placeholder="Enter LUT name..."
+                        className="flex-1 rounded-lg border border-border bg-background px-2.5 py-2 text-xs font-mono focus:outline-none focus:border-primary/50"
+                        placeholder="LUT name..."
                         value={lutInput}
                         onChange={(e) => setLutInput(e.target.value)}
                       />
-                      <Button onClick={handleLoadLut} variant="outline" size="sm">
+                      <Button onClick={handleLoadLut} variant="outline" size="sm" className="rounded-lg text-xs h-8">
                         Load
                       </Button>
                     </div>
@@ -919,27 +889,23 @@ export default function LutDemo() {
                 </Card>
               </motion.div>
 
-              <motion.div variants={fadeInUp(0.2)}>
-                <Card className="p-5 border-0 shadow-lg bg-card/80 backdrop-blur-sm">
-                  <div className="flex items-center justify-between mb-4">
+              <motion.div variants={fadeInUp(0.1)}>
+                <Card className="p-4 border border-border shadow-sm bg-card/95 backdrop-blur-sm rounded-xl">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-secondary flex items-center justify-center">
-                        <Brain className="w-4 h-4 text-white" />
+                      <div className="w-8 h-8 rounded-lg bg-secondary/15 ring-2 ring-secondary/20 flex items-center justify-center">
+                        <Brain className="w-4 h-4 text-secondary" />
                       </div>
-                      <h3 className="font-bold text-foreground">Teach the AI</h3>
+                      <h3 className="font-bold text-foreground text-sm">Teach the AI</h3>
                     </div>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => setTeachOpen(!teachOpen)}
-                      className="gap-1"
+                      className="gap-1 rounded-lg text-xs h-7"
                     >
                       {teachOpen ? "Close" : "Expand"}
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform ${
-                          teachOpen ? "rotate-180" : ""
-                        }`}
-                      />
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${teachOpen ? "rotate-180" : ""}`} />
                     </Button>
                   </div>
 
@@ -949,38 +915,31 @@ export default function LutDemo() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="space-y-3 overflow-hidden"
+                        className="space-y-2.5 overflow-hidden"
                       >
                         {isReadOnlyLut && (
-                          <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                            <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                            <p className="text-xs text-amber-700">
-                              This is a read-only demo LUT. Create a new LUT to
-                              add custom knowledge.
-                            </p>
+                          <div className="flex items-start gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
+                            <Info className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
+                            <p className="text-[11px] text-amber-700">Read-only demo. Create a new LUT to add custom knowledge.</p>
                           </div>
                         )}
-                        <div className="space-y-2">
-                          <label className="text-xs font-medium text-muted-foreground">
-                            Question
-                          </label>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Question</label>
                           <input
                             type="text"
-                            className="w-full rounded-lg border-2 border-muted bg-background px-3 py-2 text-sm focus:outline-none focus:border-primary/50 transition-colors"
-                            placeholder="What is your favorite color?"
+                            className="w-full rounded-lg border border-border bg-background px-2.5 py-2 text-xs focus:outline-none focus:border-primary/50"
+                            placeholder="e.g. What is your favorite color?"
                             value={teachQuestion}
                             onChange={(e) => setTeachQuestion(e.target.value)}
                             disabled={isReadOnlyLut}
                           />
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-medium text-muted-foreground">
-                            Answer
-                          </label>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Answer</label>
                           <textarea
-                            className="w-full rounded-lg border-2 border-muted bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:border-primary/50 transition-colors"
+                            className="w-full rounded-lg border border-border bg-background px-2.5 py-2 text-xs resize-none focus:outline-none focus:border-primary/50"
                             rows={2}
-                            placeholder="My favorite color is purple."
+                            placeholder="e.g. My favorite color is purple."
                             value={teachAnswer}
                             onChange={(e) => setTeachAnswer(e.target.value)}
                             disabled={isReadOnlyLut}
@@ -988,48 +947,34 @@ export default function LutDemo() {
                         </div>
                         <Button
                           onClick={handleTeach}
-                          disabled={
-                            isReadOnlyLut ||
-                            !teachQuestion.trim() ||
-                            !teachAnswer.trim()
-                          }
-                          className="w-full bg-gradient-secondary hover:opacity-90 text-white"
+                          disabled={isReadOnlyLut || !teachQuestion.trim() || !teachAnswer.trim()}
+                          className="w-full rounded-lg text-xs h-8 bg-secondary hover:bg-secondary/90 text-secondary-foreground"
                         >
-                          <Sparkles className="w-4 h-4 mr-2" />
+                          <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                           Teach Model
                         </Button>
                       </motion.div>
                     )}
                   </AnimatePresence>
-
                   {!teachOpen && (
-                    <p className="text-sm text-muted-foreground">
-                      Add custom Q&A pairs to personalize the model's responses
-                      in real-time.
-                    </p>
+                    <p className="text-xs text-muted-foreground">Add Q&A pairs to personalize responses in real-time.</p>
                   )}
                 </Card>
               </motion.div>
 
-              <motion.div variants={fadeInUp(0.3)}>
-                <Card className="p-5 border-0 shadow-lg bg-card/80 backdrop-blur-sm">
+              <motion.div variants={fadeInUp(0.12)}>
+                <Card className="p-4 border border-border shadow-sm bg-card/95 backdrop-blur-sm rounded-xl">
                   <button
                     onClick={() => setShowAdvanced(!showAdvanced)}
                     className="w-full flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-muted/80 flex items-center justify-center">
                         <Sliders className="w-4 h-4 text-muted-foreground" />
                       </div>
-                      <h3 className="font-bold text-foreground">
-                        Advanced Settings
-                      </h3>
+                      <h3 className="font-bold text-foreground text-sm">Advanced Settings</h3>
                     </div>
-                    <ChevronDown
-                      className={`w-4 h-4 text-muted-foreground transition-transform ${
-                        showAdvanced ? "rotate-180" : ""
-                      }`}
-                    />
+                    <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${showAdvanced ? "rotate-180" : ""}`} />
                   </button>
 
                   <AnimatePresence>
@@ -1038,16 +983,12 @@ export default function LutDemo() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="mt-4 space-y-4 overflow-hidden"
+                        className="mt-3 space-y-3 overflow-hidden"
                       >
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <label className="text-xs font-medium text-muted-foreground">
-                              Threshold
-                            </label>
-                            <span className="text-xs font-mono text-foreground">
-                              {threshold.toFixed(2)}
-                            </span>
+                            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Threshold</label>
+                            <span className="text-[10px] font-mono text-foreground">{threshold.toFixed(2)}</span>
                           </div>
                           <input
                             type="range"
@@ -1055,83 +996,59 @@ export default function LutDemo() {
                             max="1"
                             step="0.01"
                             value={threshold}
-                            onChange={(e) =>
-                              setThreshold(parseFloat(e.target.value))
-                            }
-                            className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                            onChange={(e) => setThreshold(parseFloat(e.target.value))}
+                            className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                           />
                         </div>
-
-                        <div className="space-y-2">
-                          <label className="text-xs font-medium text-muted-foreground">
-                            Active Blocks
-                          </label>
-                          <div className="flex flex-wrap gap-2">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Active Blocks</label>
+                          <div className="flex flex-wrap gap-1.5">
                             {availableBlocks.map((block) => (
                               <div
                                 key={block}
-                                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-mono cursor-pointer transition-all ${
+                                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-mono cursor-pointer transition-all ${
                                   wnnBlocks.includes(block)
-                                    ? "bg-primary/10 text-primary border-2 border-primary/30"
-                                    : "bg-muted text-muted-foreground border-2 border-transparent"
+                                    ? "bg-primary/10 text-primary border border-primary/25"
+                                    : "bg-muted/80 text-muted-foreground border border-transparent"
                                 }`}
                                 onClick={() => toggleBlock(block)}
                               >
-                                {wnnBlocks.includes(block) && (
-                                  <Check className="w-3 h-3" />
-                                )}
-                                Block {block}
+                                {wnnBlocks.includes(block) && <Check className="w-2.5 h-2.5" />}
+                                {block}
                                 {!isReadOnlyLut && (
                                   <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleDeleteBlock(block);
-                                    }}
-                                    className="ml-1 hover:text-destructive"
+                                    onClick={(e) => { e.stopPropagation(); handleDeleteBlock(block); }}
+                                    className="ml-0.5 hover:text-destructive"
                                   >
-                                    <Trash2 className="w-3 h-3" />
+                                    <Trash2 className="w-2.5 h-2.5" />
                                   </button>
                                 )}
                               </div>
                             ))}
                           </div>
                         </div>
-
                         {!isReadOnlyLut && (
-                          <div className="flex gap-2">
+                          <div className="flex gap-1.5">
                             <input
                               type="text"
-                              className="flex-1 rounded-lg border-2 border-muted bg-background px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary/50 transition-colors"
+                              className="flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-primary/50"
                               placeholder="Block index"
                               value={newBlockInput}
                               onChange={(e) => setNewBlockInput(e.target.value)}
                             />
-                            <Button
-                              onClick={handleAddBlock}
-                              size="sm"
-                              variant="outline"
-                            >
-                              <Plus className="w-4 h-4" />
+                            <Button onClick={handleAddBlock} size="sm" variant="outline" className="rounded-lg h-8 px-2">
+                              <Plus className="w-3.5 h-3.5" />
                             </Button>
                           </div>
                         )}
-
                         {wnnBlocks.length > 0 && (
-                          <div className="space-y-3">
-                            <label className="text-xs font-medium text-muted-foreground">
-                              Block Residuals
-                            </label>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Block Residuals</label>
                             {wnnBlocks.map((block) => (
-                              <div key={block} className="space-y-1">
-                                <div className="flex justify-between text-xs">
-                                  <span className="font-mono">
-                                    Block {block}
-                                  </span>
-                                  <span className="font-mono">
-                                    {(
-                                      residualMap[String(block)] ?? 1.0
-                                    ).toFixed(2)}
-                                  </span>
+                              <div key={block} className="space-y-0.5">
+                                <div className="flex justify-between text-[10px]">
+                                  <span className="font-mono">Block {block}</span>
+                                  <span className="font-mono">{(residualMap[String(block)] ?? 1.0).toFixed(2)}</span>
                                 </div>
                                 <input
                                   type="range"
@@ -1139,14 +1056,9 @@ export default function LutDemo() {
                                   max="2"
                                   step="0.05"
                                   value={residualMap[String(block)] ?? 1.0}
-                                  onChange={(e) =>
-                                    handleResidualChange(
-                                      block,
-                                      parseFloat(e.target.value)
-                                    )
-                                  }
+                                  onChange={(e) => handleResidualChange(block, parseFloat(e.target.value))}
                                   disabled={isReadOnlyLut}
-                                  className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary disabled:opacity-50"
+                                  className="w-full h-1 bg-muted rounded-lg appearance-none cursor-pointer accent-primary disabled:opacity-50"
                                 />
                               </div>
                             ))}
@@ -1158,37 +1070,27 @@ export default function LutDemo() {
                 </Card>
               </motion.div>
 
-              <motion.div variants={fadeInUp(0.4)}>
-                <Card className="p-5 border-0 shadow-lg bg-gradient-to-br from-primary/5 to-secondary/5">
+              <motion.div variants={fadeInUp(0.14)}>
+                <Card className="p-4 border border-border shadow-sm bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl">
                   <div className="flex items-center gap-2 mb-3">
-                    <Rocket className="w-5 h-5 text-primary" />
-                    <h3 className="font-bold text-foreground">How It Works</h3>
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 ring-2 ring-primary/15 flex items-center justify-center">
+                      <Rocket className="w-4 h-4 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-foreground text-sm">How It Works</h3>
                   </div>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <span className="w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                        1
-                      </span>
-                      <span>
-                        LUT stores knowledge as embedding corrections
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                        2
-                      </span>
-                      <span>
-                        During inference, relevant corrections are retrieved
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                        3
-                      </span>
-                      <span>
-                        Model outputs are steered toward learned behavior
-                      </span>
-                    </li>
+                  <ul className="space-y-2.5 text-xs text-muted-foreground">
+                    {[
+                      { n: 1, text: "LUT stores knowledge as embedding corrections" },
+                      { n: 2, text: "Relevant corrections are retrieved during inference" },
+                      { n: 3, text: "Outputs are steered toward learned behavior" },
+                    ].map(({ n, text }) => (
+                      <li key={n} className="flex items-start gap-2">
+                        <span className="w-6 h-6 rounded-full bg-primary/15 text-primary text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5 ring-2 ring-primary/20">
+                          {n}
+                        </span>
+                        <span>{text}</span>
+                      </li>
+                    ))}
                   </ul>
                 </Card>
               </motion.div>
@@ -1196,8 +1098,6 @@ export default function LutDemo() {
           </div>
         </div>
       </motion.section>
-
-      <Footer />
     </div>
   );
 }

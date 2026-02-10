@@ -4,17 +4,19 @@ import { Problem } from "@/components/Problem";
 import { Solution } from "@/components/Solution";
 import { Advantages } from "@/components/Advantages";
 import { UseCases } from "@/components/UseCases";
+import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-[#0a0812]">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
       <Hero />
       <Problem />
       <Solution />
       <Advantages />
       <UseCases />
+      <CTA />
       <Footer />
     </div>
   );

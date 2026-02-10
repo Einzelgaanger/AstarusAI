@@ -826,21 +826,21 @@ export default function SpaceChat() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
             onClick={(e) => e.target === e.currentTarget && setShowLoadingModal(false)}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-black/90 border border-white/20 rounded-2xl p-4 sm:p-8 max-w-md w-full mx-4 glass-dark glass-border"
+              className="bg-card border border-border rounded-2xl p-4 sm:p-8 max-w-md w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto mx-4 shadow-2xl"
             >
               <div className="flex flex-col items-center space-y-6">
                 {/* Icon */}
                 <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center ${
                   loadingType === 'generate' 
                     ? 'bg-gradient-secondary' 
-                    : 'bg-gradient-primary'
+                    : 'bg-primary'
                 } shadow-lg`}>
                   {loadingType === 'generate' ? (
                     <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-white animate-pulse" />
@@ -851,15 +851,15 @@ export default function SpaceChat() {
                 
                 {/* Title */}
                 <div className="text-center">
-                  <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                     {loadingType === 'generate' ? 'Generating Q&A Pairs' : 'Training AI'}
                   </h3>
-                  <p className="text-xs sm:text-sm text-white/70 px-2">{loadingStage}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground px-2">{loadingStage}</p>
                 </div>
                 
                 {/* Progress Bar */}
                 <div className="w-full space-y-2">
-                  <div className="flex justify-between text-xs text-white/60 mb-1">
+                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
                     <span>
                       {loadingType === 'generate' 
                         ? `${loadingProgress}%` 
@@ -869,12 +869,12 @@ export default function SpaceChat() {
                       <span>{loadingTimeRemaining}</span>
                     )}
                   </div>
-                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                     <motion.div
                       className={`h-full ${
                         loadingType === 'generate' 
                           ? 'bg-gradient-secondary' 
-                          : 'bg-gradient-primary'
+                          : 'bg-primary'
                       }`}
                       initial={{ width: 0 }}
                       animate={{ 
@@ -916,44 +916,45 @@ export default function SpaceChat() {
       </AnimatePresence>
       
       <Navbar />
-      <div className="flex-1 flex bg-gradient-to-b from-black via-primary/5 to-black pt-20 sm:pt-24 min-h-[calc(100vh-4rem)]">
+      <div className="flex-1 flex flex-col relative bg-gradient-to-b from-background via-muted/20 to-background pt-20 sm:pt-24 min-h-[calc(100vh-4rem)] overflow-hidden">
+        <div className="absolute inset-0 bg-grid-subtle pointer-events-none" aria-hidden />
         {/* Mobile Navigation */}
-        <div className="md:hidden w-full border-b border-white/10 bg-black/40">
+        <div className="md:hidden w-full border-b border-border bg-card/95 backdrop-blur-sm relative z-10">
           <div className="flex">
             <button
               onClick={() => setActiveView('chat')}
-              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm transition-colors touch-manipulation min-h-[44px] ${
+              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium transition-colors touch-manipulation min-h-[48px] ${
                 activeView === 'chat'
-                  ? 'text-white border-b-2 border-white/30'
-                  : 'text-white/60'
+                  ? 'text-foreground border-b-2 border-primary bg-primary/5'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-4 h-4 shrink-0" />
               <span>Chat</span>
             </button>
             <button
               onClick={() => setActiveView('training')}
-              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm transition-colors touch-manipulation min-h-[44px] ${
+              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium transition-colors touch-manipulation min-h-[48px] ${
                 activeView === 'training'
-                  ? 'text-white border-b-2 border-white/30'
-                  : 'text-white/60'
+                  ? 'text-foreground border-b-2 border-primary bg-primary/5'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <GraduationCap className="w-4 h-4" />
+              <GraduationCap className="w-4 h-4 shrink-0" />
               <span>Training</span>
             </button>
             <button
               onClick={() => setActiveView('logs')}
-              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm transition-colors touch-manipulation min-h-[44px] ${
+              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium transition-colors touch-manipulation min-h-[48px] ${
                 activeView === 'logs'
-                  ? 'text-white border-b-2 border-white/30'
-                  : 'text-white/60'
+                  ? 'text-foreground border-b-2 border-primary bg-primary/5'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <ScrollText className="w-4 h-4" />
+              <ScrollText className="w-4 h-4 shrink-0" />
               <span>Logs</span>
               {trainingHistory.length > 0 && (
-                <span className="text-xs text-white/40 ml-0.5">
+                <span className="text-[10px] sm:text-xs text-muted-foreground ml-0.5 px-1.5 py-0.5 rounded-full bg-muted/80">
                   {trainingHistory.length}
                 </span>
               )}
@@ -962,8 +963,8 @@ export default function SpaceChat() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 flex-1 flex flex-col max-w-5xl">
+        <div className="flex-1 flex flex-col overflow-hidden relative z-10">
+          <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-6 flex-1 flex flex-col max-w-5xl min-h-0">
             <motion.div
               initial="hidden"
               animate="visible"
@@ -972,20 +973,20 @@ export default function SpaceChat() {
             >
               {/* Chat View */}
               {activeView === 'chat' && (
-                <Card className="glass-dark glass-border border-white/20 flex-1 flex flex-col mb-6 min-h-0">
-                  <div className="p-3 sm:p-4 md:p-6 border-b border-white/10">
+                <Card className="bg-card border border-border flex-1 flex flex-col mb-4 sm:mb-6 min-h-0 shadow-sm rounded-2xl overflow-hidden">
+                  <div className="p-3 sm:p-4 md:p-5 border-b border-border">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <div className="min-w-0 flex-1">
-                          <h2 className="font-bold text-white text-base sm:text-lg truncate">
+                          <h2 className="font-bold text-foreground text-base sm:text-lg truncate">
                             {spaceName || lut_name || "Space Chat"}
                           </h2>
                           <div className="flex items-center gap-1.5 sm:gap-2 mt-1 flex-wrap">
-                            <span className="text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-primary/20 text-primary/90 border border-primary/30 font-mono truncate max-w-[120px] sm:max-w-none">
+                            <span className="text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-mono truncate max-w-[120px] sm:max-w-none">
                               {lut_name}
                             </span>
-                            <span className="text-xs text-white/50 hidden sm:inline">•</span>
-                            <span className="text-xs text-white/60 hidden sm:inline">Memory-Augmented LUT</span>
+                            <span className="text-xs text-muted-foreground hidden sm:inline">•</span>
+                            <span className="text-xs text-muted-foreground hidden sm:inline">Memory-Augmented LUT</span>
                           </div>
                         </div>
                       </div>
@@ -994,7 +995,7 @@ export default function SpaceChat() {
                           onClick={() => setActiveView('training')}
                           variant="ghost"
                           size="sm"
-                          className="h-9 sm:h-8 px-2 sm:px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs sm:text-sm touch-manipulation"
+                          className="h-9 sm:h-8 px-2 sm:px-3 text-muted-foreground hover:text-foreground hover:bg-muted/60 text-xs sm:text-sm touch-manipulation"
                         >
                           <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-2" />
                           <span className="hidden sm:inline">Train</span>
@@ -1003,12 +1004,12 @@ export default function SpaceChat() {
                           onClick={() => setActiveView('logs')}
                           variant="ghost"
                           size="sm"
-                          className="h-9 sm:h-8 px-2 sm:px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs sm:text-sm touch-manipulation"
+                          className="h-9 sm:h-8 px-2 sm:px-3 text-muted-foreground hover:text-foreground hover:bg-muted/60 text-xs sm:text-sm touch-manipulation"
                         >
                           <ScrollText className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-2" />
                           <span className="hidden sm:inline">Logs</span>
                           {trainingHistory.length > 0 && (
-                            <span className="ml-1 text-xs text-white/50">
+                            <span className="ml-1 text-xs text-muted-foreground">
                               ({trainingHistory.length})
                             </span>
                           )}
@@ -1017,7 +1018,7 @@ export default function SpaceChat() {
                           variant="ghost"
                           size="icon"
                           onClick={() => setMessages([])}
-                          className="h-9 w-9 sm:h-8 sm:w-8 text-white hover:bg-white/10 touch-manipulation"
+                          className="h-9 w-9 sm:h-8 sm:w-8 text-foreground hover:bg-muted/60 touch-manipulation"
                           title="Clear chat"
                         >
                           <RefreshCw className="w-4 h-4" />
@@ -1031,14 +1032,14 @@ export default function SpaceChat() {
                     className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4"
                   >
                     {!hasMessages ? (
-                      <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-6">
-                          <Bot className="w-10 h-10 text-white/80" />
+                      <div className="h-full flex flex-col items-center justify-center text-center px-4 py-6">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 ring-2 ring-primary/15">
+                          <Bot className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">
                           Start a Conversation
                         </h3>
-                        <p className="text-white/70 mb-6 max-w-md">
+                        <p className="text-sm text-muted-foreground mb-6 max-w-md">
                           Ask me about Astarus AI, our technology, or anything you'd like to know.
                         </p>
                       </div>
@@ -1064,8 +1065,8 @@ export default function SpaceChat() {
                               <div
                                 className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
                                   m.role === "user"
-                                    ? "bg-gradient-primary text-white"
-                                    : "bg-white/10 text-white/80"
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-muted text-muted-foreground"
                                 }`}
                               >
                                 {m.role === "user" ? (
@@ -1077,8 +1078,8 @@ export default function SpaceChat() {
                               <div
                                 className={`rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
                                   m.role === "user"
-                                    ? "bg-gradient-primary text-white"
-                                    : "bg-white/10 text-white glass-dark"
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-muted text-foreground"
                                 }`}
                               >
                                 {m.content}
@@ -1096,14 +1097,14 @@ export default function SpaceChat() {
                         className="flex justify-start"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-                            <Bot className="w-4 h-4 text-white/80" />
+                          <div className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center">
+                            <Bot className="w-4 h-4 text-muted-foreground" />
                           </div>
-                          <div className="bg-white/10 text-white glass-dark rounded-2xl px-4 py-3">
+                          <div className="bg-muted text-foreground rounded-2xl px-4 py-3">
                             <div className="typing-indicator">
-                              <span className="bg-white/60"></span>
-                              <span className="bg-white/60"></span>
-                              <span className="bg-white/60"></span>
+                              <span className="bg-primary"></span>
+                              <span className="bg-primary"></span>
+                              <span className="bg-primary"></span>
                             </div>
                           </div>
                         </div>
@@ -1112,25 +1113,25 @@ export default function SpaceChat() {
                     <div ref={messagesEndRef} />
                   </div>
 
-                  <div className="border-t border-white/10 p-3 sm:p-4 md:p-6">
+                  <div className="border-t border-border p-3 sm:p-4 md:p-6">
                     {status && (
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`mb-3 px-4 py-2 rounded-lg text-sm ${
+                        className={`mb-3 px-4 py-2 rounded-xl text-sm ${
                           status.includes("success") ||
                           status.includes("stored")
-                            ? "bg-green-500/20 text-green-200 border border-green-500/50"
-                            : "bg-red-500/20 text-red-200 border border-red-500/50"
+                            ? "bg-green-500/20 text-green-700 dark:text-green-200 border border-green-500/50"
+                            : "bg-red-500/20 text-red-700 dark:text-red-200 border border-red-500/50"
                         }`}
                       >
                         {status}
                       </motion.div>
                     )}
                     <div className="flex gap-2 sm:gap-3">
-                      <div className="flex-1 relative">
+                      <div className="flex-1 min-w-0">
                         <textarea
-                          className="w-full resize-none rounded-xl border border-white/20 bg-white/5 px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/30 transition-all"
+                          className="w-full resize-none rounded-xl border border-border bg-background px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/30 transition-all touch-manipulation"
                           rows={2}
                           placeholder="Ask something about Astarus AI..."
                           value={input}
@@ -1147,7 +1148,7 @@ export default function SpaceChat() {
                       <Button
                         onClick={() => handleSend()}
                         disabled={isGenerating || !input.trim()}
-                        className="h-auto min-h-[44px] px-4 sm:px-6 bg-gradient-primary hover:opacity-90 text-white touch-manipulation"
+                        className="h-11 min-h-[44px] min-w-[44px] sm:min-w-[52px] sm:px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation shrink-0"
                       >
                         {isGenerating ? (
                           <RefreshCw className="w-5 h-5 animate-spin" />
@@ -1162,20 +1163,20 @@ export default function SpaceChat() {
 
               {/* Training View */}
               {activeView === 'training' && (
-                <Card className="glass-dark glass-border border-white/20 flex-1 flex flex-col mb-6">
-                  <div className="p-3 sm:p-4 md:p-6 border-b border-white/10">
+                <Card className="bg-card border border-border flex-1 flex flex-col mb-4 sm:mb-6 shadow-sm rounded-2xl overflow-hidden min-h-0">
+                  <div className="p-3 sm:p-4 md:p-5 border-b border-border">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="flex items-center gap-2 sm:gap-3">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-secondary flex items-center justify-center shadow-lg flex-shrink-0">
-                          <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                          <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-secondary-foreground" />
                         </div>
                         <div>
-                          <h2 className="font-bold text-white text-base sm:text-lg">Train the AI</h2>
-                          <p className="text-xs text-white/60">Add knowledge to this space</p>
+                          <h2 className="font-bold text-foreground text-base sm:text-lg">Train the AI</h2>
+                          <p className="text-xs text-muted-foreground">Add knowledge to this space</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                        <div className="hidden sm:flex flex-col items-end mr-2 text-xs text-white/60">
+                        <div className="hidden sm:flex flex-col items-end mr-2 text-xs text-muted-foreground">
                           <span className="font-mono">
                             LUT: {effectiveLutName}
                           </span>
@@ -1184,7 +1185,7 @@ export default function SpaceChat() {
                           onClick={() => setActiveView('chat')}
                           variant="ghost"
                           size="sm"
-                          className="h-9 sm:h-8 px-2 sm:px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs sm:text-sm touch-manipulation"
+                          className="h-9 sm:h-8 px-2 sm:px-3 text-muted-foreground hover:text-foreground hover:bg-muted/60 text-xs sm:text-sm touch-manipulation"
                         >
                           <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-2" />
                           <span className="hidden sm:inline">Chat</span>
@@ -1193,12 +1194,12 @@ export default function SpaceChat() {
                           onClick={() => setActiveView('logs')}
                           variant="ghost"
                           size="sm"
-                          className="h-9 sm:h-8 px-2 sm:px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs sm:text-sm touch-manipulation"
+                          className="h-9 sm:h-8 px-2 sm:px-3 text-muted-foreground hover:text-foreground hover:bg-muted/60 text-xs sm:text-sm touch-manipulation"
                         >
                           <ScrollText className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-2" />
                           <span className="hidden sm:inline">Logs</span>
                           {trainingHistory.length > 0 && (
-                            <span className="ml-1 text-xs text-white/50">
+                            <span className="ml-1 text-xs text-muted-foreground">
                               ({trainingHistory.length})
                             </span>
                           )}
@@ -1207,13 +1208,13 @@ export default function SpaceChat() {
                     </div>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4">
+                  <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-white">
+                      <label className="text-sm font-medium text-foreground">
                         Enter text to train the AI
                       </label>
                       <textarea
-                        className="w-full rounded-lg border border-white/20 bg-white/5 px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-white placeholder:text-white/50 resize-none focus:outline-none focus:border-primary/50 transition-colors"
+                        className="w-full rounded-xl border border-border bg-background px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-foreground placeholder:text-muted-foreground resize-none min-h-[120px] sm:min-h-[160px] focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/30 transition-colors touch-manipulation"
                         rows={8}
                         placeholder="Paste or type the text you want to train the AI with. The system will automatically extract key Q&A pairs from it..."
                         value={trainingText}
@@ -1224,7 +1225,7 @@ export default function SpaceChat() {
                     <Button
                       onClick={handleGenerateQAs}
                       disabled={!trainingText.trim() || isGeneratingQAs}
-                      className="w-full min-h-[44px] bg-gradient-secondary hover:opacity-90 text-white touch-manipulation"
+                      className="w-full min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation text-sm font-medium"
                     >
                       {isGeneratingQAs ? (
                         <>
@@ -1240,26 +1241,26 @@ export default function SpaceChat() {
                     </Button>
 
                     {generatedQAs.length > 0 && (
-                      <div className="space-y-4 pt-4 border-t border-white/10">
+                      <div className="space-y-4 pt-4 border-t border-border">
                         <div className="flex items-center justify-between">
-                          <label className="text-sm font-medium text-white">
+                          <label className="text-sm font-medium text-foreground">
                             Review and edit Q&A pairs ({generatedQAs.length})
                           </label>
                         </div>
-                        <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                        <div className="space-y-3 max-h-[min(500px,50vh)] overflow-y-auto pr-1">
                             {generatedQAs.map((qa) => (
                               <div
                                 key={qa.id}
-                                className="p-3 rounded-lg border border-white/20 bg-white/5 space-y-2"
+                                className="p-3 rounded-xl border border-border bg-muted/40 space-y-2"
                               >
                                 <div className="space-y-1">
-                                  <label className="text-xs font-medium text-white/60">
+                                  <label className="text-xs font-medium text-muted-foreground">
                                     Question
                                   </label>
                                   {editingQA === `${qa.id}-question` ? (
                                     <input
                                       type="text"
-                                      className="w-full rounded border border-primary/50 bg-white/10 px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                      className="w-full rounded border border-primary/50 bg-background px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                                       value={qa.question}
                                       onChange={(e) => handleEditQA(qa.id, 'question', e.target.value)}
                                       onBlur={() => setEditingQA(null)}
@@ -1273,7 +1274,7 @@ export default function SpaceChat() {
                                     />
                                   ) : (
                                     <p
-                                      className="text-sm text-white cursor-pointer hover:bg-white/5 p-1 rounded min-h-[20px]"
+                                      className="text-sm text-foreground cursor-pointer hover:bg-muted/60 p-1 rounded min-h-[20px]"
                                       onClick={() => setEditingQA(`${qa.id}-question`)}
                                     >
                                       {qa.question}
@@ -1281,12 +1282,12 @@ export default function SpaceChat() {
                                   )}
                                 </div>
                                 <div className="space-y-1">
-                                  <label className="text-xs font-medium text-white/60">
+                                  <label className="text-xs font-medium text-muted-foreground">
                                     Answer
                                   </label>
                                   {editingQA === `${qa.id}-answer` ? (
                                     <textarea
-                                      className="w-full rounded border border-primary/50 bg-white/10 px-2 py-1 text-sm text-white resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                      className="w-full rounded border border-primary/50 bg-background px-2 py-1 text-sm text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
                                       rows={3}
                                       value={qa.answer}
                                       onChange={(e) => handleEditQA(qa.id, 'answer', e.target.value)}
@@ -1300,7 +1301,7 @@ export default function SpaceChat() {
                                     />
                                   ) : (
                                     <p
-                                      className="text-sm text-white cursor-pointer hover:bg-white/5 p-1 rounded min-h-[40px] whitespace-pre-wrap"
+                                      className="text-sm text-foreground cursor-pointer hover:bg-muted/60 p-1 rounded min-h-[40px] whitespace-pre-wrap"
                                       onClick={() => setEditingQA(`${qa.id}-answer`)}
                                     >
                                       {qa.answer}
@@ -1318,7 +1319,7 @@ export default function SpaceChat() {
                                         setEditingQA(`${qa.id}-question`);
                                       }
                                     }}
-                                    className="h-7 px-2 text-white/70 hover:text-white hover:bg-white/10"
+                                    className="h-7 px-2 text-muted-foreground hover:text-foreground hover:bg-muted/60"
                                   >
                                     <Edit2 className="w-3 h-3" />
                                   </Button>
@@ -1337,7 +1338,7 @@ export default function SpaceChat() {
                         <Button
                           onClick={handleTrain}
                           disabled={generatedQAs.length === 0}
-                          className="w-full min-h-[44px] bg-gradient-primary hover:opacity-90 text-white touch-manipulation"
+                          className="w-full min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation text-sm font-medium"
                         >
                           <Check className="w-4 h-4 mr-2" />
                           Train AI ({generatedQAs.length} Q&A pairs)
@@ -1349,11 +1350,11 @@ export default function SpaceChat() {
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`px-4 py-2 rounded-lg text-sm ${
+                        className={`px-4 py-2 rounded-xl text-sm ${
                           status.includes("success") ||
                           status.includes("stored")
-                            ? "bg-green-500/20 text-green-200 border border-green-500/50"
-                            : "bg-red-500/20 text-red-200 border border-red-500/50"
+                            ? "bg-green-500/20 text-green-700 dark:text-green-200 border border-green-500/50"
+                            : "bg-red-500/20 text-red-700 dark:text-red-200 border border-red-500/50"
                         }`}
                       >
                         {status}
@@ -1365,16 +1366,16 @@ export default function SpaceChat() {
 
               {/* Logs View */}
               {activeView === 'logs' && (
-                <Card className="glass-dark glass-border border-white/20 flex-1 flex flex-col mb-6">
-                  <div className="p-3 sm:p-4 md:p-6 border-b border-white/10">
+                <Card className="bg-card border border-border flex-1 flex flex-col mb-4 sm:mb-6 shadow-sm rounded-2xl overflow-hidden min-h-0">
+                  <div className="p-3 sm:p-4 md:p-5 border-b border-border">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="flex items-center gap-2 sm:gap-3">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-secondary flex items-center justify-center shadow-lg flex-shrink-0">
-                          <ScrollText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                          <ScrollText className="w-4 h-4 sm:w-5 sm:h-5 text-secondary-foreground" />
                         </div>
                         <div>
-                          <h2 className="font-bold text-white text-base sm:text-lg">Training History</h2>
-                          <p className="text-xs text-white/60">View all training activities in this space</p>
+                          <h2 className="font-bold text-foreground text-base sm:text-lg">Training History</h2>
+                          <p className="text-xs text-muted-foreground">View all training activities in this space</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -1382,7 +1383,7 @@ export default function SpaceChat() {
                           onClick={() => setActiveView('chat')}
                           variant="ghost"
                           size="sm"
-                          className="h-9 sm:h-8 px-2 sm:px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs sm:text-sm touch-manipulation"
+                          className="h-9 sm:h-8 px-2 sm:px-3 text-muted-foreground hover:text-foreground hover:bg-muted/60 text-xs sm:text-sm touch-manipulation"
                         >
                           <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-2" />
                           <span className="hidden sm:inline">Chat</span>
@@ -1391,7 +1392,7 @@ export default function SpaceChat() {
                           onClick={() => setActiveView('training')}
                           variant="ghost"
                           size="sm"
-                          className="h-9 sm:h-8 px-2 sm:px-3 text-white/70 hover:text-white hover:bg-white/10 text-xs sm:text-sm touch-manipulation"
+                          className="h-9 sm:h-8 px-2 sm:px-3 text-muted-foreground hover:text-foreground hover:bg-muted/60 text-xs sm:text-sm touch-manipulation"
                         >
                           <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-2" />
                           <span className="hidden sm:inline">Train</span>
@@ -1400,27 +1401,27 @@ export default function SpaceChat() {
                     </div>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
+                  <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5">
                     {trainingHistory.length === 0 ? (
-                      <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-secondary/20 to-primary/20 flex items-center justify-center mb-6">
-                          <ScrollText className="w-10 h-10 text-white/80" />
+                      <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center px-4 py-8">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 ring-2 ring-primary/15">
+                          <ScrollText className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">
                           No Training History
                         </h3>
-                        <p className="text-white/70 mb-6 max-w-md">
+                        <p className="text-sm text-muted-foreground mb-5 max-w-md">
                           Training activities will appear here once you start training the AI with text.
                         </p>
                         <Button
                           onClick={() => setActiveView('training')}
-                          className="bg-gradient-primary hover:opacity-90 text-white"
+                          className="min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation text-sm px-5"
                         >
                           Go to Training
                         </Button>
                       </div>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {trainingHistory.map((entry, i) => (
                           <motion.button
                             key={entry.id}
@@ -1429,33 +1430,27 @@ export default function SpaceChat() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.05 }}
                             onClick={() => openHistoryEntry(entry)}
-                            className="w-full text-left p-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all flex items-center justify-between"
+                            className="w-full text-left p-3 sm:p-4 rounded-xl border border-border bg-muted/40 hover:bg-muted transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 touch-manipulation min-h-[44px]"
                           >
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
-                                <User className="w-5 h-5 text-white" />
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center shrink-0 ring-2 ring-primary/20">
+                                <User className="w-4 h-4 text-primary" />
                               </div>
-                              <div>
-                                <p className="text-white font-medium">{entry.user}</p>
-                                <p className="text-xs text-white/60">
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium text-foreground truncate">{entry.user}</p>
+                                <p className="text-xs text-muted-foreground">
                                   {new Date(entry.date).toLocaleString()}
                                 </p>
                                 {entry.lastEditedBy && entry.lastEditedAt && (
-                                  <p className="text-xs text-white/50 mt-1">
-                                    Last edited by {entry.lastEditedBy} on{" "}
-                                    {new Date(entry.lastEditedAt).toLocaleString()}
+                                  <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
+                                    Edited by {entry.lastEditedBy}
                                   </p>
                                 )}
                               </div>
                             </div>
-                            <div className="text-right">
-                              <p className="text-white font-semibold">
-                                {entry.qaCount}
-                              </p>
-                              <p className="text-xs text-white/60">Q&A pairs</p>
-                              <p className="mt-1 text-xs text-white/70">
-                                View & edit
-                              </p>
+                            <div className="flex sm:flex-col items-center sm:items-end gap-1 shrink-0">
+                              <span className="text-foreground font-semibold text-sm">{entry.qaCount}</span>
+                              <span className="text-xs text-muted-foreground">Q&A pairs • View & edit</span>
                             </div>
                           </motion.button>
                         ))}
@@ -1475,7 +1470,7 @@ export default function SpaceChat() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-40 flex items-center justify-center bg-background/80 backdrop-blur-sm"
             onClick={(e) =>
               e.target === e.currentTarget && !isRetraining && closeHistoryModal()
             }
@@ -1484,18 +1479,18 @@ export default function SpaceChat() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-black/90 border border-white/20 rounded-2xl p-4 sm:p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col glass-dark glass-border"
+              className="bg-card border border-border rounded-2xl p-4 sm:p-6 max-w-2xl w-[calc(100%-2rem)] mx-4 max-h-[85vh] max-h-[85dvh] overflow-hidden flex flex-col shadow-2xl"
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-primary flex items-center justify-center">
-                    <FileText className="w-4 h-4 text-white" />
+              <div className="flex items-center justify-between gap-3 mb-4 shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 ring-2 ring-primary/20">
+                    <FileText className="w-4 h-4 text-primary" />
                   </div>
-                  <div>
-                    <h3 className="text-base sm:text-lg font-bold text-white">
+                  <div className="min-w-0">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground truncate">
                       Training Session Details
                     </h3>
-                    <p className="text-xs text-white/60">
+                    <p className="text-xs text-muted-foreground">
                       View, edit, and retrain on stored Q&A pairs
                     </p>
                   </div>
@@ -1503,7 +1498,7 @@ export default function SpaceChat() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10"
+                  className="h-10 w-10 sm:h-9 sm:w-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/60 touch-manipulation shrink-0"
                   onClick={closeHistoryModal}
                   disabled={isRetraining}
                 >
@@ -1511,20 +1506,20 @@ export default function SpaceChat() {
                 </Button>
               </div>
 
-              <div className="flex-1 overflow-y-auto pr-1 space-y-3">
+              <div className="flex-1 overflow-y-auto pr-1 space-y-3 min-h-0">
                 {historyEditQAs.map((qa) => (
                   <div
                     key={qa.id}
-                    className="p-3 rounded-lg border border-white/20 bg-white/5 space-y-2"
+                    className="p-3 rounded-xl border border-border bg-muted/30 space-y-2"
                   >
                     <div className="space-y-1">
-                      <label className="text-xs font-medium text-white/60">
+                      <label className="text-xs font-medium text-muted-foreground">
                         Question
                       </label>
                       <input
                         type="text"
                         aria-label="Training question"
-                        className="w-full rounded border border-primary/50 bg-white/10 px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full rounded border border-primary/50 bg-background px-2 py-1 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                         value={qa.question}
                         onChange={(e) =>
                           handleHistoryQAEdit(qa.id, "question", e.target.value)
@@ -1533,12 +1528,12 @@ export default function SpaceChat() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium text-white/60">
+                      <label className="text-xs font-medium text-muted-foreground">
                         Answer
                       </label>
                       <textarea
                         aria-label="Training answer"
-                        className="w-full rounded border border-primary/50 bg-white/10 px-2 py-1 text-sm text-white resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full rounded border border-primary/50 bg-background px-2 py-1 text-sm text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
                         rows={3}
                         value={qa.answer}
                         onChange={(e) =>
@@ -1551,16 +1546,16 @@ export default function SpaceChat() {
                 ))}
 
                 {historyEditQAs.length === 0 && (
-                  <p className="text-sm text-white/60">
+                  <p className="text-sm text-muted-foreground">
                     No Q&A pairs stored for this training session.
                   </p>
                 )}
               </div>
 
-              <div className="mt-4 flex justify-end gap-2">
+              <div className="mt-4 flex flex-col-reverse sm:flex-row justify-end gap-2 shrink-0 pt-2 border-t border-border">
                 <Button
                   variant="ghost"
-                  className="text-white/70 hover:text-white hover:bg-white/10"
+                  className="min-h-[44px] rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/60 touch-manipulation"
                   onClick={closeHistoryModal}
                   disabled={isRetraining}
                 >
@@ -1569,7 +1564,7 @@ export default function SpaceChat() {
                 <Button
                   onClick={handleRetrainHistory}
                   disabled={isRetraining || historyEditQAs.length === 0}
-                  className="bg-gradient-primary hover:opacity-90 text-white"
+                  className="min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation text-sm font-medium"
                 >
                   {isRetraining ? (
                     <>

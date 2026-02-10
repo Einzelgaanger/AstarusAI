@@ -3,12 +3,16 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+const routerFutureFlags = {
+  v7_startTransition: true,
+  v7_relativeSplatPath: true,
+};
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Technology from "./pages/Technology";
 import Team from "./pages/Team";
 import Investors from "./pages/Investors";
-import Contact from "./pages/Contact";
 import Chat from "./pages/Chat";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -30,14 +34,13 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter future={routerFutureFlags}>
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/technology" element={<Technology />} />
             <Route path="/team" element={<Team />} />
             <Route path="/investors" element={<Investors />} />
-            <Route path="/contact" element={<Contact />} />
             <Route path="/demo" element={<Chat />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/login" element={<Login />} />

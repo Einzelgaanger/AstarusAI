@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Mail, Phone, Linkedin, Twitter, Github } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowUpRight, Mail, Phone, Linkedin } from "lucide-react";
 
 const footerLinks = {
   company: [
     { label: "About Us", to: "/team" },
     { label: "Technology", to: "/technology" },
     { label: "Investors", to: "/investors" },
-    { label: "Contact", to: "/contact" },
   ],
   resources: [
     { label: "Try Demo", to: "/chat" },
@@ -19,28 +19,34 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-[#0a0812] py-12 sm:py-16 px-4 sm:px-6 overflow-hidden border-t border-white/5">
-      <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/25 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-primary/15 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 mb-10 sm:mb-12">
-            <div className="sm:col-span-2 space-y-4 sm:space-y-6">
+    <footer className="relative bg-black py-12 sm:py-16 lg:py-20 xl:py-24 px-4 sm:px-6 md:px-8 lg:px-10 overflow-hidden border-t border-white/10 safe-area-pb safe-area-px court-pattern">
+      <div className="container relative z-10 max-w-5xl lg:max-w-6xl xl:max-w-[72rem] mx-auto">
+        <div className="w-full">
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 xl:gap-16 mb-10 sm:mb-12 lg:mb-14 xl:mb-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+            }}
+          >
+            <motion.div
+              className="sm:col-span-2 space-y-4 sm:space-y-6"
+              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
+            >
               <Link to="/" className="inline-flex items-center gap-2 touch-manipulation">
                 <img
-                  src="/Actual Logo.png"
+                  src="/Astarus Logo.png"
                   alt="Astarus Logo"
-                  className="h-12 sm:h-14 md:h-16 w-auto rounded-lg"
+                  className="h-16 sm:h-20 md:h-24 w-auto rounded-lg"
                 />
                 <span className="font-display text-xl sm:text-2xl font-bold text-white">Astarus</span>
               </Link>
-              
-              <p className="text-sm sm:text-base text-white/60 leading-relaxed max-w-sm">
-                Building the next generation of continuously learning AI systems 
+
+              <p className="text-sm sm:text-base text-white/80 leading-relaxed max-w-sm">
+                Building the next generation of continuously learning AI systems
                 with memory-augmented transformer technology.
               </p>
 
@@ -49,82 +55,87 @@ export const Footer = () => {
                   href="https://www.linkedin.com/in/rafayel-latif-490aa724a/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 active:bg-white/15 flex items-center justify-center text-white/60 hover:text-white transition-all touch-manipulation min-h-[44px] min-w-[44px]"
+                  className="w-10 h-10 rounded-xl bg-white/10 hover:bg-violet-600 flex items-center justify-center text-white transition-all touch-manipulation min-h-[44px] min-w-[44px]"
                   aria-label="LinkedIn"
                 >
                   <Linkedin className="w-5 h-5" />
                 </a>
                 <a
                   href="mailto:rafayel.latif@gmail.com"
-                  className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 active:bg-white/15 flex items-center justify-center text-white/60 hover:text-white transition-all touch-manipulation min-h-[44px] min-w-[44px]"
+                  className="w-10 h-10 rounded-xl bg-white/10 hover:bg-violet-600 flex items-center justify-center text-white transition-all touch-manipulation min-h-[44px] min-w-[44px]"
                   aria-label="Email"
                 >
                   <Mail className="w-5 h-5" />
                 </a>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="space-y-3 sm:space-y-4">
+            <motion.div
+              className="space-y-3 sm:space-y-4"
+              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
+            >
               <h4 className="font-bold text-white text-base sm:text-lg">Company</h4>
               <ul className="space-y-2 sm:space-y-3">
                 {footerLinks.company.map((link) => (
                   <li key={link.to}>
                     <Link
                       to={link.to}
-                      className="text-sm sm:text-base text-white/60 hover:text-white active:text-white transition-colors inline-flex items-center gap-1 group touch-manipulation"
+                      className="text-sm sm:text-base text-white/80 hover:text-violet-400 transition-colors inline-flex items-center gap-1 group touch-manipulation"
                     >
                       {link.label}
-                      <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
+                      <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all text-violet-400" />
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
-            <div className="space-y-3 sm:space-y-4">
-              <h4 className="font-bold text-white text-base sm:text-lg">Contact</h4>
+            <motion.div
+              className="space-y-3 sm:space-y-4"
+              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
+            >
+              <h4 className="font-bold text-white text-base sm:text-lg">Get in Touch</h4>
               <ul className="space-y-2 sm:space-y-3">
                 <li>
                   <a
                     href="mailto:rafayel.latif@gmail.com"
-                    className="text-sm sm:text-base text-white/60 hover:text-white active:text-white transition-colors inline-flex items-center gap-2 touch-manipulation break-all"
+                    className="text-sm sm:text-base text-white/80 hover:text-violet-400 transition-colors inline-flex items-center gap-2 touch-manipulation break-all"
                   >
-                    <Mail className="w-4 h-4 flex-shrink-0" />
+                    <Mail className="w-4 h-4 flex-shrink-0 text-white" />
                     <span className="break-all">rafayel.latif@gmail.com</span>
                   </a>
                 </li>
                 <li>
                   <a
                     href="tel:+447957456969"
-                    className="text-sm sm:text-base text-white/60 hover:text-white active:text-white transition-colors inline-flex items-center gap-2 touch-manipulation"
+                    className="text-sm sm:text-base text-white/80 hover:text-violet-400 transition-colors inline-flex items-center gap-2 touch-manipulation"
                   >
-                    <Phone className="w-4 h-4 flex-shrink-0" />
+                    <Phone className="w-4 h-4 flex-shrink-0 text-white" />
                     <span>+44 7957 456969</span>
                   </a>
                 </li>
+                <li className="text-sm sm:text-base text-white/70 pt-1">
+                  Monday–Friday, 9am–5pm GMT
+                </li>
               </ul>
+            </motion.div>
+          </motion.div>
 
-              <div className="pt-3 sm:pt-4">
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-gradient-primary text-white text-sm font-semibold hover:opacity-90 active:opacity-95 transition-opacity shadow-lg shadow-primary/30 touch-manipulation min-h-[44px]"
-                >
-                  Get in Touch
-                  <ArrowUpRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-6 sm:pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-            <p className="text-xs sm:text-sm text-white/40 text-center sm:text-left">
+          <motion.div
+            className="pt-4 sm:pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <p className="text-[11px] sm:text-xs text-white/60 text-center sm:text-left">
               &copy; {currentYear} Astarus AI. All rights reserved.
             </p>
-            <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-white/40">
-              <span className="cursor-pointer hover:text-white/60 transition-colors touch-manipulation">Privacy Policy</span>
-              <span className="cursor-pointer hover:text-white/60 transition-colors touch-manipulation">Terms of Service</span>
+            <div className="flex items-center gap-3 sm:gap-4 text-[11px] sm:text-xs text-white/60">
+              <span className="cursor-pointer hover:text-violet-400 transition-colors touch-manipulation">Privacy Policy</span>
+              <span className="cursor-pointer hover:text-violet-400 transition-colors touch-manipulation">Terms of Service</span>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </footer>
