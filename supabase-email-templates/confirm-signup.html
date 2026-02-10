@@ -15,10 +15,9 @@
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:40px;">
             <tr>
               <td align="center">
-                <!-- NOTE: Kept your exact logo URL. If it is a signed URL, it may expire later. -->
-                <!-- IMPORTANT FIX: removed opacity:0 so Gmail won't render it invisible -->
-                <img src="https://cktqgcmcqikkgaazrhbs.supabase.co/storage/v1/object/sign/Logo/Astarus%20Logo%20(1).png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8wYmQ4MTI2Yy1iY2FjLTQ3ODUtYTBmMS0wYmU5MWJlMDg0MzAiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJMb2dvL0FzdGFydXMgTG9nbyAoMSkucG5nIiwiaWF0IjoxNzcwNzA0MjgyLCJleHAiOjE4MDIyNDAyODJ9.zSAj33jMpReowvNCu6UjGSfugXhzdRMA4rzkyiaRrzs"
-                     alt="Astaris AI"
+                <!-- Logo: upload your logo to Supabase Storage → public bucket → logo.png (or adjust path below) -->
+                <img src="https://cktqgcmcqikkgaazrhbs.supabase.co/storage/v1/object/public/public/logo.png"
+                     alt="Astarus AI"
                      width="220"
                      style="display:block; margin:0 auto;">
               </td>
@@ -146,7 +145,8 @@
                           <td>
                             <!-- Button container with glow -->
                             <div style="position:relative; display:inline-block; animation: buttonGlow 3s ease-in-out infinite;">
-                              <a href="{{ .ConfirmationURL }}"
+                              <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=signup"
+                                 data-cta="true"
                                  style="position:relative; display:inline-flex; align-items:center; gap:10px;
                                         padding:20px 44px;
                                         background: linear-gradient(135deg, rgba(90, 45, 184, 0.95) 0%, rgba(74, 29, 159, 0.95) 100%);
@@ -198,9 +198,9 @@
                             <br>
                             Copy and paste this link into your browser:
                             <br>
-                            <a href="{{ .ConfirmationURL }}" 
+                            <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=signup" 
                                style="color:#5a2db8; text-decoration:none; word-break:break-all; font-size:12px; margin-top:6px; display:inline-block;">
-                              {{ .ConfirmationURL }}
+                              {{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=signup
                             </a>
                           </td>
                         </tr>
@@ -251,7 +251,7 @@
                         <tr>
                           <td>
                             <p style="margin:0; font-size:12px; color:#999999;">
-                              © 2024 Astaris AI · All rights reserved
+                              © 2026 Astarus AI · All rights reserved
                             </p>
                           </td>
                         </tr>
@@ -269,11 +269,11 @@
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:32px;">
             <tr>
               <td align="center" style="font-size:13px; color:#999999; line-height:1.6;">
-                <a href="https://astarus.ai" style="color:#5a2db8; text-decoration:none; margin:0 12px; font-weight:500;">Website</a>
+                <a href="{{ .SiteURL }}" style="color:#5a2db8; text-decoration:none; margin:0 12px; font-weight:500;">Website</a>
                 <span style="color:#cccccc;">·</span>
-                <a href="https://astarus.ai/privacy" style="color:#5a2db8; text-decoration:none; margin:0 12px; font-weight:500;">Privacy Policy</a>
+                <a href="{{ .SiteURL }}/privacy" style="color:#5a2db8; text-decoration:none; margin:0 12px; font-weight:500;">Privacy Policy</a>
                 <span style="color:#cccccc;">·</span>
-                <a href="https://astarus.ai/terms" style="color:#5a2db8; text-decoration:none; margin:0 12px; font-weight:500;">Terms of Service</a>
+                <a href="{{ .SiteURL }}/terms" style="color:#5a2db8; text-decoration:none; margin:0 12px; font-weight:500;">Terms of Service</a>
               </td>
             </tr>
           </table>
@@ -450,6 +450,15 @@
         }
       }
 
+      /* Button hover effect (optional) */
+      a[data-cta="true"]:hover svg {
+        transform: translateX(4px);
+      }
+
+      a[data-cta="true"]:active {
+        transform: translateY(-1px) scale(0.98);
+      }
+
       /* Responsive */
       @media only screen and (max-width: 600px) {
         img[width="220"] {
@@ -464,7 +473,7 @@
         h1 {
           font-size: 26px !important;
         }
-        a[href="{{ .ConfirmationURL }}"] {
+        a[data-cta="true"] {
           padding: 18px 36px !important;
           font-size: 15px !important;
         }
