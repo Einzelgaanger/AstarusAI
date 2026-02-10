@@ -1,5 +1,4 @@
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Users, Rocket, Target, ArrowRight, CheckCircle2, Sparkles, Building2, Calendar } from "lucide-react";
@@ -77,8 +76,9 @@ export default function Investors() {
       <Navbar />
 
       <motion.section
-        className="relative pt-28 pb-16 px-4 overflow-hidden"
+        className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 px-3 sm:px-4 overflow-hidden safe-area-px"
         initial="hidden"
+        animate="visible"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={fadeIn()}
@@ -89,21 +89,21 @@ export default function Investors() {
             alt="Investment Background" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/50" />
+          <div className="absolute inset-0 bg-background/85" />
         </div>
         <div className="absolute top-20 right-1/3 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
 
         <div className="container relative z-10 max-w-4xl mx-auto text-center">
           <motion.div variants={fadeInUp(0.1)} className="space-y-6">
-            <div className="section-badge mx-auto">
-              <TrendingUp className="w-4 h-4 text-secondary" />
-              <span className="text-secondary">Investment Opportunity</span>
+            <div className="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider mx-auto">
+              <TrendingUp className="w-4 h-4" />
+              <span>Investment Opportunity</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold">
               <span className="text-foreground">Join the </span>
-              <span className="text-gradient-secondary">AI Revolution</span>
+              <span className="text-primary">AI Revolution</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -115,7 +115,7 @@ export default function Investors() {
       </motion.section>
 
       <motion.section
-        className="py-20 px-4 bg-white"
+        className="py-12 sm:py-20 px-3 sm:px-4 bg-white safe-area-px"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
@@ -123,7 +123,7 @@ export default function Investors() {
       >
         <div className="container">
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto"
             variants={staggerContainer(0.1, 0.1)}
           >
             {valueProps.map((prop, index) => {
@@ -142,7 +142,7 @@ export default function Investors() {
                       : "bg-gradient-to-br from-secondary/5 to-secondary/10"
                   }`}>
                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg mb-5 group-hover:scale-110 transition-transform ${
-                      isPrimary ? "bg-gradient-primary" : "bg-gradient-secondary"
+                      "bg-primary"
                     }`}>
                       <Icon className="w-7 h-7 text-white" />
                     </div>
@@ -159,7 +159,7 @@ export default function Investors() {
       </motion.section>
 
       <motion.section
-        className="py-20 px-4 bg-gradient-dark"
+        className="py-12 sm:py-20 px-3 sm:px-4 bg-gradient-dark safe-area-px"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
@@ -167,39 +167,39 @@ export default function Investors() {
       >
         <div className="container max-w-4xl mx-auto">
           <motion.div className="text-center mb-16" variants={fadeInUp(0.1)}>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Why Invest in <span className="text-gradient">Astarus</span>?
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Why Invest in <span className="text-primary">Astarus</span>?
             </h2>
           </motion.div>
 
           <motion.div className="space-y-6" variants={staggerContainer(0.1, 0.1)}>
             <motion.div variants={fadeInUp(0.1)}>
-              <Card className="p-8 bg-white/5 border-white/10">
+              <Card className="p-8 bg-card border border-border shadow-sm">
                 <h3 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-                    <Target className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                    <Target className="w-5 h-5 text-primary-foreground" />
                   </div>
                   The Problem We Solve
                 </h3>
-                <p className="text-white/70 leading-relaxed mb-4">
+                <p className="text-muted-foreground leading-relaxed mb-4">
                   Current AI models are static after training. They can't adapt to individual users 
                   or company-specific data without expensive retraining or complex external systems.
                 </p>
-                <p className="text-white/70 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   This limits personalization, increases costs, and creates barriers to enterprise adoption.
                 </p>
               </Card>
             </motion.div>
 
             <motion.div variants={fadeInUp(0.2)}>
-              <Card className="p-8 bg-white/5 border-white/10">
+              <Card className="p-8 bg-card border border-border shadow-sm">
                 <h3 className="text-2xl font-bold text-secondary mb-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-secondary flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-secondary-foreground" />
                   </div>
                   Our Solution
                 </h3>
-                <p className="text-white/70 leading-relaxed mb-6">
+                <p className="text-muted-foreground leading-relaxed mb-6">
                   Memory-augmented transformers that learn continuously in real-time, 
                   adapting to users and enterprises in seconds instead of weeks.
                 </p>
@@ -209,9 +209,9 @@ export default function Investors() {
                     { value: "<20s", label: "Update time" },
                     { value: "<1%", label: "Cost vs fine-tuning" },
                   ].map((stat, i) => (
-                    <div key={i} className="text-center p-4 rounded-xl bg-white/5">
-                      <div className="text-2xl font-bold text-gradient-secondary">{stat.value}</div>
-                      <div className="text-sm text-white/60">{stat.label}</div>
+                    <div key={i} className="text-center p-4 rounded-xl bg-muted/50 border border-border">
+                      <div className="text-2xl font-bold text-primary">{stat.value}</div>
+                      <div className="text-sm text-muted-foreground">{stat.label}</div>
                     </div>
                   ))}
                 </div>
@@ -219,10 +219,10 @@ export default function Investors() {
             </motion.div>
 
             <motion.div variants={fadeInUp(0.3)}>
-              <Card className="p-8 bg-white/5 border-white/10">
-                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-                    <Building2 className="w-5 h-5 text-white" />
+              <Card className="p-8 bg-card border border-border shadow-sm">
+                <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-primary-foreground" />
                   </div>
                   Market Opportunity
                 </h3>
@@ -238,7 +238,7 @@ export default function Investors() {
                       </h4>
                       <ul className="space-y-2">
                         {segment.items.map((item, j) => (
-                          <li key={j} className="flex items-center gap-2 text-white/70">
+                          <li key={j} className="flex items-center gap-2 text-muted-foreground">
                             <CheckCircle2 className={`w-4 h-4 ${
                               segment.color === "primary" ? "text-primary" : "text-secondary"
                             }`} />
@@ -264,12 +264,12 @@ export default function Investors() {
       >
         <div className="container max-w-4xl mx-auto">
           <motion.div className="text-center mb-16" variants={fadeInUp(0.1)}>
-            <div className="section-badge mx-auto mb-6">
+            <div className="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider mx-auto mb-6">
               <Calendar className="w-4 h-4 text-primary" />
               <span className="text-primary">Roadmap</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
-              Traction & <span className="text-gradient">Timeline</span>
+              Traction & <span className="text-primary">Timeline</span>
             </h2>
           </motion.div>
 
@@ -294,8 +294,8 @@ export default function Investors() {
                         item.color === "success" 
                           ? "bg-green-500" 
                           : item.color === "primary" 
-                            ? "bg-gradient-primary" 
-                            : "bg-gradient-secondary"
+                            ? "bg-primary" 
+                            : "bg-primary"
                       }`}>
                         <Icon className="w-8 h-8 text-white" />
                       </div>
@@ -322,7 +322,7 @@ export default function Investors() {
       </motion.section>
 
       <motion.section
-        className="py-20 px-4 bg-gradient-primary"
+        className="py-20 px-4 bg-primary"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -333,10 +333,10 @@ export default function Investors() {
             className="max-w-3xl mx-auto text-center"
             variants={fadeInUp(0.1)}
           >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
               Let's Build the Future Together
             </h2>
-            <p className="text-lg text-white/80 mb-8">
+            <p className="text-lg text-muted-foreground mb-8">
               We're seeking strategic investors who share our vision for 
               continuously learning AI systems.
             </p>
@@ -348,7 +348,7 @@ export default function Investors() {
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button className="bg-white/10 border-2 border-white/30 text-white hover:bg-white/20 font-semibold px-8 py-6 h-auto text-base">
+                <Button className="bg-muted/80 border-2 border-border text-foreground hover:bg-muted font-semibold px-8 py-6 h-auto text-base">
                   Schedule a Call
                 </Button>
               </Link>
@@ -356,8 +356,6 @@ export default function Investors() {
           </motion.div>
         </div>
       </motion.section>
-
-      <Footer />
     </div>
   );
 }

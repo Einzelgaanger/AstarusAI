@@ -1,5 +1,4 @@
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Zap, Brain, Database, TrendingUp, ArrowRight, Sparkles, Layers, Code2 } from "lucide-react";
@@ -85,8 +84,9 @@ export default function Technology() {
       <Navbar />
 
       <motion.section
-        className="relative pt-28 pb-16 px-4 overflow-hidden"
+        className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 px-3 sm:px-4 overflow-hidden safe-area-px"
         initial="hidden"
+        animate="visible"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={fadeIn()}
@@ -97,21 +97,21 @@ export default function Technology() {
             alt="Technology Background" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/50" />
+          <div className="absolute inset-0 bg-background/85" />
         </div>
         <div className="absolute top-20 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl" />
 
         <div className="container relative z-10 max-w-4xl mx-auto text-center">
           <motion.div variants={fadeInUp(0.1)} className="space-y-6">
-            <div className="section-badge mx-auto">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-primary">Deep Dive</span>
+            <div className="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider mx-auto">
+              <Sparkles className="w-4 h-4" />
+              <span>Deep Dive</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
+            <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight">
               <span className="text-foreground">The Technology Behind </span>
-              <span className="text-gradient">Astarus</span>
+              <span className="text-primary">Astarus</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -129,12 +129,12 @@ export default function Technology() {
         viewport={{ once: true, amount: 0.1 }}
         variants={fadeIn()}
       >
-        <div className="container">
-          <motion.div className="max-w-3xl mx-auto text-center mb-16" variants={fadeInUp(0.1)}>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+        <div className="container px-3 sm:px-4">
+          <motion.div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16" variants={fadeInUp(0.1)}>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
               Memory-Augmented Architecture
             </h2>
-            <p className="text-lg text-white/70">
+            <p className="text-lg text-muted-foreground">
               Our LUT (Lookup Table) augmented transformers represent a paradigm shift 
               in how AI models learn and adapt.
             </p>
@@ -148,12 +148,12 @@ export default function Technology() {
               const Icon = feature.icon;
               return (
                 <motion.div key={index} variants={fadeInUp(index * 0.1)}>
-                  <Card className="p-6 h-full bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-300 group">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                      <Icon className="w-7 h-7 text-white" />
+                  <Card className="p-6 h-full bg-card border border-border hover:border-primary/20 transition-all duration-300 group shadow-sm">
+                    <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                      <Icon className="w-7 h-7 text-primary-foreground" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
-                    <p className="text-white/60">{feature.description}</p>
+                    <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
+                    <p className="text-muted-foreground">{feature.description}</p>
                   </Card>
                 </motion.div>
               );
@@ -163,7 +163,7 @@ export default function Technology() {
       </motion.section>
 
       <motion.section
-        className="py-20 px-4 bg-white"
+        className="py-12 sm:py-20 px-3 sm:px-4 bg-white safe-area-px"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
@@ -171,12 +171,12 @@ export default function Technology() {
       >
         <div className="container">
           <motion.div className="max-w-3xl mx-auto text-center mb-16" variants={fadeInUp(0.1)}>
-            <div className="section-badge mx-auto mb-6">
+            <div className="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider mx-auto mb-6">
               <TrendingUp className="w-4 h-4 text-primary" />
               <span className="text-primary">Proven Results</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Performance <span className="text-gradient">Metrics</span>
+              Performance <span className="text-primary">Metrics</span>
             </h2>
             <p className="text-lg text-muted-foreground">
               Benchmarked across multiple model sizes and domains
@@ -201,11 +201,11 @@ export default function Technology() {
                     isPrimary ? "bg-gradient-to-br from-primary/5 to-primary/10" : "bg-gradient-to-br from-secondary/5 to-secondary/10"
                   }`}>
                     <div className={`w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg ${
-                      isPrimary ? "bg-gradient-primary" : "bg-gradient-secondary"
+                      isPrimary ? "bg-primary" : "bg-primary"
                     }`}>
                       <Icon className="w-7 h-7 text-white" />
                     </div>
-                    <div className={`text-4xl font-bold mb-2 ${isPrimary ? "text-gradient" : "text-gradient-secondary"}`}>
+                    <div className="text-4xl font-bold mb-2 text-primary">
                       {metric.value}
                     </div>
                     <p className="text-sm text-muted-foreground font-medium">{metric.label}</p>
@@ -227,7 +227,7 @@ export default function Technology() {
         <div className="container">
           <motion.div className="max-w-3xl mx-auto text-center mb-16" variants={fadeInUp(0.1)}>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
-              How It <span className="text-gradient">Works</span>
+              How It <span className="text-primary">Works</span>
             </h2>
             <p className="text-lg text-muted-foreground">
               A step-by-step guide to our memory-augmented training process
@@ -254,7 +254,7 @@ export default function Technology() {
                   }`}>
                     <div className="flex items-start gap-5">
                       <div className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 text-xl font-bold text-white ${
-                        isPrimary ? "bg-gradient-primary" : "bg-gradient-secondary"
+                        isPrimary ? "bg-primary" : "bg-primary"
                       }`}>
                         {step.step}
                       </div>
@@ -287,15 +287,15 @@ export default function Technology() {
             className="max-w-3xl mx-auto text-center"
             variants={fadeInUp(0.1)}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
               Experience It Yourself
             </h2>
-            <p className="text-lg text-white/70 mb-8">
+            <p className="text-lg text-muted-foreground mb-8">
               Try our interactive demo and see how memory-augmented transformers 
               enable real-time learning and personalization.
             </p>
             <Link to="/chat">
-              <Button className="cta-button group text-lg px-10 py-6 h-auto">
+              <Button className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-6 h-auto shadow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300">
                 <span>Try Interactive Demo</span>
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -303,8 +303,6 @@ export default function Technology() {
           </motion.div>
         </div>
       </motion.section>
-
-      <Footer />
     </div>
   );
 }

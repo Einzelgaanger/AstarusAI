@@ -1,15 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
-import { fadeInUp } from "@/lib/motion";
-import { UserPlus, Mail, Lock, User, CheckCircle, RefreshCw } from "lucide-react";
+import { Rocket, Mail, Lock, User, MailCheck, RefreshCw, Home } from "lucide-react";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -26,65 +22,73 @@ export default function SignUp() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       await signup(email, password, name);
       setEmailSent(true);
-    } catch (err: any) {
-      setError(err.message || "Failed to sign up");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to sign up");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <div className="flex-1 flex items-center justify-center px-4 py-20 bg-gradient-to-b from-black via-primary/5 to-black">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeInUp(0)}
-          className="w-full max-w-md"
-        >
-          <Card className="glass-dark glass-border border-white/20 shadow-2xl">
-            <CardHeader className="space-y-1 text-center">
-              <CardTitle className="text-3xl font-bold text-white">Create Account</CardTitle>
-              <CardDescription className="text-white/70">
-                Start building your AI spaces
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+    <div className="min-h-screen flex flex-col bg-background">
+      <div className="flex-1 flex min-h-0 flex-col lg:flex-row">
+        <div className="flex-1 flex flex-col min-h-0 px-4 sm:px-6 lg:px-8 pt-0 sm:pt-1 relative overflow-hidden bg-dots-subtle min-w-0 lg:w-1/2 lg:flex-shrink-0">
+          <div className="flex-1 flex flex-col items-center justify-start overflow-auto">
+          <div className="absolute inset-0 pointer-events-none">
+            <motion.div
+              className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-[100px]"
+              animate={{ scale: [1, 1.2, 1], opacity: [0.06, 0.12, 0.06] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-primary/8 rounded-full blur-[120px]"
+              animate={{ scale: [1.1, 1, 1.1], opacity: [0.05, 0.1, 0.05] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-sm relative z-10 -mt-16 sm:-mt-24"
+          >
+            <div className="flex items-center justify-start gap-0 mb-0 -space-x-10 sm:-space-x-14">
+              <img
+                src="/Astarus Logo.png"
+                alt=""
+                className="h-[21rem] sm:h-[24rem] md:h-[27rem] w-auto max-w-full"
+              />
+              <span className="font-brand text-5xl sm:text-6xl md:text-7xl tracking-tight text-black uppercase">
+                Astarus
+              </span>
+            </div>
+            <div className="rounded-2xl border border-border bg-white shadow-elegant pt-6 sm:pt-8 pb-4 sm:pb-5 px-6 sm:px-8 -mt-16 sm:-mt-24 md:-mt-32">
               {emailSent ? (
                 <div className="space-y-4">
-                  <div className="flex justify-center">
-                    <CheckCircle className="w-16 h-16 text-primary" />
-                  </div>
-                  <p className="text-center text-white/70 text-sm">
-                    We've sent a confirmation link to <span className="text-white font-medium">{email}</span>. Please check your email and click the link to activate your account.
-                  </p>
-                  <div className="text-center text-white/50 text-xs space-y-1">
-                    <p>Check your spam folder if you don't see it.</p>
-                    <p className="text-white/40 text-[10px] mt-2">
-                      Still not receiving emails? Make sure:
+                  <div className="text-center">
+                    <div className="inline-flex w-12 h-12 rounded-xl bg-primary/8 items-center justify-center mb-4">
+                      <MailCheck className="w-6 h-6 text-primary" />
+                    </div>
+                    <h1 className="font-display text-2xl font-bold text-foreground">Check your email</h1>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      We sent a confirmation link to <span className="font-medium text-foreground">{email}</span>. Click the link to activate your account.
                     </p>
-                    <ul className="text-white/40 text-[10px] list-disc list-inside space-y-0.5 text-left max-w-sm mx-auto">
-                      <li>Email confirmation is enabled in Supabase Auth settings</li>
-                      <li>Your email provider isn't blocking Supabase emails</li>
-                      <li>The redirect URL is whitelisted in Supabase</li>
-                    </ul>
                   </div>
-                  
+                  <p className="text-xs text-muted-foreground text-center">Check spam if you don&apos;t see it.</p>
                   {resendSuccess && (
-                    <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/50 text-green-200 text-sm text-center">
-                      Confirmation email resent! Please check your inbox.
+                    <div className="p-3 rounded-xl bg-success/10 border border-success/40 text-success text-sm text-center shadow-soft">
+                      Confirmation email resent. Check your inbox.
                     </div>
                   )}
-
                   <div className="space-y-2">
                     <Button
                       type="button"
                       variant="outline"
+                      size="sm"
                       onClick={async () => {
                         setError("");
                         setResendSuccess(false);
@@ -92,58 +96,83 @@ export default function SignUp() {
                         try {
                           await resendConfirmationEmail(email);
                           setResendSuccess(true);
-                        } catch (err: any) {
-                          setError(err.message || "Failed to resend email");
+                        } catch (err: unknown) {
+                          setError(err instanceof Error ? err.message : "Failed to resend");
                         } finally {
                           setResending(false);
                         }
                       }}
                       disabled={resending}
-                      className="w-full border-white/20 text-white hover:bg-white/10"
+                      className="w-full h-9 rounded-lg text-sm border-border/80 bg-muted/30 text-foreground hover:scale-[1.02] transition-transform duration-200"
                     >
-                      <RefreshCw className={`w-4 h-4 mr-2 ${resending ? "animate-spin" : ""}`} />
-                      {resending ? "Resending..." : "Resend Confirmation Email"}
+                      <RefreshCw className={`w-3.5 h-3.5 mr-2 ${resending ? "animate-spin" : ""}`} />
+                      {resending ? "Sending..." : "Resend confirmation email"}
                     </Button>
-                    
-                    <Link to="/login">
-                      <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+                    <Link to="/login" className="block">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-9 rounded-lg text-sm border-border/80 bg-muted/30 text-foreground hover:scale-[1.02] transition-transform duration-200"
+                      >
                         Go to Login
                       </Button>
                     </Link>
+                    <Link to="/" className="block">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full h-8 rounded-lg text-sm text-muted-foreground hover:scale-[1.02] transition-transform duration-200"
+                      >
+                        <Home className="w-3.5 h-3.5 mr-2" />
+                        Back to home
+                      </Button>
+                    </Link>
                   </div>
-
                   {error && (
-                    <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/50 text-red-200 text-sm">
+                    <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm">
                       {error}
                     </div>
                   )}
                 </div>
               ) : (
                 <>
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="text-center mb-4">
+                    <span className="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider">
+                      Create account
+                    </span>
+                    <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mt-2">
+                      Start building your AI spaces
+                    </h1>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Join Astarus and get started in seconds
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="space-y-3">
                     {error && (
-                      <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/50 text-red-200 text-sm">
+                      <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm">
                         {error}
                       </div>
                     )}
                     <div className="space-y-2">
-                      <Label htmlFor="name" className="text-white/90">Name (Optional)</Label>
+                      <Label htmlFor="name" className="text-sm font-medium text-foreground">Name</Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+                        <User className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                         <Input
                           id="name"
                           type="text"
                           placeholder="Your name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                          required
+                          className="input-premium pr-11 min-h-[48px] touch-manipulation"
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-white/90">Email</Label>
+                      <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+                        <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                         <Input
                           id="email"
                           type="email"
@@ -151,14 +180,14 @@ export default function SignUp() {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required
-                          className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                          className="input-premium pr-11 min-h-[48px] touch-manipulation"
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="password" className="text-white/90">Password</Label>
+                      <Label htmlFor="password" className="text-sm font-medium text-foreground">Password</Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+                        <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                         <Input
                           id="password"
                           type="password"
@@ -166,39 +195,65 @@ export default function SignUp() {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
-                          className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                          className="input-premium pr-11 min-h-[48px] touch-manipulation"
                         />
                       </div>
                     </div>
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-gradient-primary hover:opacity-90 text-white font-semibold"
+                      className="w-full min-h-[52px] rounded-xl bg-primary/90 hover:bg-primary text-primary-foreground font-semibold text-base shadow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300 touch-manipulation border border-primary/60 ring-1 ring-primary/40"
                     >
-                      {loading ? (
-                        "Creating account..."
-                      ) : (
+                      {loading ? "Creating account..." : (
                         <>
-                          <UserPlus className="w-4 h-4 mr-2" />
+                          <Rocket className="w-4 h-4 mr-2" />
                           Sign Up
                         </>
                       )}
                     </Button>
                   </form>
-                  <div className="mt-6 text-center text-sm text-white/70">
+                  <p className="mt-3 text-center text-sm text-muted-foreground">
                     Already have an account?{" "}
-                    <Link to="/login" className="text-primary hover:underline font-medium">
+                    <Link to="/login" className="text-primary font-medium hover:underline">
                       Sign in
+                    </Link>
+                  </p>
+                  <div className="mt-4 pt-4 border-t border-border/60 text-center">
+                    <Link
+                      to="/"
+                      className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      <Home className="w-4 h-4" />
+                      Back to home
                     </Link>
                   </div>
                 </>
               )}
-            </CardContent>
-          </Card>
-        </motion.div>
+            </div>
+          </motion.div>
+          </div>
+          <footer className="relative z-10 mt-auto w-full max-w-sm py-6 text-center text-xs text-muted-foreground self-center">
+            <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0">
+              <span>© {new Date().getFullYear()} Astarus</span>
+              <span aria-hidden>·</span>
+              <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+              <span aria-hidden>·</span>
+              <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            </p>
+          </footer>
+        </div>
+
+        <div className="hidden lg:flex lg:w-1/2 flex-shrink-0 relative min-h-[400px] bg-black/20 overflow-hidden">
+          <img
+            src="/fogotpassword.jpg"
+            alt="Sign up"
+            className="absolute inset-0 w-full h-full object-cover object-center img-panel"
+            loading="eager"
+            fetchpriority="high"
+          />
+          <div className="absolute inset-0 bg-black/25" />
+        </div>
       </div>
-      <Footer />
     </div>
   );
 }
-

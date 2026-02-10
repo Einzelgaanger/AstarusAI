@@ -1,4 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
+// Re-export single Supabase client to avoid multiple GoTrueClient instances
+export { supabase } from '@/integrations/supabase/client';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -17,13 +18,6 @@ if (!isSupabaseConfigured) {
     `To enable full functionality, set these in your .env file or Lovable environment variables.`
   );
 }
-
-// Create Supabase client with fallback values if not configured
-// This allows the app to load even without Supabase credentials
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key'
-);
 
 // Database types
 export interface Database {

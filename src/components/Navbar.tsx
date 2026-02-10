@@ -46,16 +46,16 @@ export const Navbar = () => {
           className={`flex items-center justify-between rounded-2xl px-3 sm:px-6 py-1.5 sm:py-1 transition-all duration-300 overflow-visible ${
             scrolled
               ? "glass-dark glass-border shadow-2xl"
-              : "bg-black/70 backdrop-blur-sm border border-white/10"
+              : "bg-white/90 backdrop-blur-sm border border-border"
           }`}
         >
-          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity touch-manipulation">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-90 transition-opacity touch-manipulation group">
             <img
-              src="/Actual Logo.png"
+              src="/Astarus Logo with name.png"
               alt="Astarus Logo"
-              className="h-8 sm:h-10 md:h-12 lg:h-16 w-auto rounded-lg -my-1"
+              className="h-9 sm:h-11 md:h-12 lg:h-14 w-auto rounded-xl ring-2 ring-primary/10 shadow-soft group-hover:ring-primary/20 transition-all duration-300"
             />
-            <span className="font-display text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white tracking-tight">
+            <span className="font-display text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground tracking-tight">
               Astarus
             </span>
           </Link>
@@ -65,17 +65,17 @@ export const Navbar = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-xl ${
+                className={`relative px-4 py-2.5 text-sm font-medium transition-colors rounded-xl link-underline ${
                   location.pathname === link.to
-                    ? "text-white"
-                    : "text-white/70 hover:text-white hover:bg-white/5"
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 }`}
               >
                 {link.label}
                 {location.pathname === link.to && (
                   <motion.div
                     layoutId="navbar-indicator"
-                    className="absolute inset-0 bg-white/10 rounded-xl"
+                    className="absolute inset-0 bg-primary/10 rounded-xl -z-10"
                     transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
                   />
                 )}
@@ -89,7 +89,7 @@ export const Navbar = () => {
                 <Link to="/spaces">
                   <Button
                     variant="ghost"
-                    className="text-white/80 hover:text-white hover:bg-white/10 font-medium"
+                    className="text-foreground hover:bg-muted/60 font-medium"
                   >
                     My Spaces
                   </Button>
@@ -97,7 +97,7 @@ export const Navbar = () => {
                 <Button
                   variant="ghost"
                   onClick={logout}
-                  className="text-white/80 hover:text-white hover:bg-white/10 font-medium"
+                  className="text-foreground hover:bg-muted/60 font-medium"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
@@ -108,13 +108,13 @@ export const Navbar = () => {
                 <Link to="/demo">
                   <Button
                     variant="ghost"
-                    className="text-white/80 hover:text-white hover:bg-white/10 font-medium"
+                    className="text-foreground hover:bg-muted/60 font-medium"
                   >
                     Try Demo
                   </Button>
                 </Link>
                 <Link to="/signup">
-                  <Button className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-lg shadow-primary/30 px-6">
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-md px-6 rounded-xl transition-colors">
                     <Rocket className="w-4 h-4 mr-2" />
                     Get Started
                   </Button>
@@ -125,7 +125,7 @@ export const Navbar = () => {
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2.5 rounded-xl hover:bg-white/10 active:bg-white/20 text-white transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center -mr-1"
+            className="lg:hidden p-2.5 rounded-xl hover:bg-muted/60 active:bg-muted text-foreground transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center -mr-1"
             aria-label="Toggle menu"
             aria-expanded={isOpen}
           >
@@ -142,7 +142,7 @@ export const Navbar = () => {
               transition={{ duration: 0.3 }}
               className="lg:hidden mt-2 overflow-hidden"
             >
-              <div className="glass-dark glass-border rounded-2xl p-3 sm:p-4 space-y-1.5 shadow-2xl">
+              <div className="glass-dark glass-border rounded-2xl p-3 sm:p-4 space-y-1.5 shadow-2xl bg-white">
                 {navLinks.map((link, index) => (
                   <motion.div
                     key={link.to}
@@ -154,8 +154,8 @@ export const Navbar = () => {
                       to={link.to}
                       className={`flex items-center justify-between py-3.5 sm:py-3 px-4 rounded-xl font-medium transition-colors touch-manipulation min-h-[48px] ${
                         location.pathname === link.to
-                          ? "bg-white/10 text-white"
-                          : "text-white/70 active:text-white active:bg-white/5"
+                          ? "bg-primary/10 text-foreground"
+                          : "text-muted-foreground active:text-foreground active:bg-muted/60"
                       }`}
                     >
                       {link.label}
@@ -164,13 +164,13 @@ export const Navbar = () => {
                   </motion.div>
                 ))}
 
-                <div className="pt-3 mt-3 border-t border-white/10 space-y-2.5">
+                <div className="pt-3 mt-3 border-t border-border space-y-2.5">
                   {isAuthenticated ? (
                     <>
                       <Link to="/spaces" className="block">
                         <Button
                           variant="outline"
-                          className="w-full border-white/20 text-white hover:bg-white/10 active:bg-white/15 font-medium min-h-[48px] touch-manipulation"
+                          className="w-full border-border text-foreground hover:bg-muted/60 font-medium min-h-[48px] touch-manipulation"
                         >
                           My Spaces
                         </Button>
@@ -178,7 +178,7 @@ export const Navbar = () => {
                       <Button
                         variant="outline"
                         onClick={logout}
-                        className="w-full border-white/20 text-white hover:bg-white/10 active:bg-white/15 font-medium min-h-[48px] touch-manipulation"
+                        className="w-full border-border text-foreground hover:bg-muted/60 font-medium min-h-[48px] touch-manipulation"
                       >
                         <LogOut className="w-4 h-4 mr-2" />
                         Logout
@@ -189,13 +189,13 @@ export const Navbar = () => {
                       <Link to="/demo" className="block">
                         <Button
                           variant="outline"
-                          className="w-full border-white/20 text-white hover:bg-white/10 active:bg-white/15 font-medium min-h-[48px] touch-manipulation"
+                          className="w-full border-border text-foreground hover:bg-muted/60 font-medium min-h-[48px] touch-manipulation"
                         >
                           Try Demo
                         </Button>
                       </Link>
                       <Link to="/signup" className="block">
-                        <Button className="w-full bg-gradient-primary hover:opacity-90 active:opacity-95 text-white font-semibold shadow-lg py-5 sm:py-6 min-h-[48px] touch-manipulation">
+                        <Button className="w-full bg-primary hover:bg-primary/90 active:opacity-95 text-primary-foreground font-semibold shadow-md py-5 sm:py-6 min-h-[48px] rounded-xl touch-manipulation transition-colors">
                           <Rocket className="w-4 h-4 mr-2" />
                           Get Started
                         </Button>

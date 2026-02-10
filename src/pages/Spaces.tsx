@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -215,7 +214,7 @@ export default function Spaces() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white text-sm sm:text-base">Loading...</div>
+        <div className="text-foreground text-sm sm:text-base">Loading...</div>
       </div>
     );
   }
@@ -223,7 +222,7 @@ export default function Spaces() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-1 px-3 sm:px-4 pt-24 sm:pt-28 md:pt-32 pb-10 sm:pb-14 md:pb-20 bg-gradient-to-b from-black via-primary/5 to-black">
+      <div className="flex-1 px-3 sm:px-4 pt-24 sm:pt-28 md:pt-32 pb-10 sm:pb-14 md:pb-20 bg-gradient-to-b from-background via-muted/20 to-background">
         <div className="container mx-auto max-w-6xl">
           <motion.div
             initial="hidden"
@@ -233,11 +232,11 @@ export default function Spaces() {
           >
             <motion.div variants={fadeInUp(0)} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Your Spaces</h1>
-                <p className="text-sm sm:text-base text-white/70">Manage your AI brains and knowledge bases</p>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">Your Spaces</h1>
+                <p className="text-sm sm:text-base text-muted-foreground">Manage your AI brains and knowledge bases</p>
               </div>
               <Button
-                className="min-h-[44px] bg-gradient-primary hover:opacity-90 text-white touch-manipulation"
+                className="min-h-[44px] bg-primary hover:bg-primary/90 text-white touch-manipulation"
                 onClick={() => navigate("/spaces/new")}
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -251,7 +250,7 @@ export default function Spaces() {
               <motion.div variants={fadeInUp(0.05)} className="space-y-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Mail className="w-5 h-5 text-primary" />
-                  <h2 className="text-2xl font-bold text-white">Pending Invitations</h2>
+                  <h2 className="text-2xl font-bold text-foreground">Pending Invitations</h2>
                   <span className="px-2 py-1 rounded-full bg-primary/20 text-primary text-sm font-medium">
                     {pendingInvitations.length}
                   </span>
@@ -262,10 +261,10 @@ export default function Spaces() {
                       key={invitation.id}
                       variants={fadeInUp(0.1 + index * 0.05)}
                     >
-                      <Card className="glass-dark glass-border border-primary/50 hover:border-primary transition-all">
+                      <Card className="bg-card border border-primary/50 hover:border-primary transition-all shadow-sm">
                         <CardHeader>
                           <div className="flex items-start justify-between mb-2">
-                            <CardTitle className="text-white">{invitation.space.name}</CardTitle>
+                            <CardTitle className="text-foreground">{invitation.space.name}</CardTitle>
                             {invitation.space.icon ? (
                               <span className="text-2xl">{invitation.space.icon}</span>
                             ) : invitation.space.type === "team" ? (
@@ -274,20 +273,20 @@ export default function Spaces() {
                               <User className="w-5 h-5 text-secondary" />
                             )}
                           </div>
-                          <CardDescription className="text-white/70 capitalize">
+                          <CardDescription className="text-muted-foreground capitalize">
                             {invitation.space.type} Space • Invitation
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
                           {invitation.space.description && (
-                            <p className="text-sm text-white/60 mb-4">{invitation.space.description}</p>
+                            <p className="text-sm text-muted-foreground mb-4">{invitation.space.description}</p>
                           )}
                           <div className="space-y-2">
                             <div className="flex gap-2">
                               <Button
                                 onClick={() => handleAcceptInvitation(invitation.space_id)}
                                 disabled={processingInvitation === invitation.space_id}
-                                className="flex-1 min-h-[44px] bg-gradient-primary hover:opacity-90 text-white touch-manipulation"
+                                className="flex-1 min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation"
                               >
                                 <Check className="w-4 h-4 mr-2" />
                                 {processingInvitation === invitation.space_id ? "Accepting..." : "Accept"}
@@ -313,21 +312,21 @@ export default function Spaces() {
             {/* Your Spaces Section */}
             <motion.div variants={fadeInUp(0.1)}>
               <div className="flex items-center gap-2 mb-4">
-                <Brain className="w-5 h-5 text-white" />
-                <h2 className="text-2xl font-bold text-white">Your Spaces</h2>
+                <Brain className="w-5 h-5 text-foreground" />
+                <h2 className="text-2xl font-bold text-foreground">Your Spaces</h2>
               </div>
             </motion.div>
 
             {spaces.length === 0 ? (
               <motion.div variants={fadeInUp(0.1)}>
-                <Card className="glass-dark glass-border border-white/20">
+                <Card className="bg-card border border-border shadow-sm">
                   <CardContent className="py-12 text-center">
-                    <Brain className="w-16 h-16 mx-auto mb-4 text-white/30" />
-                    <h3 className="text-xl font-semibold text-white mb-2">No spaces yet</h3>
-                    <p className="text-white/70 mb-6">Create your first space to get started</p>
+                    <Brain className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                    <h3 className="text-xl font-semibold text-foreground mb-2">No spaces yet</h3>
+                    <p className="text-muted-foreground mb-6">Create your first space to get started</p>
                     <Button
                       onClick={() => navigate("/spaces/new")}
-                      className="min-h-[44px] bg-gradient-primary hover:opacity-90 text-white touch-manipulation"
+                      className="min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Create Your First Space
@@ -345,7 +344,7 @@ export default function Spaces() {
                     key={space.id}
                     variants={fadeInUp(0.1 + index * 0.05)}
                   >
-                    <Card className="glass-dark glass-border border-white/20 hover:border-primary/50 transition-all cursor-pointer h-full">
+                    <Card className="bg-card border border-border hover:border-primary/50 transition-all cursor-pointer h-full shadow-sm">
                       <CardHeader>
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1 min-w-0">
@@ -362,7 +361,7 @@ export default function Spaces() {
                                       handleCancelEditSpace();
                                     }
                                   }}
-                                  className="bg-white/5 border-white/20 text-white flex-1 min-w-0"
+                                  className="bg-background border-border text-foreground flex-1 min-w-0"
                                   autoFocus
                                   disabled={updatingSpace}
                                 />
@@ -370,7 +369,7 @@ export default function Spaces() {
                                   size="sm"
                                   onClick={() => handleSaveSpaceName(space.id)}
                                   disabled={updatingSpace || !editSpaceName.trim()}
-                                  className="bg-gradient-primary hover:opacity-90 text-white h-8 px-2"
+                                  className="bg-primary hover:bg-primary/90 text-primary-foreground h-8 px-2"
                                 >
                                   <Save className="w-3 h-3" />
                                 </Button>
@@ -379,13 +378,13 @@ export default function Spaces() {
                                   variant="ghost"
                                   onClick={handleCancelEditSpace}
                                   disabled={updatingSpace}
-                                  className="text-white/70 hover:text-white h-8 px-2"
+                                  className="text-muted-foreground hover:text-foreground h-8 px-2"
                                 >
                                   <X className="w-3 h-3" />
                                 </Button>
                               </div>
                             ) : (
-                              <CardTitle className="text-white flex items-center gap-2">
+                              <CardTitle className="text-foreground flex items-center gap-2">
                                 {space.icon && <span className="text-2xl">{space.icon}</span>}
                                 <span className="truncate">{space.name}</span>
                                 {space.creator_id === user?.id && (
@@ -396,7 +395,7 @@ export default function Spaces() {
                                       e.stopPropagation();
                                       handleStartEditSpace(space);
                                     }}
-                                    className="h-6 w-6 p-0 text-white/50 hover:text-white hover:bg-white/10 ml-1"
+                                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/60 ml-1"
                                   >
                                     <Edit2 className="w-3 h-3" />
                                   </Button>
@@ -412,18 +411,18 @@ export default function Spaces() {
                             )
                           )}
                         </div>
-                        <CardDescription className="text-white/70 capitalize">
+                        <CardDescription className="text-muted-foreground capitalize">
                           {space.type} Space
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
                         {space.description && (
-                          <p className="text-sm text-white/60 mb-4">{space.description}</p>
+                          <p className="text-sm text-muted-foreground mb-4">{space.description}</p>
                         )}
                         <div className="space-y-2">
                           <Button
                             onClick={() => navigate(`/spaces/${space.lut_name}`)}
-                            className="w-full min-h-[44px] bg-gradient-primary hover:opacity-90 text-white touch-manipulation"
+                            className="w-full min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation"
                           >
                             Open
                             <ArrowRight className="w-4 h-4 ml-2" />
@@ -436,7 +435,7 @@ export default function Spaces() {
                                   loadSpaceMembers(space.id);
                                 }}
                                 variant="outline"
-                                className="w-full min-h-[44px] border-white/20 text-white bg-white/10 opacity-90 hover:bg-white/10 hover:text-white hover:scale-105 transition-transform touch-manipulation"
+                                className="w-full min-h-[44px] border-border text-foreground bg-muted/60 hover:bg-muted hover:text-foreground hover:scale-105 transition-transform touch-manipulation"
                               >
                                 <Users className="w-4 h-4 mr-2" />
                                 Members
@@ -464,16 +463,16 @@ export default function Spaces() {
 
       {/* Members Dialog */}
       <Dialog open={membersOpen !== null} onOpenChange={(open) => !open && setMembersOpen(null)}>
-        <DialogContent className="glass-dark glass-border border-white/20 text-white bg-black/90 !left-1/2 !top-1/2 !-translate-x-1/2 !-translate-y-1/2 max-w-[95vw] sm:max-w-2xl mx-4">
+        <DialogContent className="bg-card border border-border !left-1/2 !top-1/2 !-translate-x-1/2 !-translate-y-1/2 max-w-[95vw] sm:max-w-2xl mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white">Space Members</DialogTitle>
-            <DialogDescription className="text-white/70">
+            <DialogTitle className="text-foreground">Space Members</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Manage members and invitations for this space
             </DialogDescription>
           </DialogHeader>
           {membersOpen && (
-            <div className="space-y-4">
-              <div className="flex gap-2">
+            <div className="space-y-4 min-w-0">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   type="email"
                   placeholder="Enter email to invite"
@@ -484,30 +483,30 @@ export default function Spaces() {
                       handleInvite(membersOpen);
                     }
                   }}
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-background border-border text-foreground min-h-[44px] touch-manipulation flex-1 min-w-0"
                 />
                 <Button
                   onClick={() => handleInvite(membersOpen)}
                   disabled={inviting || !inviteEmail.trim()}
-                  className="bg-gradient-primary hover:opacity-90 text-white"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground min-h-[44px] touch-manipulation flex-shrink-0"
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   {inviting ? "Inviting..." : "Invite"}
                 </Button>
               </div>
-              <div className="space-y-2 min-h-0">
+              <div className="space-y-2 min-h-0 overflow-y-auto max-h-[50vh] pr-1">
                 {spaceMembers[membersOpen]?.map((member) => (
                   <div
                     key={member.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10"
+                    className="flex items-center justify-between gap-2 p-3 rounded-lg bg-muted/50 border border-border min-w-0"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4 text-white" />
+                        <User className="w-4 h-4 text-primary-foreground" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-white font-medium truncate">{member.email}</p>
-                        <p className="text-xs text-white/60 capitalize">
+                        <p className="text-foreground font-medium truncate">{member.email}</p>
+                        <p className="text-xs text-muted-foreground capitalize">
                           {member.role} • {member.status}
                         </p>
                       </div>
@@ -526,15 +525,13 @@ export default function Spaces() {
                   </div>
                 ))}
                 {(!spaceMembers[membersOpen] || spaceMembers[membersOpen].length === 0) && (
-                  <p className="text-center text-white/60 py-4">No members yet</p>
+                  <p className="text-center text-muted-foreground py-4">No members yet</p>
                 )}
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
-
-      <Footer />
     </div>
   );
 }

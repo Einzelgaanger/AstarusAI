@@ -1,5 +1,4 @@
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -92,8 +91,9 @@ export default function Contact() {
       <Navbar />
 
       <motion.section
-        className="relative pt-28 pb-16 px-4 overflow-hidden"
+        className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 px-3 sm:px-4 overflow-hidden safe-area-px"
         initial="hidden"
+        animate="visible"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={fadeIn()}
@@ -104,21 +104,21 @@ export default function Contact() {
             alt="Contact Background" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/50" />
+          <div className="absolute inset-0 bg-background/85" />
         </div>
         <div className="absolute top-20 left-1/3 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-secondary/10 rounded-full blur-3xl" />
 
         <div className="container relative z-10 max-w-4xl mx-auto text-center">
           <motion.div variants={fadeInUp(0.1)} className="space-y-6">
-            <div className="section-badge mx-auto">
-              <MessageCircle className="w-4 h-4 text-primary" />
-              <span className="text-primary">Get in Touch</span>
+            <div className="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider mx-auto">
+              <MessageCircle className="w-4 h-4" />
+              <span>Get in Touch</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
-              <span className="text-foreground">Let's Start a </span>
-              <span className="text-gradient">Conversation</span>
+            <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight">
+              <span className="text-foreground">Let&apos;s Start a </span>
+              <span className="text-primary">Conversation</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -130,14 +130,14 @@ export default function Contact() {
       </motion.section>
 
       <motion.section
-        className="py-16 px-4"
+        className="py-12 sm:py-16 px-3 sm:px-4 safe-area-px"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
         variants={fadeIn()}
       >
         <div className="container">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-8">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             <motion.div
               className="space-y-6"
               variants={staggerContainer(0.1, 0.1)}
@@ -153,7 +153,7 @@ export default function Contact() {
                         : "bg-gradient-to-br from-secondary/5 to-secondary/10"
                     }`}>
                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg mb-5 group-hover:scale-110 transition-transform ${
-                        isPrimary ? "bg-gradient-primary" : "bg-gradient-secondary"
+                        "bg-primary"
                       }`}>
                         <Icon className="w-7 h-7 text-white" />
                       </div>
@@ -175,7 +175,7 @@ export default function Contact() {
               <motion.div variants={fadeInUp(0.3)}>
                 <Card className="p-6 border-0 shadow-lg bg-gradient-to-br from-muted/50 to-muted">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
                       <Sparkles className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="font-bold text-foreground">Quick Response</h3>
@@ -192,24 +192,24 @@ export default function Contact() {
               className="lg:col-span-2"
               variants={fadeInUp(0.2)}
             >
-              <Card className="p-8 border-0 shadow-xl">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center">
+              <Card className="p-4 sm:p-6 md:p-8 border-0 shadow-xl">
+                <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                  <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
                     <Send className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-foreground">Send a Message</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-foreground">Send a Message</h2>
                     <p className="text-muted-foreground text-sm">We'll get back to you shortly</p>
                   </div>
                 </div>
 
-                <form className="space-y-6" onSubmit={handleSubmit}>
-                  <div className="grid md:grid-cols-2 gap-4">
+                <form className="space-y-5 sm:space-y-6" onSubmit={handleSubmit}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-foreground">First Name</label>
                       <Input 
                         placeholder="John" 
-                        className="h-12 border-2 focus:border-primary/50"
+                        className="input-premium min-h-[48px] touch-manipulation"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         required
@@ -219,7 +219,7 @@ export default function Contact() {
                       <label className="text-sm font-medium text-foreground">Last Name</label>
                       <Input 
                         placeholder="Doe" 
-                        className="h-12 border-2 focus:border-primary/50"
+                        className="input-premium min-h-[48px] touch-manipulation"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         required
@@ -232,7 +232,7 @@ export default function Contact() {
                     <Input 
                       type="email" 
                       placeholder="john@example.com" 
-                      className="h-12 border-2 focus:border-primary/50"
+                      className="input-premium min-h-[48px] touch-manipulation"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -243,7 +243,7 @@ export default function Contact() {
                     <label className="text-sm font-medium text-foreground">Company (Optional)</label>
                     <Input 
                       placeholder="Your company name" 
-                      className="h-12 border-2 focus:border-primary/50"
+                      className="input-premium min-h-[48px] touch-manipulation"
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
                     />
@@ -252,7 +252,7 @@ export default function Contact() {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">I'm interested in...</label>
                     <select 
-                      className="w-full h-12 px-4 border-2 border-input rounded-lg bg-background focus:outline-none focus:border-primary/50 transition-colors"
+                      className="w-full min-h-[44px] h-12 px-4 border-2 border-input rounded-lg bg-background focus:outline-none focus:border-primary/50 transition-colors touch-manipulation"
                       value={interest}
                       onChange={(e) => setInterest(e.target.value)}
                       required
@@ -268,7 +268,7 @@ export default function Contact() {
                     <Textarea
                       placeholder="Tell us about your interest in Astarus..."
                       rows={5}
-                      className="border-2 focus:border-primary/50 resize-none"
+                      className="input-premium resize-none min-h-[120px]"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       required
@@ -277,7 +277,7 @@ export default function Contact() {
 
                   <Button 
                     type="submit" 
-                    className="w-full cta-button h-14 text-base"
+                    className="w-full min-h-[52px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300 touch-manipulation"
                   >
                     <Send className="w-5 h-5 mr-2" />
                     Send Message
@@ -290,7 +290,7 @@ export default function Contact() {
       </motion.section>
 
       <motion.section
-        className="py-20 px-4 bg-muted/30"
+        className="py-12 sm:py-20 px-3 sm:px-4 bg-muted/30 safe-area-px"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
@@ -298,12 +298,12 @@ export default function Contact() {
       >
         <div className="container max-w-3xl mx-auto">
           <motion.div className="text-center mb-12" variants={fadeInUp(0.1)}>
-            <div className="section-badge mx-auto mb-6">
+            <div className="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider mx-auto mb-6">
               <HelpCircle className="w-4 h-4 text-secondary" />
               <span className="text-secondary">FAQ</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              Frequently Asked <span className="text-gradient-secondary">Questions</span>
+              Frequently Asked <span className="text-primary">Questions</span>
             </h2>
           </motion.div>
 
@@ -320,9 +320,9 @@ export default function Contact() {
                 >
                   <button
                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                    className="w-full p-6 text-left flex items-center justify-between gap-4"
+                    className="w-full p-4 sm:p-6 text-left flex items-center justify-between gap-4 min-h-[48px] touch-manipulation"
                   >
-                    <h3 className="font-bold text-foreground">{faq.question}</h3>
+                    <h3 className="font-bold text-foreground text-sm sm:text-base">{faq.question}</h3>
                     <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-300 flex-shrink-0 ${
                       openFaq === index ? "rotate-180" : ""
                     }`} />
@@ -350,8 +350,6 @@ export default function Contact() {
           </motion.div>
         </div>
       </motion.section>
-
-      <Footer />
     </div>
   );
 }

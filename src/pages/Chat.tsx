@@ -1,7 +1,6 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -566,11 +565,11 @@ export default function LutDemo() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
       <motion.section
-        className="relative pt-28 pb-8 px-4 overflow-hidden"
+        className="relative pt-24 sm:pt-28 pb-6 sm:pb-8 px-3 sm:px-4 overflow-hidden safe-area-px"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -589,12 +588,12 @@ export default function LutDemo() {
 
         <div className="container relative z-10 max-w-4xl mx-auto text-center">
             <motion.div variants={fadeInUp(0.1)} className="space-y-6">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold px-1">
               <span className="text-foreground">Experience </span>
-              <span className="text-gradient">Memory-Augmented AI</span>
+              <span className="text-primary">Memory-Augmented AI</span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-black max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-black max-w-2xl mx-auto">
               Experience our LUT-enhanced Mistral model. This AI has been trained
               with Astarus-specific knowledge that it can recall instantly,
               without the need for expensive fine-tuning or complex retraining processes.
@@ -637,7 +636,7 @@ export default function LutDemo() {
       </motion.section>
 
       <motion.section
-        className="py-6 sm:py-8 px-3 sm:px-4"
+        className="py-6 sm:py-8 px-3 sm:px-4 safe-area-px"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
@@ -650,7 +649,7 @@ export default function LutDemo() {
                 <div className="p-3 sm:p-4 md:p-6 border-b bg-gradient-to-r from-primary/5 via-transparent to-secondary/5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-lg">
+                      <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg">
                         <MessageCircle className="w-5 h-5 text-white" />
                       </div>
                       <div>
@@ -722,14 +721,14 @@ export default function LutDemo() {
                             }`}
                           >
                             <div
-                              className={`flex items-start gap-3 max-w-[85%] ${
+                              className={`flex items-start gap-2 sm:gap-3 max-w-[92%] sm:max-w-[85%] ${
                                 m.role === "user" ? "flex-row-reverse" : ""
                               }`}
                             >
                               <div
                                 className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
                                   m.role === "user"
-                                    ? "bg-gradient-primary text-white"
+                                    ? "bg-primary text-white"
                                     : "bg-muted text-muted-foreground"
                                 }`}
                               >
@@ -740,7 +739,7 @@ export default function LutDemo() {
                                 )}
                               </div>
                               <div
-                                className={`rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${
+                                className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm whitespace-pre-wrap break-words ${
                                   m.role === "user"
                                     ? "chat-bubble-user text-white"
                                     : "chat-bubble-ai text-foreground"
@@ -812,10 +811,10 @@ export default function LutDemo() {
                       {status}
                     </motion.div>
                   )}
-                  <div className="flex gap-3">
-                    <div className="flex-1 relative">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <div className="flex-1 relative min-w-0">
                       <textarea
-                        className="w-full resize-none rounded-xl border-2 border-muted bg-background px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
+                        className="w-full resize-none rounded-xl border-2 border-muted bg-background px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all min-h-[44px] touch-manipulation"
                         rows={2}
                         placeholder="Ask something about Astarus AI..."
                         value={input}
@@ -831,7 +830,7 @@ export default function LutDemo() {
                     <Button
                       onClick={() => handleSend()}
                       disabled={isGenerating || !input.trim()}
-                      className="h-auto px-6 bg-gradient-primary hover:opacity-90 text-white shadow-lg shadow-primary/25"
+                      className="h-auto min-h-[44px] px-4 sm:px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-soft touch-manipulation flex-shrink-0"
                     >
                       {isGenerating ? (
                         <RefreshCw className="w-5 h-5 animate-spin" />
@@ -852,7 +851,7 @@ export default function LutDemo() {
                 <Card className="p-5 border-0 shadow-lg bg-card/80 backdrop-blur-sm">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                         <Settings2 className="w-4 h-4 text-white" />
                       </div>
                       <h3 className="font-bold text-foreground">LUT Controls</h3>
@@ -1196,8 +1195,6 @@ export default function LutDemo() {
           </div>
         </div>
       </motion.section>
-
-      <Footer />
     </div>
   );
 }

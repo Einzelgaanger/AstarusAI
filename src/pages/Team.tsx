@@ -1,5 +1,4 @@
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Linkedin, Mail, Users, ArrowRight, Sparkles } from "lucide-react";
@@ -34,8 +33,9 @@ export default function Team() {
       <Navbar />
 
       <motion.section
-        className="relative pt-28 pb-16 px-4 overflow-hidden"
+        className="relative pt-24 sm:pt-28 pb-12 sm:pb-16 px-3 sm:px-4 overflow-hidden safe-area-px"
         initial="hidden"
+        animate="visible"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={fadeIn()}
@@ -46,21 +46,21 @@ export default function Team() {
             alt="Team Background" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/50" />
+          <div className="absolute inset-0 bg-background/85" />
         </div>
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/10 rounded-full blur-3xl" />
 
         <div className="container relative z-10 max-w-4xl mx-auto text-center">
           <motion.div variants={fadeInUp(0.1)} className="space-y-6">
-            <div className="section-badge mx-auto">
-              <Users className="w-4 h-4 text-primary" />
-              <span className="text-primary">Our Team</span>
+            <div className="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider mx-auto">
+              <Users className="w-4 h-4" />
+              <span>Our Team</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
+            <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight">
               <span className="text-foreground">Meet the </span>
-              <span className="text-gradient">Pioneers</span>
+              <span className="text-primary">Pioneers</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -72,8 +72,9 @@ export default function Team() {
       </motion.section>
 
       <motion.section
-        className="py-20 px-4"
+        className="py-12 sm:py-20 px-3 sm:px-4 safe-area-px"
         initial="hidden"
+        animate="visible"
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
         variants={fadeIn()}
@@ -92,11 +93,7 @@ export default function Team() {
                   whileHover={{ y: -8 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className={`p-8 border-0 shadow-lg hover:shadow-2xl transition-all duration-500 h-full group ${
-                    isPrimary 
-                      ? "bg-gradient-to-br from-primary/5 to-primary/10" 
-                      : "bg-gradient-to-br from-secondary/5 to-secondary/10"
-                  }`}>
+                  <Card className="p-5 sm:p-8 border border-border shadow-soft hover:shadow-elegant transition-all duration-500 h-full group bg-card">
                     <div className="text-center space-y-5">
                       <div className="relative inline-block">
                         {member.image ? (
@@ -111,13 +108,13 @@ export default function Team() {
                           </div>
                         ) : (
                           <div className={`w-32 h-32 rounded-2xl mx-auto flex items-center justify-center text-4xl font-bold text-white shadow-xl group-hover:scale-105 transition-transform duration-300 ${
-                            isPrimary ? "bg-gradient-primary" : "bg-gradient-secondary"
+                            "bg-primary"
                           }`}>
                             {member.initials}
                           </div>
                         )}
                         <div className={`absolute -bottom-2 -right-2 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
-                          isPrimary ? "bg-gradient-primary" : "bg-gradient-secondary"
+                          "bg-primary"
                         }`}>
                           <Sparkles className="w-5 h-5 text-white" />
                         </div>
@@ -139,7 +136,7 @@ export default function Team() {
                           href={member.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                          className={`w-10 h-10 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center transition-all duration-300 touch-manipulation ${
                             isPrimary 
                               ? "bg-primary/10 text-primary hover:bg-primary hover:text-white" 
                               : "bg-secondary/10 text-secondary hover:bg-secondary hover:text-white"
@@ -149,7 +146,7 @@ export default function Team() {
                         </a>
                         <a
                           href={`mailto:${member.email}`}
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                          className={`w-10 h-10 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center transition-all duration-300 touch-manipulation ${
                             isPrimary 
                               ? "bg-primary/10 text-primary hover:bg-primary hover:text-white" 
                               : "bg-secondary/10 text-secondary hover:bg-secondary hover:text-white"
@@ -179,28 +176,28 @@ export default function Team() {
             className="max-w-3xl mx-auto text-center"
             variants={fadeInUp(0.1)}
           >
-            <div className="w-20 h-20 rounded-2xl bg-gradient-primary mx-auto mb-8 flex items-center justify-center shadow-lg glow-primary">
+            <div className="w-20 h-20 rounded-2xl bg-primary mx-auto mb-8 flex items-center justify-center shadow-lg glow-primary">
               <Users className="w-10 h-10 text-white" />
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
               Join Our Team
             </h2>
             
-            <p className="text-lg text-white/70 mb-8 max-w-xl mx-auto">
+            <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
               We're always looking for talented individuals who are passionate 
               about pushing the boundaries of AI research and development.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/contact">
-                <Button className="cta-button group">
+                <Button className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-soft hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300 group">
                   <span>View Open Positions</span>
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               <Link to="/technology">
-                <Button className="cta-button-secondary bg-white/10 border-white/20 text-white hover:bg-white/20">
+                <Button variant="outline" className="rounded-xl border-2 border-border bg-background hover:bg-muted/60">
                   Learn About Our Tech
                 </Button>
               </Link>
@@ -208,8 +205,6 @@ export default function Team() {
           </motion.div>
         </div>
       </motion.section>
-
-      <Footer />
     </div>
   );
 }

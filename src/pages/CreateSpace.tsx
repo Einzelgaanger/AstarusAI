@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -89,7 +88,7 @@ export default function CreateSpace() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-1 bg-gradient-to-b from-black via-primary/10 to-black pt-24 sm:pt-28 pb-14 sm:pb-16 px-3 sm:px-4">
+      <div className="flex-1 bg-gradient-to-b from-background via-muted/20 to-background pt-24 sm:pt-28 pb-14 sm:pb-16 px-3 sm:px-4 safe-area-px safe-area-pb">
         <div className="container mx-auto max-w-5xl">
           <motion.div
             initial="hidden"
@@ -98,25 +97,25 @@ export default function CreateSpace() {
             className="grid grid-cols-1 lg:grid-cols-[1.1fr,1fr] gap-6 lg:gap-10 items-stretch"
           >
             {/* Info / hero side */}
-            <Card className="order-2 lg:order-1 glass-dark glass-border border-primary/30 relative overflow-hidden">
+            <Card className="order-2 lg:order-1 bg-card border border-primary/30 relative overflow-hidden shadow-sm">
               <div className="absolute inset-0 opacity-30 pointer-events-none">
-                <div className="absolute -top-24 -right-10 w-60 h-60 bg-primary/40 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 -left-10 w-72 h-72 bg-secondary/30 rounded-full blur-3xl" />
+                <div className="absolute -top-24 -right-10 w-60 h-60 bg-primary/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 -left-10 w-72 h-72 bg-secondary/20 rounded-full blur-3xl" />
               </div>
               <CardHeader className="relative space-y-4 pb-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-white/70">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-foreground">
                   <Sparkles className="w-3 h-3 text-secondary" />
                   New continuously-learning brain
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-primary flex items-center justify-center glow-primary">
-                    <Brain className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center glow-primary">
+                    <Brain className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl sm:text-3xl font-bold text-white">
+                    <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground">
                       Create a new space
                     </CardTitle>
-                    <CardDescription className="text-sm text-white/70 max-w-md">
+                    <CardDescription className="text-sm text-muted-foreground max-w-md">
                       Spaces are independent AI brains with their own memory,
                       permissions, and training logs. Perfect for teams,
                       projects, clients, or personal knowledge.
@@ -124,37 +123,37 @@ export default function CreateSpace() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="relative space-y-4 text-sm text-white/75">
+              <CardContent className="relative space-y-4 text-sm text-muted-foreground">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                    <p className="font-semibold text-white flex items-center gap-1.5 mb-1">
+                  <div className="p-3 rounded-xl bg-muted/50 border border-border">
+                    <p className="font-semibold text-foreground flex items-center gap-1.5 mb-1">
                       <Users2 className="w-3.5 h-3.5 text-secondary" />
                       Team-ready
                     </p>
-                    <p className="text-white/70">
+                    <p className="text-muted-foreground">
                       Invite collaborators with role-based access per space.
                     </p>
                   </div>
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                    <p className="font-semibold text-white flex items-center gap-1.5 mb-1">
+                  <div className="p-3 rounded-xl bg-muted/50 border border-border">
+                    <p className="font-semibold text-foreground flex items-center gap-1.5 mb-1">
                       <Brain className="w-3.5 h-3.5 text-primary" />
                       Dedicated memory
                     </p>
-                    <p className="text-white/70">
+                    <p className="text-muted-foreground">
                       Each space keeps its own LUT so knowledge stays scoped.
                     </p>
                   </div>
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                    <p className="font-semibold text-white flex items-center gap-1.5 mb-1">
+                  <div className="p-3 rounded-xl bg-muted/50 border border-border">
+                    <p className="font-semibold text-foreground flex items-center gap-1.5 mb-1">
                       <Plus className="w-3.5 h-3.5 text-secondary" />
                       Train any time
                     </p>
-                    <p className="text-white/70">
+                    <p className="text-muted-foreground">
                       Continuously improve answers with new Q&A pairs.
                     </p>
                   </div>
                 </div>
-                <p className="text-xs sm:text-sm text-white/60">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   You can always rename, re‑icon, and re‑train a space later, so
                   focus on a clear purpose and audience for now.
                 </p>
@@ -162,12 +161,12 @@ export default function CreateSpace() {
             </Card>
 
             {/* Form side */}
-            <Card className="order-1 lg:order-2 glass-dark glass-border border-white/15 shadow-2xl">
+            <Card className="order-1 lg:order-2 bg-card border border-border shadow-2xl">
               <CardHeader className="space-y-1 pb-3">
-                <CardTitle className="text-xl font-semibold text-white">
+                <CardTitle className="text-xl font-semibold text-foreground">
                   Space details
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm text-white/70">
+                <CardDescription className="text-xs sm:text-sm text-muted-foreground">
                   Give your space a clear identity so your team knows when to
                   use it.
                 </CardDescription>
@@ -178,11 +177,11 @@ export default function CreateSpace() {
                     <div className="flex items-center justify-between gap-2">
                       <Label
                         htmlFor="space-name"
-                        className="text-xs sm:text-sm text-white/90"
+                        className="text-xs sm:text-sm text-foreground"
                       >
                         Name *
                       </Label>
-                      <span className="text-[11px] text-white/50">
+                      <span className="text-[11px] text-muted-foreground">
                         Examples: “Marketing Brain”, “Sales Playbook”
                       </span>
                     </div>
@@ -191,12 +190,12 @@ export default function CreateSpace() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g., Customer Support Brain"
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                      className="bg-background border-border text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm text-white/90">
+                    <Label className="text-xs sm:text-sm text-foreground">
                       Type *
                     </Label>
                     <RadioGroup
@@ -209,8 +208,8 @@ export default function CreateSpace() {
                         onClick={() => setType("team")}
                         className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left text-xs sm:text-sm transition-all ${
                           type === "team"
-                            ? "border-secondary bg-secondary/20 text-white"
-                            : "border-white/15 bg-white/5 text-white/80 hover:border-white/30"
+                            ? "border-secondary bg-secondary/20 text-foreground"
+                            : "border-border bg-muted/50 text-muted-foreground hover:border-border hover:bg-muted"
                         }`}
                       >
                         <div className="flex items-center gap-2">
@@ -219,7 +218,7 @@ export default function CreateSpace() {
                           </div>
                           <div>
                             <p className="font-medium">Team</p>
-                            <p className="text-[11px] text-white/60">
+                            <p className="text-[11px] text-muted-foreground">
                               Shared with others
                             </p>
                           </div>
@@ -231,8 +230,8 @@ export default function CreateSpace() {
                         onClick={() => setType("personal")}
                         className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left text-xs sm:text-sm transition-all ${
                           type === "personal"
-                            ? "border-primary bg-primary/25 text-white"
-                            : "border-white/15 bg-white/5 text-white/80 hover:border-white/30"
+                            ? "border-primary bg-primary/25 text-foreground"
+                            : "border-border bg-muted/50 text-muted-foreground hover:border-border hover:bg-muted"
                         }`}
                       >
                         <div className="flex items-center gap-2">
@@ -241,7 +240,7 @@ export default function CreateSpace() {
                           </div>
                           <div>
                             <p className="font-medium">Personal</p>
-                            <p className="text-[11px] text-white/60">
+                            <p className="text-[11px] text-muted-foreground">
                               Just for you
                             </p>
                           </div>
@@ -254,24 +253,24 @@ export default function CreateSpace() {
                     <div className="flex items-center justify-between gap-2">
                       <Label
                         htmlFor="icon"
-                        className="text-xs sm:text-sm text-white/90"
+                        className="text-xs sm:text-sm text-foreground"
                       >
                         Icon (optional)
                       </Label>
-                      <span className="text-[11px] text-white/50">
+                      <span className="text-[11px] text-muted-foreground">
                         Pick an emoji or type your own
                       </span>
                     </div>
-                    <div className="grid grid-cols-6 sm:grid-cols-8 gap-1.5 max-h-32 overflow-y-auto rounded-xl bg-white/5 p-2 border border-white/10">
+                    <div className="grid grid-cols-6 sm:grid-cols-8 gap-1.5 max-h-32 overflow-y-auto rounded-xl bg-muted/50 p-2 border border-border">
                       {presetIcons.map((emoji) => (
                         <button
                           key={emoji}
                           type="button"
                           onClick={() => setIcon(emoji)}
-                          className={`flex items-center justify-center text-lg sm:text-xl rounded-lg border transition-all touch-manipulation ${
+                          className={`flex items-center justify-center text-lg sm:text-xl rounded-lg border transition-all touch-manipulation min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 ${
                             icon === emoji
                               ? "border-primary bg-primary/30 scale-105"
-                              : "border-transparent hover:border-white/30 hover:bg-white/10"
+                              : "border-transparent hover:border-border hover:bg-muted"
                           }`}
                         >
                           {emoji}
@@ -284,7 +283,7 @@ export default function CreateSpace() {
                       value={icon}
                       onChange={(e) => setIcon(e.target.value)}
                       placeholder="Or enter a custom emoji"
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 mt-1.5"
+                      className="bg-background border-border text-foreground placeholder:text-muted-foreground mt-1.5"
                       maxLength={2}
                     />
                   </div>
@@ -293,11 +292,11 @@ export default function CreateSpace() {
                     <div className="flex items-center justify-between gap-2">
                       <Label
                         htmlFor="description"
-                        className="text-xs sm:text-sm text-white/90"
+                        className="text-xs sm:text-sm text-foreground"
                       >
                         Description (optional)
                       </Label>
-                      <span className="text-[11px] text-white/50">
+                      <span className="text-[11px] text-muted-foreground">
                         Helps teammates know when to use this space
                       </span>
                     </div>
@@ -306,7 +305,7 @@ export default function CreateSpace() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="Describe what lives in this space and who it's for."
-                      className="bg-white/5 border-white/20 text-white placeholder:text-white/40 resize-none"
+                      className="bg-background border-border text-foreground placeholder:text-muted-foreground resize-none"
                       rows={3}
                     />
                   </div>
@@ -314,7 +313,7 @@ export default function CreateSpace() {
                   <Button
                     onClick={handleCreate}
                     disabled={creating || !name.trim()}
-                    className="w-full min-h-[46px] bg-gradient-primary hover:opacity-90 text-white touch-manipulation mt-2"
+                    className="w-full min-h-[46px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation mt-2"
                   >
                     {creating ? (
                       "Creating space..."
@@ -331,7 +330,6 @@ export default function CreateSpace() {
           </motion.div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
