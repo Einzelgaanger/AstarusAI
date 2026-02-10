@@ -55,7 +55,7 @@ export const Navbar = () => {
               alt="Astarus Logo"
               className="h-8 sm:h-10 md:h-12 lg:h-16 w-auto rounded-lg -my-1"
             />
-            <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white tracking-tight">
+            <span className="font-display text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white tracking-tight">
               Astarus
             </span>
           </Link>

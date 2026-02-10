@@ -19,10 +19,11 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-gradient-dark py-12 sm:py-16 px-4 sm:px-6 overflow-hidden">
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/20 rounded-full blur-3xl" />
+    <footer className="relative bg-[#0a0812] py-12 sm:py-16 px-4 sm:px-6 overflow-hidden border-t border-white/5">
+      <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/25 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-primary/15 rounded-full blur-3xl" />
       </div>
 
       <div className="container relative z-10">
@@ -35,7 +36,7 @@ export const Footer = () => {
                   alt="Astarus Logo"
                   className="h-12 sm:h-14 md:h-16 w-auto rounded-lg"
                 />
-                <span className="text-xl sm:text-2xl font-bold text-white">Astarus</span>
+                <span className="font-display text-xl sm:text-2xl font-bold text-white">Astarus</span>
               </Link>
               
               <p className="text-sm sm:text-base text-white/60 leading-relaxed max-w-sm">
