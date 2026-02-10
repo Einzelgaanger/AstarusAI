@@ -301,6 +301,20 @@ CREATE POLICY "Space members can create shared chats"
     )
   );
 
+-- Policy 4b: Space creators can create shared chats for their space (creator is not in space_members by default)
+CREATE POLICY "Space creators can create shared chats"
+  ON chats FOR INSERT
+  WITH CHECK (
+    space_id IS NOT NULL AND
+    user_id IS NULL AND
+    created_by = auth.uid() AND
+    EXISTS (
+      SELECT 1 FROM spaces
+      WHERE spaces.id = space_id
+      AND spaces.creator_id = auth.uid()
+    )
+  );
+
 -- Policy 5: Users can update their personal chats
 CREATE POLICY "Users can update their personal chats"
   ON chats FOR UPDATE
