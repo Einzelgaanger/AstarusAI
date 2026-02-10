@@ -9,17 +9,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/motion";
-import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { Mail, ArrowLeft, CheckCircle, RefreshCw } from "lucide-react";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setResendSuccess(false);
     setLoading(true);
 
     try {
@@ -30,9 +33,43 @@ export default function ForgotPassword() {
       if (error) throw error;
       setSent(true);
     } catch (err: any) {
-      setError(err.message || "Failed to send reset email");
+      const errorMessage = err.message || "Failed to send reset email";
+      if (errorMessage.includes("rate limit")) {
+        setError("Too many requests. Please wait a few minutes before trying again.");
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (!email) {
+      setError("Please enter your email address first");
+      return;
+    }
+
+    setError("");
+    setResendSuccess(false);
+    setResending(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+      setResendSuccess(true);
+    } catch (err: any) {
+      const errorMessage = err.message || "Failed to resend reset email";
+      if (errorMessage.includes("rate limit")) {
+        setError("Too many requests. Please wait a few minutes before trying again.");
+      } else {
+        setError(errorMessage);
+      }
+    } finally {
+      setResending(false);
     }
   };
 
@@ -66,12 +103,38 @@ export default function ForgotPassword() {
                   <p className="text-center text-white/70 text-sm">
                     If an account exists for <span className="text-white font-medium">{email}</span>, you'll receive a password reset link shortly. Check your spam folder if you don't see it.
                   </p>
-                  <Link to="/login">
-                    <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      Back to Login
+                  
+                  {resendSuccess && (
+                    <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/50 text-green-200 text-sm text-center">
+                      Reset email resent! Please check your inbox.
+                    </div>
+                  )}
+
+                  {error && (
+                    <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/50 text-red-200 text-sm">
+                      {error}
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleResend}
+                      disabled={resending}
+                      className="w-full border-white/20 text-white hover:bg-white/10"
+                    >
+                      <RefreshCw className={`w-4 h-4 mr-2 ${resending ? "animate-spin" : ""}`} />
+                      {resending ? "Resending..." : "Resend Reset Link"}
                     </Button>
-                  </Link>
+                    
+                    <Link to="/login">
+                      <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Back to Login
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">

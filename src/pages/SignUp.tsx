@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/motion";
-import { UserPlus, Mail, Lock, User, CheckCircle } from "lucide-react";
+import { UserPlus, Mail, Lock, User, CheckCircle, RefreshCw } from "lucide-react";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -18,7 +18,9 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const { signup } = useAuth();
+  const [resending, setResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const { signup, resendConfirmationEmail } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,14 +63,60 @@ export default function SignUp() {
                   <p className="text-center text-white/70 text-sm">
                     We've sent a confirmation link to <span className="text-white font-medium">{email}</span>. Please check your email and click the link to activate your account.
                   </p>
-                  <p className="text-center text-white/50 text-xs">
-                    Check your spam folder if you don't see it.
-                  </p>
-                  <Link to="/login">
-                    <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10 mt-2">
-                      Go to Login
+                  <div className="text-center text-white/50 text-xs space-y-1">
+                    <p>Check your spam folder if you don't see it.</p>
+                    <p className="text-white/40 text-[10px] mt-2">
+                      Still not receiving emails? Make sure:
+                    </p>
+                    <ul className="text-white/40 text-[10px] list-disc list-inside space-y-0.5 text-left max-w-sm mx-auto">
+                      <li>Email confirmation is enabled in Supabase Auth settings</li>
+                      <li>Your email provider isn't blocking Supabase emails</li>
+                      <li>The redirect URL is whitelisted in Supabase</li>
+                    </ul>
+                  </div>
+                  
+                  {resendSuccess && (
+                    <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/50 text-green-200 text-sm text-center">
+                      Confirmation email resent! Please check your inbox.
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={async () => {
+                        setError("");
+                        setResendSuccess(false);
+                        setResending(true);
+                        try {
+                          await resendConfirmationEmail(email);
+                          setResendSuccess(true);
+                        } catch (err: any) {
+                          setError(err.message || "Failed to resend email");
+                        } finally {
+                          setResending(false);
+                        }
+                      }}
+                      disabled={resending}
+                      className="w-full border-white/20 text-white hover:bg-white/10"
+                    >
+                      <RefreshCw className={`w-4 h-4 mr-2 ${resending ? "animate-spin" : ""}`} />
+                      {resending ? "Resending..." : "Resend Confirmation Email"}
                     </Button>
-                  </Link>
+                    
+                    <Link to="/login">
+                      <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+                        Go to Login
+                      </Button>
+                    </Link>
+                  </div>
+
+                  {error && (
+                    <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/50 text-red-200 text-sm">
+                      {error}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>

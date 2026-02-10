@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/motion";
-import { Lock, CheckCircle } from "lucide-react";
+import { Lock, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -17,12 +17,42 @@ export default function ResetPassword() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [hasValidSession, setHasValidSession] = useState<boolean | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user has a valid session (from password reset link)
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setHasValidSession(true);
+        } else {
+          // Check URL hash for recovery token
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          const type = hashParams.get('type');
+          
+          if (accessToken && type === 'recovery') {
+            // Token is in URL, session will be created when we update password
+            setHasValidSession(true);
+          } else {
+            setHasValidSession(false);
+          }
+        }
+      } catch (err) {
+        setHasValidSession(false);
+      }
+    };
+
+    checkSession();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
+    // Validation
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -33,15 +63,41 @@ export default function ResetPassword() {
       return;
     }
 
+    // Check for common weak passwords
+    const commonPasswords = ['password', '123456', 'password123', 'qwerty'];
+    if (commonPasswords.includes(password.toLowerCase())) {
+      setError("Please choose a stronger password");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // First, ensure we have a session (handle URL hash tokens)
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // Try to get session from URL hash
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        
+        if (!accessToken) {
+          throw new Error("Invalid or expired reset link. Please request a new password reset.");
+        }
+      }
+
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
+      
       setSuccess(true);
       setTimeout(() => navigate("/login"), 3000);
     } catch (err: any) {
-      setError(err.message || "Failed to update password");
+      const errorMessage = err.message || "Failed to update password";
+      if (errorMessage.includes("expired") || errorMessage.includes("invalid")) {
+        setError("This reset link has expired or is invalid. Please request a new password reset.");
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -69,9 +125,33 @@ export default function ResetPassword() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {success ? (
-                <div className="flex justify-center py-4">
-                  <CheckCircle className="w-16 h-16 text-green-400" />
+              {hasValidSession === false ? (
+                <div className="space-y-4">
+                  <div className="flex justify-center">
+                    <AlertCircle className="w-16 h-16 text-yellow-400" />
+                  </div>
+                  <p className="text-center text-white/70 text-sm">
+                    This password reset link is invalid or has expired. Please request a new password reset.
+                  </p>
+                  <Link to="/forgot-password">
+                    <Button className="w-full bg-gradient-primary hover:opacity-90 text-white font-semibold">
+                      Request New Reset Link
+                    </Button>
+                  </Link>
+                  <Link to="/login">
+                    <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+                      Back to Login
+                    </Button>
+                  </Link>
+                </div>
+              ) : success ? (
+                <div className="space-y-4">
+                  <div className="flex justify-center">
+                    <CheckCircle className="w-16 h-16 text-green-400" />
+                  </div>
+                  <p className="text-center text-white/70 text-sm">
+                    Your password has been successfully updated! Redirecting to login...
+                  </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,11 +192,16 @@ export default function ResetPassword() {
                   </div>
                   <Button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || hasValidSession === false}
                     className="w-full bg-gradient-primary hover:opacity-90 text-white font-semibold"
                   >
                     {loading ? "Updating..." : "Update Password"}
                   </Button>
+                  <div className="text-center">
+                    <Link to="/login" className="text-sm text-white/70 hover:text-white">
+                      Back to Login
+                    </Link>
+                  </div>
                 </form>
               )}
             </CardContent>

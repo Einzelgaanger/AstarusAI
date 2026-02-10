@@ -28,7 +28,19 @@ export default function Login() {
       await login(email, password);
       navigate("/spaces");
     } catch (err: any) {
-      setError(err.message || "Failed to log in");
+      // Check for specific error types
+      const errorMessage = err.message || "Failed to log in";
+      
+      // Check if it's an email not confirmed error
+      if (errorMessage.includes("email") && errorMessage.includes("confirm")) {
+        setError(
+          "Please verify your email address before signing in. Check your inbox for the confirmation link."
+        );
+      } else if (errorMessage.includes("Invalid login credentials")) {
+        setError("Invalid email or password. Please check your credentials and try again.");
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
