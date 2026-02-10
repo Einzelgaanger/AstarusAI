@@ -192,7 +192,7 @@ export default function ResetPassword() {
                   </div>
                   <Button
                     type="submit"
-                    disabled={loading || hasValidSession === false}
+                    disabled={loading || !hasValidSession}
                     className="w-full bg-gradient-primary hover:opacity-90 text-white font-semibold"
                   >
                     {loading ? "Updating..." : "Update Password"}
