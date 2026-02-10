@@ -23,7 +23,7 @@ export default function ForgotPassword() {
 
     try {
       const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${import.meta.env.VITE_SITE_URL || window.location.origin}/auth/callback`,
       });
       if (err) throw err;
       setSent(true);
@@ -51,7 +51,7 @@ export default function ForgotPassword() {
 
     try {
       const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${import.meta.env.VITE_SITE_URL || window.location.origin}/auth/callback`,
       });
       if (err) throw err;
       setResendSuccess(true);

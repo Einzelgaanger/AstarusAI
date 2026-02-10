@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { ArrowUpRight, Mail, Phone, Linkedin } from "lucide-react";
 
 const footerLinks = {
@@ -6,7 +7,6 @@ const footerLinks = {
     { label: "About Us", to: "/team" },
     { label: "Technology", to: "/technology" },
     { label: "Investors", to: "/investors" },
-    { label: "Contact", to: "/contact" },
   ],
   resources: [
     { label: "Try Demo", to: "/chat" },
@@ -19,16 +19,28 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-black py-12 sm:py-16 px-4 sm:px-6 overflow-hidden border-t border-white/10 safe-area-pb safe-area-px court-pattern">
-      <div className="container relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 mb-10 sm:mb-12">
-            <div className="sm:col-span-2 space-y-4 sm:space-y-6">
+    <footer className="relative bg-black py-12 sm:py-16 lg:py-20 xl:py-24 px-4 sm:px-6 md:px-8 lg:px-10 overflow-hidden border-t border-white/10 safe-area-pb safe-area-px court-pattern">
+      <div className="container relative z-10 max-w-5xl lg:max-w-6xl xl:max-w-[72rem] mx-auto">
+        <div className="w-full">
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 xl:gap-16 mb-10 sm:mb-12 lg:mb-14 xl:mb-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+            }}
+          >
+            <motion.div
+              className="sm:col-span-2 space-y-4 sm:space-y-6"
+              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
+            >
               <Link to="/" className="inline-flex items-center gap-2 touch-manipulation">
                 <img
-                  src="/Astarus Logo with name.png"
+                  src="/Astarus Logo.png"
                   alt="Astarus Logo"
-                  className="h-12 sm:h-14 md:h-16 w-auto rounded-lg"
+                  className="h-16 sm:h-20 md:h-24 w-auto rounded-lg"
                 />
                 <span className="font-display text-xl sm:text-2xl font-bold text-white">Astarus</span>
               </Link>
@@ -56,9 +68,12 @@ export const Footer = () => {
                   <Mail className="w-5 h-5" />
                 </a>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="space-y-3 sm:space-y-4">
+            <motion.div
+              className="space-y-3 sm:space-y-4"
+              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
+            >
               <h4 className="font-bold text-white text-base sm:text-lg">Company</h4>
               <ul className="space-y-2 sm:space-y-3">
                 {footerLinks.company.map((link) => (
@@ -73,10 +88,13 @@ export const Footer = () => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
 
-            <div className="space-y-3 sm:space-y-4">
-              <h4 className="font-bold text-white text-base sm:text-lg">Contact</h4>
+            <motion.div
+              className="space-y-3 sm:space-y-4"
+              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
+            >
+              <h4 className="font-bold text-white text-base sm:text-lg">Get in Touch</h4>
               <ul className="space-y-2 sm:space-y-3">
                 <li>
                   <a
@@ -96,29 +114,28 @@ export const Footer = () => {
                     <span>+44 7957 456969</span>
                   </a>
                 </li>
+                <li className="text-sm sm:text-base text-white/70 pt-1">
+                  Monday–Friday, 9am–5pm GMT
+                </li>
               </ul>
+            </motion.div>
+          </motion.div>
 
-              <div className="pt-3 sm:pt-4">
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 active:opacity-95 transition-colors touch-manipulation min-h-[44px]"
-                >
-                  Get in Touch
-                  <ArrowUpRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-6 sm:pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-            <p className="text-xs sm:text-sm text-white/70 text-center sm:text-left">
+          <motion.div
+            className="pt-4 sm:pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <p className="text-[11px] sm:text-xs text-white/60 text-center sm:text-left">
               &copy; {currentYear} Astarus AI. All rights reserved.
             </p>
-            <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-white/70">
+            <div className="flex items-center gap-3 sm:gap-4 text-[11px] sm:text-xs text-white/60">
               <span className="cursor-pointer hover:text-violet-400 transition-colors touch-manipulation">Privacy Policy</span>
               <span className="cursor-pointer hover:text-violet-400 transition-colors touch-manipulation">Terms of Service</span>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </footer>

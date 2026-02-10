@@ -213,8 +213,14 @@ export default function Spaces() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-foreground text-sm sm:text-base">Loading...</div>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center px-4 pt-24 pb-10 bg-muted/20">
+          <Card className="p-8 rounded-2xl border border-border shadow-sm bg-card max-w-sm w-full text-center">
+            <div className="w-10 h-10 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-sm font-medium text-foreground">Loading spaces...</p>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -222,21 +228,23 @@ export default function Spaces() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-1 px-3 sm:px-4 pt-24 sm:pt-28 md:pt-32 pb-10 sm:pb-14 md:pb-20 bg-gradient-to-b from-background via-muted/20 to-background">
-        <div className="container mx-auto max-w-6xl">
+      <div className="flex-1 relative px-3 sm:px-4 pt-20 sm:pt-24 md:pt-28 pb-8 sm:pb-12 md:pb-16 bg-gradient-to-b from-background via-muted/20 to-background overflow-hidden safe-area-px">
+        <div className="absolute inset-0 bg-grid-subtle pointer-events-none" aria-hidden />
+        <div className="container relative z-10 mx-auto max-w-6xl">
           <motion.div
             initial="hidden"
             animate="visible"
-            variants={staggerContainer(0.1)}
-            className="space-y-6 sm:space-y-8"
+            variants={staggerContainer(0.08, 0.05)}
+            className="space-y-5 sm:space-y-6"
           >
-            <motion.div variants={fadeInUp(0)} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">Your Spaces</h1>
-                <p className="text-sm sm:text-base text-muted-foreground">Manage your AI brains and knowledge bases</p>
+            <motion.div variants={fadeInUp(0)} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-1">My Spaces</p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Your Spaces</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Manage your AI brains and knowledge bases</p>
               </div>
               <Button
-                className="min-h-[44px] bg-primary hover:bg-primary/90 text-white touch-manipulation"
+                className="w-full sm:w-auto min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-white touch-manipulation font-semibold text-sm px-4 sm:px-5 py-2.5 shrink-0"
                 onClick={() => navigate("/spaces/new")}
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -247,59 +255,55 @@ export default function Spaces() {
 
             {/* Pending Invitations Section */}
             {pendingInvitations.length > 0 && (
-              <motion.div variants={fadeInUp(0.05)} className="space-y-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <Mail className="w-5 h-5 text-primary" />
-                  <h2 className="text-2xl font-bold text-foreground">Pending Invitations</h2>
-                  <span className="px-2 py-1 rounded-full bg-primary/20 text-primary text-sm font-medium">
+              <motion.div variants={fadeInUp(0.05)} className="space-y-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Mail className="w-4 h-4 text-primary shrink-0" />
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground">Pending Invitations</h2>
+                  <span className="px-2 py-0.5 rounded-full bg-primary/15 text-primary text-xs font-semibold border border-primary/20">
                     {pendingInvitations.length}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {pendingInvitations.map((invitation, index) => (
-                    <motion.div
-                      key={invitation.id}
-                      variants={fadeInUp(0.1 + index * 0.05)}
-                    >
-                      <Card className="bg-card border border-primary/50 hover:border-primary transition-all shadow-sm">
-                        <CardHeader>
-                          <div className="flex items-start justify-between mb-2">
-                            <CardTitle className="text-foreground">{invitation.space.name}</CardTitle>
+                    <motion.div key={invitation.id} variants={fadeInUp(0.08 + index * 0.03)}>
+                      <Card className="bg-card border border-primary/30 hover:border-primary/50 transition-all shadow-sm rounded-xl overflow-hidden">
+                        <CardHeader className="p-4 sm:p-5">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <CardTitle className="text-base sm:text-lg text-foreground truncate">{invitation.space.name}</CardTitle>
                             {invitation.space.icon ? (
-                              <span className="text-2xl">{invitation.space.icon}</span>
+                              <span className="text-xl sm:text-2xl shrink-0">{invitation.space.icon}</span>
                             ) : invitation.space.type === "team" ? (
-                              <Users2 className="w-5 h-5 text-primary" />
+                              <Users2 className="w-5 h-5 text-primary shrink-0" />
                             ) : (
-                              <User className="w-5 h-5 text-secondary" />
+                              <User className="w-5 h-5 text-secondary shrink-0" />
                             )}
                           </div>
-                          <CardDescription className="text-muted-foreground capitalize">
-                            {invitation.space.type} Space • Invitation
+                          <CardDescription className="text-xs sm:text-sm text-muted-foreground capitalize">
+                            {invitation.space.type} • Invitation
                           </CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-4 sm:p-5 pt-0">
                           {invitation.space.description && (
-                            <p className="text-sm text-muted-foreground mb-4">{invitation.space.description}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground mb-3 line-clamp-2">{invitation.space.description}</p>
                           )}
-                          <div className="space-y-2">
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={() => handleAcceptInvitation(invitation.space_id)}
-                                disabled={processingInvitation === invitation.space_id}
-                                className="flex-1 min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation"
-                              >
-                                <Check className="w-4 h-4 mr-2" />
-                                {processingInvitation === invitation.space_id ? "Accepting..." : "Accept"}
-                              </Button>
-                              <Button
-                                onClick={() => handleDeclineInvitation(invitation.space_id)}
-                                disabled={processingInvitation === invitation.space_id}
-                                variant="outline"
-                                className="min-h-[44px] min-w-[44px] border-red-500/50 text-red-400 hover:bg-red-500/10 touch-manipulation"
-                              >
-                                <XCircle className="w-4 h-4" />
-                              </Button>
-                            </div>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handleAcceptInvitation(invitation.space_id)}
+                              disabled={processingInvitation === invitation.space_id}
+                              className="flex-1 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm touch-manipulation"
+                            >
+                              <Check className="w-4 h-4 mr-1.5" />
+                              {processingInvitation === invitation.space_id ? "..." : "Accept"}
+                            </Button>
+                            <Button
+                              onClick={() => handleDeclineInvitation(invitation.space_id)}
+                              disabled={processingInvitation === invitation.space_id}
+                              variant="outline"
+                              size="icon"
+                              className="min-h-[44px] min-w-[44px] rounded-xl border-red-500/40 text-red-500 hover:bg-red-500/10 touch-manipulation shrink-0"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>
@@ -310,23 +314,25 @@ export default function Spaces() {
             )}
 
             {/* Your Spaces Section */}
-            <motion.div variants={fadeInUp(0.1)}>
-              <div className="flex items-center gap-2 mb-4">
-                <Brain className="w-5 h-5 text-foreground" />
-                <h2 className="text-2xl font-bold text-foreground">Your Spaces</h2>
+            <motion.div variants={fadeInUp(0.06)}>
+              <div className="flex items-center gap-2 mb-3">
+                <Brain className="w-4 h-4 text-primary shrink-0" />
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">Your Spaces</h2>
               </div>
             </motion.div>
 
             {spaces.length === 0 ? (
-              <motion.div variants={fadeInUp(0.1)}>
-                <Card className="bg-card border border-border shadow-sm">
-                  <CardContent className="py-12 text-center">
-                    <Brain className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-xl font-semibold text-foreground mb-2">No spaces yet</h3>
-                    <p className="text-muted-foreground mb-6">Create your first space to get started</p>
+              <motion.div variants={fadeInUp(0.08)}>
+                <Card className="bg-card border border-border shadow-sm rounded-xl overflow-hidden">
+                  <CardContent className="py-10 sm:py-12 px-4 text-center">
+                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4 ring-2 ring-primary/15">
+                      <Brain className="w-7 h-7 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-1">No spaces yet</h3>
+                    <p className="text-sm text-muted-foreground mb-5">Create your first space to get started</p>
                     <Button
                       onClick={() => navigate("/spaces/new")}
-                      className="min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation"
+                      className="min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation text-sm px-5"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Create Your First Space
@@ -336,16 +342,13 @@ export default function Spaces() {
               </motion.div>
             ) : (
               <motion.div
-                variants={fadeInUp(0.1)}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+                variants={fadeInUp(0.08)}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
               >
                 {spaces.map((space, index) => (
-                  <motion.div
-                    key={space.id}
-                    variants={fadeInUp(0.1 + index * 0.05)}
-                  >
-                    <Card className="bg-card border border-border hover:border-primary/50 transition-all cursor-pointer h-full shadow-sm">
-                      <CardHeader>
+                  <motion.div key={space.id} variants={fadeInUp(0.08 + index * 0.03)}>
+                    <Card className="bg-card border border-border hover:border-primary/30 transition-all h-full shadow-sm rounded-xl overflow-hidden flex flex-col">
+                      <CardHeader className="p-4 sm:p-5 pb-2">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1 min-w-0">
                             {editingSpaceId === space.id ? (
@@ -361,7 +364,7 @@ export default function Spaces() {
                                       handleCancelEditSpace();
                                     }
                                   }}
-                                  className="bg-background border-border text-foreground flex-1 min-w-0"
+                                  className="bg-background border-border text-foreground flex-1 min-w-0 rounded-lg text-sm"
                                   autoFocus
                                   disabled={updatingSpace}
                                 />
@@ -411,44 +414,44 @@ export default function Spaces() {
                             )
                           )}
                         </div>
-                        <CardDescription className="text-muted-foreground capitalize">
+                        <CardDescription className="text-xs sm:text-sm text-muted-foreground capitalize">
                           {space.type} Space
                         </CardDescription>
                       </CardHeader>
-                      <CardContent>
+                      <CardContent className="p-4 sm:p-5 pt-0 flex-1 flex flex-col">
                         {space.description && (
-                          <p className="text-sm text-muted-foreground mb-4">{space.description}</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-3 line-clamp-2">{space.description}</p>
                         )}
-                        <div className="space-y-2">
+                        <div className="space-y-2 mt-auto">
                           <Button
                             onClick={() => navigate(`/spaces/${space.lut_name}`)}
-                            className="w-full min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation"
+                            className="w-full min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm touch-manipulation"
                           >
                             Open
                             <ArrowRight className="w-4 h-4 ml-2" />
                           </Button>
                           {space.creator_id === user?.id && (
-                            <>
+                            <div className="grid grid-cols-2 gap-2">
                               <Button
                                 onClick={() => {
                                   setMembersOpen(space.id);
                                   loadSpaceMembers(space.id);
                                 }}
                                 variant="outline"
-                                className="w-full min-h-[44px] border-border text-foreground bg-muted/60 hover:bg-muted hover:text-foreground hover:scale-105 transition-transform touch-manipulation"
+                                className="min-h-[44px] rounded-xl border-border text-foreground bg-muted/50 hover:bg-muted text-sm touch-manipulation"
                               >
-                                <Users className="w-4 h-4 mr-2" />
+                                <Users className="w-4 h-4 mr-1.5 sm:mr-2" />
                                 Members
                               </Button>
                               <Button
                                 onClick={() => handleDeleteSpace(space.id)}
                                 variant="outline"
-                                className="w-full min-h-[44px] border-red-500/50 text-red-400 bg-red-500/10 opacity-90 hover:bg-red-500/10 hover:text-red-400 hover:scale-105 transition-transform touch-manipulation"
+                                className="min-h-[44px] rounded-xl border-red-500/40 text-red-500 bg-red-500/5 hover:bg-red-500/10 text-sm touch-manipulation"
                               >
-                                <X className="w-4 h-4 mr-2" />
+                                <X className="w-4 h-4 mr-1.5 sm:mr-2" />
                                 Delete
                               </Button>
-                            </>
+                            </div>
                           )}
                         </div>
                       </CardContent>
@@ -463,10 +466,10 @@ export default function Spaces() {
 
       {/* Members Dialog */}
       <Dialog open={membersOpen !== null} onOpenChange={(open) => !open && setMembersOpen(null)}>
-        <DialogContent className="bg-card border border-border !left-1/2 !top-1/2 !-translate-x-1/2 !-translate-y-1/2 max-w-[95vw] sm:max-w-2xl mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-foreground">Space Members</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
+        <DialogContent className="bg-card border border-border rounded-2xl !left-1/2 !top-1/2 !-translate-x-1/2 !-translate-y-1/2 w-[calc(100%-2rem)] max-w-[95vw] sm:max-w-2xl mx-4 max-h-[85vh] overflow-y-auto shadow-2xl p-4 sm:p-6">
+          <DialogHeader className="space-y-1.5">
+            <DialogTitle className="text-lg sm:text-xl text-foreground">Space Members</DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
               Manage members and invitations for this space
             </DialogDescription>
           </DialogHeader>
@@ -483,29 +486,29 @@ export default function Spaces() {
                       handleInvite(membersOpen);
                     }
                   }}
-                  className="bg-background border-border text-foreground min-h-[44px] touch-manipulation flex-1 min-w-0"
+                  className="bg-background border-border text-foreground min-h-[44px] rounded-xl touch-manipulation flex-1 min-w-0 text-sm"
                 />
                 <Button
                   onClick={() => handleInvite(membersOpen)}
                   disabled={inviting || !inviteEmail.trim()}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground min-h-[44px] touch-manipulation flex-shrink-0"
+                  className="min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground touch-manipulation flex-shrink-0 text-sm px-4"
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   {inviting ? "Inviting..." : "Invite"}
                 </Button>
               </div>
-              <div className="space-y-2 min-h-0 overflow-y-auto max-h-[50vh] pr-1">
+              <div className="space-y-2 min-h-0 overflow-y-auto max-h-[min(50vh,20rem)] pr-1 -mr-1">
                 {spaceMembers[membersOpen]?.map((member) => (
                   <div
                     key={member.id}
-                    className="flex items-center justify-between gap-2 p-3 rounded-lg bg-muted/50 border border-border min-w-0"
+                    className="flex items-center justify-between gap-2 p-3 rounded-xl bg-muted/40 border border-border min-w-0"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4 text-primary-foreground" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0 ring-2 ring-primary/20">
+                        <User className="w-4 h-4 text-primary" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-foreground font-medium truncate">{member.email}</p>
+                        <p className="text-sm font-medium text-foreground truncate">{member.email}</p>
                         <p className="text-xs text-muted-foreground capitalize">
                           {member.role} • {member.status}
                         </p>
@@ -516,8 +519,8 @@ export default function Spaces() {
                       <Button
                         onClick={() => handleRemoveMember(member.id, membersOpen)}
                         variant="ghost"
-                        size="sm"
-                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
+                        size="icon"
+                        className="min-h-[44px] min-w-[44px] rounded-xl text-red-500 hover:text-red-400 hover:bg-red-500/10 flex-shrink-0 touch-manipulation"
                       >
                         <X className="w-4 h-4" />
                       </Button>
@@ -525,7 +528,7 @@ export default function Spaces() {
                   </div>
                 ))}
                 {(!spaceMembers[membersOpen] || spaceMembers[membersOpen].length === 0) && (
-                  <p className="text-center text-muted-foreground py-4">No members yet</p>
+                  <p className="text-center text-sm text-muted-foreground py-6">No members yet</p>
                 )}
               </div>
             </div>

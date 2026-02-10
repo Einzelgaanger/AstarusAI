@@ -215,6 +215,15 @@
     background: var(--gradient-dark);
   }
 
+  /* Subtle pattern for CTA / "Experience it yourself" sections (light bg) */
+  .bg-pattern-cta {
+    background-image:
+      radial-gradient(circle at center, hsl(262 83% 58% / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(262 83% 58% / 0.03) 1px, transparent 1px),
+      linear-gradient(180deg, hsl(262 83% 58% / 0.03) 1px, transparent 1px);
+    background-size: 20px 20px, 36px 36px, 36px 36px;
+  }
+
   .bg-mesh-gradient {
     background: var(--gradient-mesh);
   }
@@ -281,9 +290,42 @@
       linear-gradient(180deg, hsl(262 83% 58% / 0.04) 1px, transparent 1px);
     background-size: 48px 48px;
   }
+
+  /* More visible grid for sections (e.g. The Challenge) */
+  .bg-grid-visible {
+    background-image:
+      linear-gradient(90deg, hsl(220 18% 70% / 0.14) 1px, transparent 1px),
+      linear-gradient(180deg, hsl(220 18% 70% / 0.14) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
   .bg-dots-subtle {
     background-image: radial-gradient(hsl(262 83% 58% / 0.22) 1.5px, transparent 1.5px);
     background-size: 24px 24px;
+  }
+
+  /* Pattern for Proven Results section */
+  .bg-pattern-results {
+    background-image:
+      radial-gradient(circle at center, hsl(262 83% 58% / 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(220 18% 70% / 0.06) 1px, transparent 1px),
+      linear-gradient(180deg, hsl(220 18% 70% / 0.06) 1px, transparent 1px);
+    background-size: 20px 20px, 32px 32px, 32px 32px;
+  }
+
+  /* Unique pattern for Our Architecture (Technology) — hexagonal / neural-style grid */
+  .bg-pattern-architecture {
+    --arch-line: hsl(262 83% 58% / 0.06);
+    --arch-node: hsl(262 83% 58% / 0.09);
+    background-image:
+      /* Diagonal lines (60° / 120°) for hexagonal feel */
+      linear-gradient(60deg, var(--arch-line) 1px, transparent 1px),
+      linear-gradient(120deg, var(--arch-line) 1px, transparent 1px),
+      /* Horizontal tie lines */
+      linear-gradient(90deg, hsl(262 83% 58% / 0.04) 1px, transparent 1px),
+      /* Nodes at intersections */
+      radial-gradient(circle at center, var(--arch-node) 1.5px, transparent 1.5px);
+    background-size: 34px 59px, 34px 59px, 17px 29.5px, 17px 29.5px;
+    background-position: 0 0, 0 0, 0 0, 8.5px 14.75px;
   }
 
   /* Sharper rendering for full-bleed images (auth panels, etc.) */
